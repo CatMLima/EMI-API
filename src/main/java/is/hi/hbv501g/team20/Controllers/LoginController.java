@@ -4,15 +4,12 @@ import is.hi.hbv501g.team20.Persistence.Entities.User;
 import is.hi.hbv501g.team20.Services.Implementations.LoginServiceImplementation;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 @Controller
 public class LoginController {
@@ -38,7 +35,6 @@ public class LoginController {
 
     }
 
-
     @RequestMapping(value="/sign-up", method= RequestMethod.GET)
     public String getSignUpPage(Model model){
         model.addAttribute("user", new User());
@@ -59,7 +55,7 @@ public class LoginController {
         if (existing != null) {
             session.setAttribute("user", existing);
             model.addAttribute("user", existing);
-            return "user";
+            return "redirect:/feed";
         }
         return "redirect:/";
     }

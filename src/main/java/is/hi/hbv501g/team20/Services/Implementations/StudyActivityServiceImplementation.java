@@ -7,16 +7,14 @@ import is.hi.hbv501g.team20.Services.StudyActivityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class StudyActivityServiceImplementation implements StudyActivityService {
 
     //UserRepository userRepo;
-    private StudyActivityRepository studyActRepo;
-
     @Autowired
-    public StudyActivityServiceImplementation(StudyActivityRepository studyActRepo) {
-        this.studyActRepo = studyActRepo;
-    }
+    StudyActivityRepository studyActRepo;
 
     @Override
     public StudyActivity save(StudyActivity studyActivity) {
@@ -41,6 +39,11 @@ public class StudyActivityServiceImplementation implements StudyActivityService 
     @Override
     public StudyActivity findById(long id) {
         return studyActRepo.findById(id);
+    }
+
+    @Override
+    public List<StudyActivity> findAll() {
+        return studyActRepo.findAll();
     }
 
 }

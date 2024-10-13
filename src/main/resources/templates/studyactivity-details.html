@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>StudyActivity Details</title>
+</head>
+<body>
+<h1>This is your StudyActivity</h1>
+<p>Title: <span th:text="${studyactivity.title}"></span></p>
+<p>Description: <span th:text="${studyactivity.description}"></span></p>
+<p>Date: <span th:text="${studyactivity.date}"></span></p>
+<p>Start: <span th:text="${studyactivity.start}"></span></p>
+<p>End: <span th:text="${studyactivity.end}"></span></p>
+<p>SubjectID: <span th:text="${studyactivity.subjectID}"></span></p>
+<p>SubjectName: <span th:text="${studyactivity.subjectName}"></span></p>
+
+<a href="/feed">Back to Feed</a>
+
+</body>
+</html>

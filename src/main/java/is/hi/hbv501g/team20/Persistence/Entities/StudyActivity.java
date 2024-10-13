@@ -7,19 +7,55 @@ import java.util.Date;
 
 
 @Entity
-//@Table(name = "\"studyactivity\"")
+@Table(name = "\"studyactivity\"")
 public class StudyActivity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long ID;
+
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+
+    @Temporal(TemporalType.DATE)
     private Date date;
+
+    //@Temporal(TemporalType.TIME)
     private LocalTime start; //eða Timer timer?
+
+    //@Temporal(TemporalType.TIME)
     private LocalTime end;
+
+    private String title;
     private String description;
+    private String subjectID;
+    private String subjectName;
+
+    //not yet u horny bastard! <- THE WHHAT NOW?!
+
+    //@OneToMany(mappedBy = "id", cascade = CascadeType.ALL, orphanRemoval = true)
+    //private List<Coffee> coffees;
+    //private String ImageID; //or Image Image
+
+    public StudyActivity(Date date,
+                         LocalTime start,
+                         LocalTime end,
+                         String title,
+                         String description,
+                         String subjectID,
+                         String subjectName) {
+        this.date = date;
+        this.start = start;
+        this.end = end; //implement differently?
+        this.title = title;
+        this.description = description;
+        this.subjectID = subjectID;
+        this.subjectName = subjectName;
+    }
+
+    public StudyActivity() {
+    }
 
     public User getUser() {
         return user;
@@ -27,29 +63,6 @@ public class StudyActivity {
 
     public void setUser(User user) {
         this.user = user;
-    }
-
-    //not yet u horny bastard! <- THE WHHAT NOW?!
-
-    private String subjectID;
-    private String subjectName;
-
-    //@OneToMany(mappedBy = "id", cascade = CascadeType.ALL, orphanRemoval = true)
-    //private List<Coffee> coffees;
-    //private String ImageID; //or Image Image
-    //private Location location;
-
-    public StudyActivity(Date date, String subjectID, String subjectName, LocalTime start, LocalTime end, String description) {
-        this.date = date;
-        this.subjectID = subjectID;
-        this.subjectName = subjectName;
-        this.start = start;
-        this.end = end; //implement differently
-        this.description = description;
-        this.user = user;
-    }
-
-    public StudyActivity() {
     }
 
     public long getID() {
@@ -83,6 +96,10 @@ public class StudyActivity {
     public void setEnd(LocalTime end) {
         this.end = end;
     }
+
+    public String getTitle() { return title; }
+
+    public void setTitle(String title) { this.title = title; }
 
     public String getDescription() {
         return description;

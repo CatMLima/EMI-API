@@ -5,6 +5,8 @@
     <title>User Page</title>
 </head>
 <body>
+    <button onclick="window.history.back()">Return to Feed</button>
+
     <h1>Welcome, <span th:text="${user.name}"></span>!</h1>
     <p>Your email: <span th:text="${user.email}"></span></p>
     <!-- Add more user details as needed -->
@@ -13,7 +15,7 @@
 
     <div>
         <h2>Your Profile Picture</h2>
-        <img th:src="@{/api/user/{id}/profilePicture(id=${user.id})}" alt="Profile Picture" width="150" height="150" />
+        <img id="picture" th:src="@{'/user/' + ${user.id} + '/profilePicture'}" alt="Profile Picture" width="150" height="150" />
     </div>
 
     <div>
@@ -27,7 +29,9 @@
 
     <!-- Add the Settings button -->
     <div>
-        <button onclick="window.location.href='/settings'">Settings</button>
+        <form th:action="@{/settings}" method="get">
+            <button type="submit">User Settings</button>
+        </form>
     </div>
 </body>
 </html>

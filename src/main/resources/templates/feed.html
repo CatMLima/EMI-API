@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Feed</title>
+    <link href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.3/css/bootstrap.min.css"
+          rel="stylesheet">
+</head>
+<body>
+<h1>Welcome to Your Feed</h1>
+
+<!-- Button to go to Profile Page -->
+<form th:action="@{/user}" method="get">
+    <button type="submit">Go to Profile</button>
+</form>
+
+<!-- Button to start a Study Activity -->
+<form th:action="@{/studyactivity-create}" method="get">
+    <button type="submit">Create a Study Activity</button>
+</form>
+
+<!-- Here below we can add content to the feed -->
+
+<div th:switch="${studyactivity}">
+    <h2 th:case="null">No StudyActivities yet!</h2>
+    <div th:case="*">
+        <h2>StudyActivities</h2>
+        <table class="table table-striped table-bordered">
+            <thead>
+            <tr>
+                <th>Title</th>
+                <th>Description</th>
+                <th>SubjectID</th>
+                <th>SubjectName</th>
+                <th>Created on</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="studyactivity : ${studyactivity}">
+                <td th:text="${studyactivity.title}"></td>
+                <td th:text="${studyactivity.description}"></td>
+                <td th:text="${studyactivity.subjectID}"></td>
+                <td th:text="${studyactivity.subjectName}"></td>
+                <td th:text="${studyactivity.date}"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+</html>

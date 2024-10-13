@@ -1,6 +1,7 @@
 package is.hi.hbv501g.team20.Controllers;
 
 import is.hi.hbv501g.team20.Persistence.Entities.User;
+import is.hi.hbv501g.team20.Persistence.Repository.UserRepository;
 import is.hi.hbv501g.team20.Services.Implementations.LoginServiceImplementation;
 import is.hi.hbv501g.team20.Services.LoginService;
 import jakarta.servlet.http.HttpSession;
@@ -12,20 +13,19 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.session.Session;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 @Controller
 public class UserController {
 
+    private final UserRepository userRepository;
     private LoginServiceImplementation loginService;
 
     @Autowired
-    public UserController(LoginServiceImplementation loginService) {
+    public UserController(LoginServiceImplementation loginService, UserRepository userRepository) {
         this.loginService = loginService;
+        this.userRepository = userRepository;
     }
 
     @PostMapping("/api/uploadProfilePicture")
@@ -41,6 +41,7 @@ public class UserController {
                 user.setProfilePicture(bytes);
                 loginService.save(user);
                 model.addAttribute("user", user);
+                model.addAttribute("picture", user.getProfilePicture());
                 return "user";
             } catch (Exception e) {
                 e.printStackTrace();
@@ -55,16 +56,20 @@ public class UserController {
     Still working on this - Cat
      */
     @GetMapping("/user/{id}/profilePicture")
-    public ResponseEntity<byte[]> getProfilePicture(Session session, Model model){
-        User user = (User) session.getAttribute("user");
-        byte[] picture = user.getProfilePicture();
-
-        if (picture != null){
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.IMAGE_JPEG);
-            return new ResponseEntity<>(picture, headers, HttpStatus.OK);
-        } else{
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-        }
+    public ResponseEntity<byte[]> getProfilePicture(@PathVariable Long id){
+        User user = loginService.findById(id);
+        return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(user.getProfilePicture());
     }
+
+    @RequestMapping(value="/settings", method=RequestMethod.GET)
+    public String getSettingsPage(Model model, HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        if (user != null) {
+            model.addAttribute("user", user);
+            System.out.println("User in session: " + user.getName());
+            return "settings";
+        }
+        return "user";
+    }
+
 }
