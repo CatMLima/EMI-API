@@ -55,8 +55,8 @@
                 <td th:text="${activeStudyActivity.description}"></td>
                 <td th:text="${activeStudyActivity.subjectID}"></td>
                 <td th:text="${activeStudyActivity.subjectName}"></td>
-                <td th:text="${#dates.format(activeStudyActivity.start, 'HH:mm')}"></td>
-                <td th:text="${#dates.format(activeStudyActivity.duration, 'HH:mm')}"></td>
+                <td th:text="${activeStudyActivity.start}"></td>
+                <td th:text="${activeStudyActivity.duration}"></td>
                 <td>
                     <!-- Button to start a Study Activity -->
                     <form th:action="@{/studyactivity-finish/{id}(id=${activeStudyActivity.id})}" method="post">
