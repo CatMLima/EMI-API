@@ -23,10 +23,51 @@
     <button class="btn btn-secondary" type="submit">Go to Profile</button>
 </form>
 
-<!-- Button to start a Study Activity -->
-<form th:action="@{/studyactivity-create}" method="get">
-    <button class="btn btn-primary" type="submit">Create a Study Activity</button>
-</form>
+<br>
+
+<!-- Active study Activity -->
+<div th:switch="${studyactivity}">
+    <!-- Display this message if 'ongoingStudyActivity' is empty -->
+    <h4 th:if="${userActive != 0}">
+        <!-- Button to start a Study Activity -->
+        <form th:action="@{/studyactivity-create}" method="get">
+            <button class="btn btn-primary" type="submit">Create a Study Activity</button>
+        </form>
+    </h4>
+
+    <div th:if="${userActive == 0}">
+        <h4>Your Active Study Activity</h4>
+        <table class="table table-striped table-bordered">
+            <thead>
+            <tr>
+                <th>Title</th>
+                <th>Description</th>
+                <th>SubjectID</th>
+                <th>SubjectName</th>
+                <th>Started at</th>
+                <!--<th>Duration</th>  -->
+                <th>Stop</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="activeStudyActivity : ${activeStudyActivity}">
+                <td th:text="${activeStudyActivity.title}"></td>
+                <td th:text="${activeStudyActivity.description}"></td>
+                <td th:text="${activeStudyActivity.subjectID}"></td>
+                <td th:text="${activeStudyActivity.subjectName}"></td>
+                <td th:text="${activeStudyActivity.start}"></td>
+                <!-- <td th:text="${activeStudyActivity.duration}"></td>  -->
+                <td>
+                    <!-- Button to start a Study Activity -->
+                    <form th:action="@{/studyactivity-finish/{id}(id=${activeStudyActivity.id})}" method="post">
+                        <button class="btn btn-primary" type="submit">End Study Activity</button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
 
 
 <form th:action="@{/locations-list}" method="get">

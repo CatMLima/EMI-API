@@ -50,6 +50,7 @@ public class StudyActivityController {
 
         User user = (User) httpSession.getAttribute("user");
         user.setIsActive(0);
+        loginService.save(user);
         studyActivity.setUser(user);
         studyActivity.setPrivacy(user);
         studyActivity.setDate(new Date());
@@ -80,14 +81,16 @@ public class StudyActivityController {
     }
 
     @RequestMapping(value = "/studyactivity-finish/{id}")
-    public String finishStudyActivity(@PathVariable("id") long id, Model model) {
+    public String finishStudyActivity(HttpSession httpSession, @PathVariable("id") long id, Model model) {
 
+        User user = (User) httpSession.getAttribute("user");
         StudyActivity active = studyActivityService.findById(id);
-        User user = active.getUser();
         user.setIsActive(1);
+        loginService.save(user);
         active.setEnd(LocalTime.now());
         active.setIsActive(1);
         studyActivityService.save(active);
+
         return "redirect:/feed";
 
     }
@@ -145,6 +148,10 @@ public class StudyActivityController {
         List<StudyActivity> allStudyActivities = studyActivityService.findAllPublicAndUserActivities(user);
         model.addAttribute("studyactivity", allStudyActivities);
 
+        Integer userActive = user.getIsActive();
+        List<StudyActivity> activeStudyActivity = studyActivityService.findActiveStudyActivity(user);
+        model.addAttribute("activeStudyActivity", activeStudyActivity);
+
         Map<Long, Boolean> userHasGivenCoffee = new HashMap<>(); // Map to track user's coffee status
         model.addAttribute("userHasGivenCoffee", userHasGivenCoffee);
         for (StudyActivity activity : allStudyActivities) {
@@ -155,6 +162,7 @@ public class StudyActivityController {
 
         if (user != null) {
             model.addAttribute("user", user);
+            model.addAttribute("userActive", userActive);
         }
         return "feed";
     }
