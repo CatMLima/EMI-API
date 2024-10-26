@@ -3,10 +3,12 @@ package is.hi.hbv501g.team20.Persistence.Entities;
 import is.hi.hbv501g.team20.Persistence.Enums.Building;
 import jakarta.persistence.*;
 
+import java.time.Duration;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 
 @Entity
@@ -29,6 +31,8 @@ public class StudyActivity {
 
     //@Temporal(TemporalType.TIME)
     private LocalTime end;
+
+    private Duration duration;
 
     private String title;
     private String description;
@@ -118,6 +122,14 @@ public class StudyActivity {
         this.end = end;
     }
 
+    public Duration getDuration() {
+        return duration;
+    }
+
+    public void setDuration(LocalTime start, LocalTime end) {
+        this.duration = Duration.between(start, Objects.requireNonNullElseGet(end, LocalTime::now));
+    }
+    
     public String getTitle() { return title; }
 
     public void setTitle(String title) { this.title = title; }

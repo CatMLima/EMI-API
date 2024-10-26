@@ -48,6 +48,10 @@
     <td th:text="${studyactivity.end}"></td>
   </tr>
   <tr>
+    <td>Duration: </td>
+    <td th:text="${studyactivity.duration}"></td>
+  </tr>
+  <tr>
     <td>SubjectId: </td>
     <td th:text="${studyactivity.subjectID}"></td>
   </tr>
@@ -57,7 +61,7 @@
   </tr>
   <td>   <!-- Finish study-activity-->
     <a th:href="@{/studyactivity-finish/{id}(id=${studyactivity.id})}" >
-      <button class="btn btn-danger" type="submit">Finish this Study Activity</button>
+      <button class="btn btn-primary" type="submit">Finish this Study Activity</button>
     </a>
   </td>
   <td>   <!-- Delete study-activity-->
