@@ -82,6 +82,9 @@ public class StudyActivityServiceImplementation implements StudyActivityService 
         return studyActRepo.findActiveByUser(user);
     }
 
+    /*
+    Methods related to locations
+     */
 
     @Override
     public Location findByBuilding(Building building) {
@@ -89,9 +92,10 @@ public class StudyActivityServiceImplementation implements StudyActivityService 
     }
 
     @Override
-    public Location findByUserCount(int userCount) {
-        return locRepo.findByUserCount(userCount);
+    public List<Location> findByUserCountLessThanEqual(int userCount) {
+        return locRepo.findByUserCountLessThanEqual(userCount);
     }
+
 
     @Override
     public Location save(Location location) {
@@ -102,5 +106,11 @@ public class StudyActivityServiceImplementation implements StudyActivityService 
     public List<Location> findAllLocations() {
         return locRepo.findAll();
     }
+
+    @Override
+    public List<Location> findBuildingAlphabetically() {
+        return locRepo.findAllByOrderByBuildingAsc();
+    }
+
 
 }

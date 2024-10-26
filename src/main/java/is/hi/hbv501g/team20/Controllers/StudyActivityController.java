@@ -5,6 +5,7 @@ import is.hi.hbv501g.team20.Persistence.Entities.Location;
 import is.hi.hbv501g.team20.Persistence.Entities.StudyActivity;
 import is.hi.hbv501g.team20.Persistence.Entities.User;
 import is.hi.hbv501g.team20.Persistence.Enums.Building;
+import is.hi.hbv501g.team20.Persistence.Repository.LocationRepository;
 import is.hi.hbv501g.team20.Services.CoffeeService;
 import is.hi.hbv501g.team20.Services.LoginService;
 import is.hi.hbv501g.team20.Services.StudyActivityService;
@@ -28,6 +29,8 @@ import java.util.Map;
 public class StudyActivityController {
     private StudyActivityService studyActivityService;
     private LoginService loginService;
+    @Autowired
+    private LocationRepository locationRepository;
 
     @Autowired
     public StudyActivityController(StudyActivityService studyActivityService, LoginService loginService) {
@@ -80,6 +83,7 @@ public class StudyActivityController {
         return "redirect:/feed";
     }
 
+    // set the end time of the study activity and update the count of the location to -1 its current number.
     @RequestMapping(value = "/studyactivity-finish/{id}")
     public String finishStudyActivity(HttpSession httpSession, @PathVariable("id") long id, Model model) {
 
@@ -90,6 +94,9 @@ public class StudyActivityController {
         active.setEnd(LocalTime.now());
         active.setIsActive(1);
         studyActivityService.save(active);
+        Location location = active.getLocation();
+        location.setUserCount(location.getUserCount() - 1);
+        studyActivityService.save(location);
 
         return "redirect:/feed";
 
@@ -132,10 +139,18 @@ public class StudyActivityController {
         return "studyactivity-list";
     }
 
+    // Displays a page containing the list of the locations and the  number of *Active* study activities in them.
     @RequestMapping(value="/locations-list", method=RequestMethod.GET)
-    public String getLocationsList(HttpSession session, Model model) {
+    public String getLocationsList(@RequestParam(required=false) Integer userCount, HttpSession session, Model model) {
         List<Location> locations = studyActivityService.findAllLocations();
+
+        if (userCount != null){
+            locations = studyActivityService.findByUserCountLessThanEqual(userCount);
+        } else {
+            locations = studyActivityService.findBuildingAlphabetically();
+        }
         model.addAttribute("locations", locations);
+        //model.addAttribute("userCount", userCount);
 
         return "locations-list";
     }
