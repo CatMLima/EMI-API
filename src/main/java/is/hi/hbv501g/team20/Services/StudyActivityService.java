@@ -19,6 +19,8 @@ public interface StudyActivityService {
 
     List<StudyActivity> findAllPublicAndUserActivities(User user);
 
+    List<StudyActivity> findActiveStudyActivity(User user);
+
     Location findByBuilding(Building building);
     Location findByUserCount(int userCount);
     Location save(Location location);

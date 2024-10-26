@@ -77,6 +77,11 @@ public class StudyActivityServiceImplementation implements StudyActivityService 
         return activities;
     }
 
+    @Override
+    public List<StudyActivity> findActiveStudyActivity(User user){
+        return studyActRepo.findActiveByUser(user);
+    }
+
 
     @Override
     public Location findByBuilding(Building building) {
