@@ -8,7 +8,7 @@
 </head>
 <body>
 <h1 class="text-center">Create your StudyActivity</h1>
-<form if="studyActivityForm" th:action="@{/api/studyactivity-create}" method="post" th:object="${studyactivity}">
+<form id="studyActivityForm" th:action="@{/api/studyactivity-create}" method="post" th:object="${studyactivity}">
     <div th:if="${#fields.hasErrors('title')}" th:errors="*{title}" style="color:red;"></div>
     <label for="title">Title: </label>
     <input type="text" id="title" th:field="*{title}" required/> <br><br>

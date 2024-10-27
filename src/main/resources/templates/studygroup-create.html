@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Create a StudyGroup</title>
+    <link href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.3/css/bootstrap.min.css"
+          rel="stylesheet">
+</head>
+<body>
+<h1 class="text-center">Create your Studygroup</h1>
+<form id="studyGroupForm" th:action="@{/api/studygroup-create}" method="post" th:object="${studygroup}">
+    <div th:if="${#fields.hasErrors('name')}" th:errors="*{name}" style="color:red;"></div>
+    <label for="name">Name: </label>
+    <input type="text" id="name" th:field="*{name}" required/> <br><br>
+
+    <div th:if="${#fields.hasErrors('description')}" th:errors="*{description}" style="color:red;"></div>
+    <label for="description">Descritpion: </label>
+    <input type="text" id="description" th:field="*{description}" /> <br><br>
+
+    <div th:if="${#fields.hasErrors('subjectId')}" th:errors="*{subjectId}" style="color:red;"></div>
+    <label for="subjectId">SubjectId: </label>
+    <input type="text" id="subjectId" th:field="*{subjectId}" required/> <br><br>
+
+    <div>
+        <button class="btn btn-success" type="submit">Post</button>
+        <a class="btn btn-black" href="/feed">Cancel</a>
+    </div>
+</form>
+</body>
+</html>

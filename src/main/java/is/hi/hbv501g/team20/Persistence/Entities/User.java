@@ -2,6 +2,7 @@ package is.hi.hbv501g.team20.Persistence.Entities;
 
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -32,6 +33,12 @@ public class User {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<StudyActivity> activities;
+
+    @ManyToMany(mappedBy = "members")
+    private List<StudyGroup> studyGroupsMember = new ArrayList<>();
+
+    @OneToMany(mappedBy = "admin")
+    private List<StudyGroup> studyGroupsAdmin = new ArrayList<>();
 
     private Integer isActive;
 

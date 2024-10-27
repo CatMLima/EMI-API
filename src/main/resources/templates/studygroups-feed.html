@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="https://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>StudyGroup Feed</title>
+    <link href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.3/css/bootstrap.min.css"
+          rel="stylesheet">
+</head>
+<body>
+<h1 class="text-center"> Welcome to StudyGroups!
+    <form th:action="@{/feed}" method="get">
+        <button class="btn btn-outline-success btn-lg" type="submit">Go to Feed!</button>
+    </form>
+</h1>
+<!-- create a new studygroup-->
+<form th:action="@{/studygroup-create}" method="get">
+    <button class="btn btn-primary" type="submit">Create a new StudyGroup</button>
+</form>
+<!-- display user's studygroups
+
+<div th:switch="${studygroup}">
+    <h2 th:case="null">You are not a member of any StudyGroups yet</h2>
+    <div th:case="*">
+        <h2 class="text-center">Your StudyGroups</h2>
+        <table class="table table-striped table-bordered">
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th>Description</th>
+                <th>SubjectId</th>
+                <th> MemberCount</th>
+                <th> Join</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="studygroup : ${studygroup}">
+                <td th:text="${studygroup.name}"></td>
+                <td th:text="${studygroup.description}"></td>
+                <td th:text="${studygroup.subjectId}"></td>
+                <td th:text="${studygroup.memberCount}"></td>
+
+                <td>
+
+                    <a th:href="@{/studygroup-join/{id}(id=${studygroup.id})}" class="btn btn-outline-success">Join StudyGroup</a>
+
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+    </div>
+</div>
+-->
+<div th:switch="${studygroup}">
+    <h2 th:case="null">You are not a member of any StudyGroups yet</h2>
+    <div th:case="*">
+        <h2 class="text-center">Your StudyGroups</h2>
+
+        <div class="grid-container">
+            <div class="card-deck ">
+                <div th:each="studygroup : ${studygroup}" class="card mb-4" style="min-width: 17rem; max-width: 18rem; column-count:4;">
+                    <div class="card-body">
+                        <h5 class="card-title" th:text="${studygroup.name}">Study Group Name</h5>
+                        <h6 class="card-subtitle mb-2 text-muted" th:text="${studygroup.subjectId}">Subject ID</h6>
+                        <p class="card-text" th:text="${studygroup.description}">Description of the Study Group</p>
+                        <p class="card-text">
+                            <strong>Members:</strong> <span th:text="${studygroup.memberCount}">0</span>
+                        </p>
+                        <a th:href="@{/studygroup-join/{id}(id=${studygroup.id})}" class="btn btn-outline-success">Join StudyGroup</a>
+                    </div>
+                </div>
+            </div>
+    </div>
+    </div>
+</div>
+<!-- view list of user's studygroups-->
+<!-- search for activites-->
+<!-- display all activites and make a join button-->
+
+</body>
+</html>
