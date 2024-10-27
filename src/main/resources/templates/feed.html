@@ -4,6 +4,8 @@
     <title>Feed</title>
     <link href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.3/css/bootstrap.min.css"
           rel="stylesheet">
+    <!-- Auto-refresh the page every 10 seconds -->
+    <meta http-equiv="refresh" content="10">
 </head>
 <body>
 <h1 class="text-center"> Welcome to Your Feed</h1>
@@ -55,8 +57,8 @@
                 <td th:text="${activeStudyActivity.description}"></td>
                 <td th:text="${activeStudyActivity.subjectID}"></td>
                 <td th:text="${activeStudyActivity.subjectName}"></td>
-                <td th:text="${activeStudyActivity.start}"></td>
-                <td th:text="${activeStudyActivity.duration}"></td>
+                <td th:text="${#temporals.format(activeStudyActivity.start, 'HH:mm')}"></td>
+                <td th:text="${activeStudyActivity.getFormattedDuration()}"></td>
                 <td>
                     <!-- Button to start a Study Activity -->
                     <form th:action="@{/studyactivity-finish/{id}(id=${activeStudyActivity.id})}" method="post">

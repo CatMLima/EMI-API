@@ -59,6 +59,7 @@ public class StudyActivityController {
         studyActivity.setDate(new Date());
         studyActivity.setStart(LocalTime.now());
         studyActivity.setIsActive(0);
+        studyActivity.setDuration(studyActivity.getStart(), null);
 
         Building building = studyActivity.getBuilding();
         Location location = studyActivityService.findByBuilding(building);
@@ -93,6 +94,7 @@ public class StudyActivityController {
         loginService.save(user);
         active.setEnd(LocalTime.now());
         active.setIsActive(1);
+        active.setDuration(active.getStart(),active.getEnd());
         studyActivityService.save(active);
         Location location = active.getLocation();
         location.setUserCount(location.getUserCount() - 1);
@@ -116,6 +118,13 @@ public class StudyActivityController {
     public String getStudyActivityDetailsPage(@PathVariable("id") long id, Model model) {
         StudyActivity studyActivity = studyActivityService.findById(id);
         model.addAttribute("studyactivity", studyActivity);
+
+        // To ensure that old study activity has an "updated" duration, other than null
+        if (studyActivity.getDuration() == null) {
+            studyActivity.setDuration(studyActivity.getStart(), studyActivity.getEnd());
+            studyActivityService.save(studyActivity);
+        }
+
         return "studyactivity-details";
     }
 
@@ -124,6 +133,13 @@ public class StudyActivityController {
     public String getStudyActivityEditPage(@PathVariable("id") long id, Model model) {
         StudyActivity studyActivity = studyActivityService.findById(id);
         model.addAttribute("studyactivity", studyActivity);
+
+        // To ensure that old study activity has an "updated" duration, other than null
+        if (studyActivity.getDuration() == null) {
+            studyActivity.setDuration(studyActivity.getStart(), studyActivity.getEnd());
+            studyActivityService.save(studyActivity);
+        }
+
         return "studyactivity-edit";
     }
 
@@ -262,6 +278,17 @@ public class StudyActivityController {
             }
         }
         return "redirect:/feed"; // Redirect to the feed page after toggling coffee
+    }
+
+    @GetMapping("/duration-fragment")
+    public String getDurationFragment(HttpSession session, Model model) {
+        User user = (User) session.getAttribute("user");
+        List<StudyActivity> activeStudyActivities = studyActivityService.findActiveStudyActivity(user);
+
+        model.addAttribute("userActive", user.getIsActive());
+        model.addAttribute("activeStudyActivity", activeStudyActivities);
+
+        return "fragments/duration";  // Loads the Thymeleaf fragment
     }
 
     //End of feed page stuff

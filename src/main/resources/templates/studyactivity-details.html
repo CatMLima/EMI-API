@@ -33,6 +33,10 @@
         <td th:text="${studyactivity.end}"></td>
     </tr>
     <tr>
+        <td>Duration: </td>
+        <td th:text="${studyactivity.getFormattedDuration()}"></td>
+    </tr>
+    <tr>
         <td>SubjectId: </td>
         <td th:text="${studyactivity.subjectID}"></td>
     </tr>
