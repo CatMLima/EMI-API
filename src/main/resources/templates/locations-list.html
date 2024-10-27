@@ -11,6 +11,17 @@
   <h2 th:case="null">There are no locations.</h2>
   <div th:case="*">
     <h2 class="text-center">Locations</h2>
+    <form th:action="@{/locations-list}" method="get">
+      <div class="form-group">
+        <label for="userCount">Find locations with max users</label>
+        <input type="number" id="userCount" name="userCount" class="form-control" th:value="${userCount}" placeholder="Enter max user count">
+      </div>
+      <button type="submit" class="btn btn-primary">Apply Filter</button>
+    </form>
+    <a th:href="@{/locations-list}">
+      <button class="btn btn-secondary" type="submit">Reset</button>
+    </a>
+
     <table class="table table-striped table-bordered">
       <thead>
       <tr>

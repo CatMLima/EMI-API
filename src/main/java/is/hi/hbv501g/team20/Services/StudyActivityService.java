@@ -21,8 +21,12 @@ public interface StudyActivityService {
 
     List<StudyActivity> findActiveStudyActivity(User user);
 
+    /*
+    Methods related to locations.
+     */
     Location findByBuilding(Building building);
-    Location findByUserCount(int userCount);
+    List<Location> findByUserCountLessThanEqual(int userCount);
     Location save(Location location);
     List<Location> findAllLocations();
+    List<Location> findBuildingAlphabetically();
 }
