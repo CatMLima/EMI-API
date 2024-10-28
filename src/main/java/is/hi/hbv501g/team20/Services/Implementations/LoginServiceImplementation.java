@@ -12,8 +12,10 @@ import java.util.List;
 @Service
 public class LoginServiceImplementation  implements LoginService {
 
-    final
+    @Autowired
     UserRepository userRepo;
+    @Autowired
+    StudyActivityServiceImplementation studyActivityServiceImplementation;
 
     public LoginServiceImplementation(UserRepository userRepo) {
         this.userRepo = userRepo;
@@ -54,15 +56,14 @@ public class LoginServiceImplementation  implements LoginService {
     public User updatePrivacy(long id, int privacy){
         User user = findById(id);
         List<StudyActivity> activities = user.getActivities();
-        if (user != null) {
-            user.changePrivacy(privacy);
-            //activities.stream();
-            activities.forEach(activity -> activity.setPrivacy(user));
-            return userRepo.save(user);
-        }
-        return null;
+        user.changePrivacy(privacy);
+        activities.forEach(activity -> activity.setPrivacy(user));
+        return userRepo.save(user);
     }
 
     @Override
-    public void delete(User user){ userRepo.delete(user); }
+    public void deleteUser(User user){
+        studyActivityServiceImplementation.deleteAllByUser(user);
+        userRepo.delete(user);
+    }
 }

@@ -84,13 +84,15 @@
     <!-- Delete Account // NOT WORKING YET -->
     <div>
         <h4>Delete Account</h4>
-        <form th:action="@{/delete-account}" method="post">
+        <a th:href="@{/delete-account/{id}(id=${user.id})}">
             <button class="btn btn-danger" type="submit" onclick="return confirm('Are you sure you want to delete your account? This action cannot be undone.')">Delete Account</button>
-        </form>
+        </a>
     </div>
+<br>
 <form th:action="@{/user}" method="get">
     <button class="btn btn-secondary" type="submit">Go to Profile</button>
 </form>
+<br>
 <form th:action="@{/feed}" method="get">
     <button class="btn btn-primary" type="submit">Go to Feed</button>
 </form>

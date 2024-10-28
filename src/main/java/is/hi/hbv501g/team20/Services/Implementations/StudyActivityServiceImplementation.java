@@ -42,6 +42,9 @@ public class StudyActivityServiceImplementation implements StudyActivityService 
     }
 
     @Override
+    public void deleteAllByUser(User user) { studyActRepo.deleteAllByUser(user); }
+
+    @Override
     public boolean existsById(Long id) {
         return studyActRepo.existsById(id);
     }
