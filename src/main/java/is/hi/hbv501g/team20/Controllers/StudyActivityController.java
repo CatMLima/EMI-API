@@ -279,17 +279,7 @@ public class StudyActivityController {
         }
         return "redirect:/feed"; // Redirect to the feed page after toggling coffee
     }
-
-    @GetMapping("/duration-fragment")
-    public String getDurationFragment(HttpSession session, Model model) {
-        User user = (User) session.getAttribute("user");
-        List<StudyActivity> activeStudyActivities = studyActivityService.findActiveStudyActivity(user);
-
-        model.addAttribute("userActive", user.getIsActive());
-        model.addAttribute("activeStudyActivity", activeStudyActivities);
-
-        return "fragments/duration";  // Loads the Thymeleaf fragment
-    }
+    
 
     //End of feed page stuff
 }
