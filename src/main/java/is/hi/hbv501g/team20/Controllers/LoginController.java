@@ -67,8 +67,6 @@ public class LoginController {
                 session.setAttribute("user", existing); // saves user to the session
                 model.addAttribute("user", existing);
                 return "redirect:/feed";
-            } else {
-
             }
         }
 
