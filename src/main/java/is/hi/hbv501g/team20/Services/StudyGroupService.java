@@ -10,6 +10,8 @@ public interface StudyGroupService {
     StudyGroup save(StudyGroup studyGroup);
     void delete(StudyGroup studyGroup);
     StudyGroup findById(long id);
+    List<StudyGroup> findByUserId(long id);
+    List<StudyGroup> findAllExceptUser(long id);
     List<StudyGroup> findAll();
 
 

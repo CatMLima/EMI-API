@@ -113,4 +113,10 @@ public class User {
     public void setIsActive(Integer isActive) {
         this.isActive = isActive;
     }
+
+    public List<StudyGroup> getStudyGroupsMember() {
+        return studyGroupsMember;
+    }
+
+    public List<StudyGroup> getStudyGroupsAdmin() { return studyGroupsAdmin; }
 }

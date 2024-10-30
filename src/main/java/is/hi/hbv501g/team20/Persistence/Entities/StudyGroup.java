@@ -34,8 +34,8 @@ public class StudyGroup {
     @ManyToMany
     @JoinTable(
             name = "studygroup_members",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "studygroup_id")
+            joinColumns = @JoinColumn(name = "studygroup_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
     )
     private List<User> members = new ArrayList<>();
 
@@ -47,7 +47,9 @@ public class StudyGroup {
     public void setDescription(String description) {this.description = description;}
     public String getSubjectId() {return subjectId;}
     public void setSubjectId(String subjectId) {this.subjectId = subjectId;}
-    public void addMember(User user) {members.add(user);}
+    public void addMember(User user) {
+        members.add(user);
+    }
     public int getMemberCount() {return memberCount;}
     public void addMemberCount() {this.memberCount++;}
     public void setAdmin(User admin) {

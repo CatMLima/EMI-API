@@ -37,8 +37,10 @@ public class StudyGroupController {
     public String getStudyGroupfeed(HttpSession session, Model model) {
         User user = (User) session.getAttribute("user");
         if (user != null) {
-            List<StudyGroup> userStudyGroups = studyGroupService.findAll();
-            model.addAttribute("studygroup", userStudyGroups);
+            List<StudyGroup> isMemberStudyGroups = studyGroupService.findByUserId(user.getId());
+            List<StudyGroup> notMemberStudyGroups = studyGroupService.findAllExceptUser(user.getId());
+            model.addAttribute("isMemberStudyGroup", isMemberStudyGroups);
+            model.addAttribute("notMemberStudyGroup", notMemberStudyGroups);
         }
         return "studygroups-feed";
     }
@@ -56,6 +58,7 @@ public class StudyGroupController {
         User admin = (User) httpSession.getAttribute("user");
         studyGroup.setAdmin(admin);
         studyGroup.addMember(admin);
+        studyGroup.addMemberCount();
 
         if(result.hasErrors()){
             return "studygroup-create";
@@ -71,6 +74,7 @@ public class StudyGroupController {
         User user = (User) session.getAttribute("user");
         StudyGroup studyGroup = studyGroupService.findById(id);
 
+        //if user is not in studygroup, user joins
         if (!studyGroup.getMembers().contains(user)) {
             studyGroup.addMember(user);
             studyGroup.addMemberCount();

@@ -51,14 +51,36 @@
     </div>
 </div>
 -->
-<div th:switch="${studygroup}">
-    <h2 th:case="null">You are not a member of any StudyGroups yet</h2>
+<div th:switch="${isMemberStudyGroup}">
+    <h2 th:case="null"> You are not a member of a StudyGroups yet</h2>
     <div th:case="*">
         <h2 class="text-center">Your StudyGroups</h2>
 
         <div class="grid-container">
             <div class="card-deck ">
-                <div th:each="studygroup : ${studygroup}" class="card mb-4" style="min-width: 17rem; max-width: 18rem; column-count:4;">
+                <div th:each="studygroup : ${isMemberStudyGroup}" class="card mb-4" style="min-width: 17rem; max-width: 18rem; column-count:4;">
+                    <div class="card-body">
+                        <h5 class="card-title" th:text="${studygroup.name}">Study Group Name</h5>
+                        <h6 class="card-subtitle mb-2 text-muted" th:text="${studygroup.subjectId}">Subject ID</h6>
+                        <p class="card-text" th:text="${studygroup.description}">Description of the Study Group</p>
+                        <p class="card-text">
+                            <strong>Members:</strong> <span th:text="${studygroup.memberCount}">0</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:switch="${notMemberStudyGroup}">
+    <h2 th:case="null">No StudyGroups created yet</h2>
+    <div th:case="*">
+        <h2 class="text-center">Find a StudyGroup</h2>
+
+        <div class="grid-container">
+            <div class="card-deck ">
+                <div th:each="studygroup : ${notMemberStudyGroup}" class="card mb-4" style="min-width: 17rem; max-width: 18rem; column-count:4;">
                     <div class="card-body">
                         <h5 class="card-title" th:text="${studygroup.name}">Study Group Name</h5>
                         <h6 class="card-subtitle mb-2 text-muted" th:text="${studygroup.subjectId}">Subject ID</h6>
@@ -70,7 +92,7 @@
                     </div>
                 </div>
             </div>
-    </div>
+        </div>
     </div>
 </div>
 <!-- view list of user's studygroups-->

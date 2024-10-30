@@ -35,6 +35,12 @@ public class StudyGroupImplementation implements StudyGroupService {
     }
 
     @Override
+    public List<StudyGroup> findByUserId(long id) { return studyGroupRepo.findByUserId(id); }
+
+    @Override
+    public List<StudyGroup> findAllExceptUser(long id) { return studyGroupRepo.findAllExceptUser(id); }
+
+    @Override
     public List<StudyGroup> findAll() {
         return studyGroupRepo.findAll();
     }
