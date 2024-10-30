@@ -11,6 +11,9 @@ public interface StudyActivityService {
     StudyActivity save (StudyActivity studyActivity);
     void delete (StudyActivity studyActivity);
     void deleteAll();
+
+    void deleteAllByUser(User user);
+
     boolean existsById(Long id);
     StudyActivity findById(long id);
     List<StudyActivity> findAll();

@@ -19,6 +19,39 @@
                 errorMessage.innerText= '';
             }
         }
+
+        // Validate password requirements and match confirmation
+        function validatePasswordForm() {
+            const currentPassword = document.getElementById("oldPassword").value;
+            const userPassword = '[[${user.password}]]'; // Thymeleaf to retrieve the actual password
+            const newPassword = document.getElementById("newPassword").value;
+            const confirmPassword = document.getElementById("confirmPassword").value;
+
+            // Clear previous error messages
+            document.getElementById('passwordError').innerText = '';
+            document.getElementById('matchError').innerText = '';
+
+            // Check if current password matches
+            if (currentPassword !== userPassword) {
+                document.getElementById('passwordError').innerText = "Incorrect current password.";
+                return false;
+            }
+
+            // Validate new password length and complexity
+            const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d)[A-Za-z\d]{10,}$/;
+            if (!passwordRegex.test(newPassword)) {
+                alert('Password must be at least 10 characters long and contain both letters and numbers.')
+                return false;
+            }
+
+            // Check if new password matches confirm password
+            if (newPassword !== confirmPassword) {
+                alert("Passwords must match.");
+                return false;
+            }
+
+            return true;
+        }
     </script>
 </head>
 <body>
@@ -41,27 +74,25 @@
         <span id="fileSizeError" style="color:red;"></span>
     </div>
 
-    <!-- ENDPOINT for the next part this is just a placeholder / structure -->
+    <!-- Call the service to change users password -->
     <div>
         <h4>Change Password</h4>
-        <form id="changePasswordForm" th:action="@{/change-password}" method="post">
-            <div>
-                <label for="currentPassword">Current Password:</label>
-                <input type="password" id="currentPassword" name="currentPassword" placeholder="currentPassword" required>
-            </div>
-            <div>
-                <label for="newPassword">New Password:</label>
-                <input type="password" id="newPassword" name="newPassword" required>
-            </div>
-            <div>
-                <label for="confirmPassword">Confirm New Password:</label>
-                <input type="password" id="confirmPassword" name="confirmPassword" required>
-            </div>
-            <div>
-                <button class="btn btn-success" type="submit">Change Password</button>
-            </div>
-        </form>
-    </div>
+        <form th:action="@{/change-password/{id}}" onsubmit="return validatePasswordForm()">
+
+            <label for="oldPassword">Current Password:</label>
+            <input type="password" id="oldPassword" name="oldPassword" required/><br>
+            <span id="passwordError" style="color:red;"></span>
+
+            <label for="newPassword">New Password:</label>
+            <input type="password" id="newPassword" name="newPassword" required/><br>
+
+            <label for="confirmPassword">Confirm Password:</label>
+            <input type="password" id="confirmPassword" name="newPassword2" required/><br>
+            <span id="matchError" style="color:red;"></span><br>
+
+        <button class="btn btn-success" type="submit">Change Password</button>
+    </form>
+</div>
 
     <!-- Change Privacy Settings -->
     <div>
@@ -81,18 +112,21 @@
         </form>
     </div>
 
-    <!-- Delete Account // NOT WORKING YET -->
+    <!-- Delete Account -->
     <div>
         <h4>Delete Account</h4>
-        <form th:action="@{/delete-account}" method="post">
+        <a th:href="@{/delete-account/{id}(id=${user.id})}">
             <button class="btn btn-danger" type="submit" onclick="return confirm('Are you sure you want to delete your account? This action cannot be undone.')">Delete Account</button>
-        </form>
+        </a>
     </div>
+<br>
 <form th:action="@{/user}" method="get">
     <button class="btn btn-secondary" type="submit">Go to Profile</button>
 </form>
+<br>
 <form th:action="@{/feed}" method="get">
     <button class="btn btn-primary" type="submit">Go to Feed</button>
 </form>
+
 </body>
 </html>

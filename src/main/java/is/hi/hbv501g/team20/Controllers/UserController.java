@@ -16,6 +16,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Objects;
+
 @Controller
 public class UserController {
 
@@ -70,4 +72,29 @@ public class UserController {
         return "user";
     }
 
+    // Changes the users password
+    @GetMapping(value ="/change-password/{id}")
+    public String changePassword(@RequestParam String oldPassword,
+                                 @RequestParam String newPassword,
+                                 @RequestParam String newPassword2,
+                                 HttpSession session, Model model) {
+
+        User user = (User) session.getAttribute("user");
+
+        if (user == null || !Objects.equals(user.getPassword(), oldPassword)) {
+            model.addAttribute("message", "Current password is incorrect.");
+            return "redirect:/settings";
+        }
+
+        if (!Objects.equals(newPassword, newPassword2)) {
+            model.addAttribute("message", "New passwords do not match.");
+            return "redirect:/settings";
+        }
+
+        user.setPassword(newPassword);
+        loginService.save(user);
+        model.addAttribute("message", "Password changed successfully.");
+        return "redirect:/settings";
+
+    }
 }

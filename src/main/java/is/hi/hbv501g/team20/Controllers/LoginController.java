@@ -118,21 +118,22 @@ public class LoginController {
 
 
 
-    @PostMapping("/delete-account")
-    public String deleteAccount(HttpSession session, Model model) {
-        User user = (User) session.getAttribute("loggedInUser");
+    @GetMapping("/delete-account/{id}")
+    public String deleteAccount(@PathVariable("id") long id, HttpSession session, Model model) {
+
+        User user = loginService.findById(id);
 
         if (user == null) {
-            model.addAttribute("error", "User not logged in.");
-            return "login";
+            model.addAttribute("error", "User not found.");
+            return "redirect:/login"; // Or any other error page
         }
 
-        // Delete the user account
-        loginService.delete(user);
+        loginService.deleteUser(user);
         session.invalidate(); // Invalidate session after account deletion
 
+        model.addAttribute("message", "Account deleted successfully.");
         // Redirect to home
-        return "redirect:/home";
+        return "home";
     }
 
 }
