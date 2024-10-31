@@ -104,7 +104,6 @@ public class StudyActivityController {
 
     }
 
-
     // deletes a selected studyactivity and removes it from the database
     @GetMapping("/studyactivity-delete/{id}")
     public String deleteStudyActicity (@PathVariable("id") long id, Model model){
