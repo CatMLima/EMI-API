@@ -14,7 +14,7 @@
     <input type="text" id="name" th:field="*{name}" required/> <br><br>
 
     <div th:if="${#fields.hasErrors('description')}" th:errors="*{description}" style="color:red;"></div>
-    <label for="description">Descritpion: </label>
+    <label for="description">Description: </label>
     <input type="text" id="description" th:field="*{description}" /> <br><br>
 
     <div th:if="${#fields.hasErrors('subjectId')}" th:errors="*{subjectId}" style="color:red;"></div>
@@ -30,7 +30,7 @@
 
     <div>
         <button class="btn btn-success" type="submit">Post</button>
-        <a class="btn btn-black" href="/feed">Cancel</a>
+        <a class="btn btn-black" href="/studygroups-feed">Cancel</a>
     </div>
 </form>
 </body>

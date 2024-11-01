@@ -1,12 +1,10 @@
 package is.hi.hbv501g.team20.Controllers;
 
-import is.hi.hbv501g.team20.Persistence.Entities.Location;
-import is.hi.hbv501g.team20.Persistence.Entities.StudyActivity;
-import is.hi.hbv501g.team20.Persistence.Entities.StudyGroup;
-import is.hi.hbv501g.team20.Persistence.Entities.User;
+import is.hi.hbv501g.team20.Persistence.Entities.*;
 import is.hi.hbv501g.team20.Persistence.Enums.Building;
 import is.hi.hbv501g.team20.Persistence.Repository.StudyGroupRepository;
 import is.hi.hbv501g.team20.Services.LoginService;
+import is.hi.hbv501g.team20.Services.PostService;
 import is.hi.hbv501g.team20.Services.StudyGroupService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
@@ -18,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -26,10 +26,12 @@ public class StudyGroupController {
 
     private StudyGroupService studyGroupService;
     private LoginService loginService;
+    private PostService postService;
 
-    public StudyGroupController(StudyGroupService studyGroupService, LoginService loginService) {
+    public StudyGroupController(StudyGroupService studyGroupService, LoginService loginService, PostService postService) {
         this.studyGroupService = studyGroupService;
         this.loginService = loginService;
+        this.postService = postService;
     }
 
     // Displays a page containing a list of the user's studyactivities
@@ -53,7 +55,7 @@ public class StudyGroupController {
     }
 
     @RequestMapping(value = "/api/studygroup-create", method = RequestMethod.POST)
-    public String createStudyGroup(HttpSession httpSession, StudyGroup studyGroup, BindingResult result, Model model){
+    public String createStudyGroup(HttpSession httpSession, StudyGroup studyGroup, BindingResult result){
 
         User admin = (User) httpSession.getAttribute("user");
         studyGroup.setAdmin(admin);
@@ -82,4 +84,28 @@ public class StudyGroupController {
         }
         return "redirect:/studygroups-feed";
     }
+
+    // Displays a page containing a list of the user's studyactivities
+    @RequestMapping(value="/studygroup-view/{id}", method= RequestMethod.GET)
+    public String getStudyGroupViewPage(@PathVariable("id") long id, Model model) {
+        StudyGroup studyGroup = studyGroupService.findById(id);
+        List<Post> posts = postService.findByStudyGroup(studyGroup);
+        Collections.reverse(posts);
+        model.addAttribute("studyGroup", studyGroup);
+        if (posts != null) {
+            model.addAttribute("post", posts);
+        }
+        return "studygroup-view";
+    }
+
+    @RequestMapping(value = "/api/post-create/{id}", method = RequestMethod.POST)
+    public String createPost(@PathVariable("id") long id, HttpSession httpSession, Post post, BindingResult result) {
+        User user = (User) httpSession.getAttribute("user");
+        StudyGroup studyGroup = studyGroupService.findById(id);
+        post.setUser(user);
+        post.setStudygroup(studyGroup);
+        postService.save(post);
+        return "redirect:/studygroup-view/" + id;
+    }
+
 }

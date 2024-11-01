@@ -66,6 +66,7 @@
                         <p class="card-text">
                             <strong>Members:</strong> <span th:text="${studygroup.memberCount}">0</span>
                         </p>
+                        <a th:href="@{/studygroup-view/{id}(id=${studygroup.id})}" class="btn btn-outline-info">View StudyGroup</a>
                     </div>
                 </div>
             </div>
@@ -88,9 +89,6 @@
                         <p class="card-text">
                             <strong>Members:</strong> <span th:text="${studygroup.memberCount}">0</span>
                         </p>
-                        <!--
-                        <a th:href="@{/studygroup-join/{id}(id=${studygroup.id})}" class="btn btn-outline-success">Join StudyGroup</a>
-                        -->
                         <td th:switch="${studygroup.lookingForMembers}">
                             <span th:case="0"></span>
                             <span th:case="1">

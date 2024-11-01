@@ -13,16 +13,6 @@ public class StudyGroup {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    public StudyGroup(String name, String description, String subjectId, int lookingForMembers) {
-        this.name = name;
-        this.description = description;
-        this.subjectId = subjectId;
-        this.lookingForMembers = lookingForMembers;
-        this.memberCount = 1;
-    }
-
-    public StudyGroup() {}
-
     private String name;
     private String description;
     private String subjectId;
@@ -40,6 +30,19 @@ public class StudyGroup {
             inverseJoinColumns = @JoinColumn(name = "user_id")
     )
     private List<User> members = new ArrayList<>();
+
+    @OneToMany(mappedBy = "studygroup", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Post> posts = new ArrayList<>();
+
+    public StudyGroup(String name, String description, String subjectId, int lookingForMembers) {
+        this.name = name;
+        this.description = description;
+        this.subjectId = subjectId;
+        this.lookingForMembers = lookingForMembers;
+        this.memberCount = 1;
+    }
+
+    public StudyGroup() {}
 
     public long getId() {return id;}
 
