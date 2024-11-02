@@ -95,8 +95,8 @@ public class LoginServiceImplementation  implements LoginService {
         } else if (!lastActivityDate.isEqual(today)) {
             // Adds +1 days to the streak for the first study activity of today
             user.setStreak(user.getStreak() + 1);
-        } else if (!lastActivityDate.isEqual(yesterday) && !lastActivityDate.isEqual(today)) {
-            // Returns streak to 0, if there were no activities yesterday and today
+        } else if (!lastActivityDate.isEqual(yesterday)) {
+            // Returns streak to 0, if there were no activities yesterday
             user.setStreak(0);
         }
 
