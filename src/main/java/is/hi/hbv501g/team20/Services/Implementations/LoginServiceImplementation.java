@@ -81,6 +81,10 @@ public class LoginServiceImplementation  implements LoginService {
     public User updateStreak(long id){
         User user = findById(id);
         List<StudyActivity> activities = user.getActivities();
+        LocalDate lastActivityDate = new java.sql.Date(activities.get(activities.size() - 1).getDate().getTime())
+                .toLocalDate(); // For java.sql.Date
+        LocalDate today = LocalDate.now();
+        LocalDate yesterday = LocalDate.now().minusDays(1);
 
         if (Objects.isNull(user.getStreak())) {
             if (activities.isEmpty()) {
@@ -88,6 +92,12 @@ public class LoginServiceImplementation  implements LoginService {
             } else {
                 user.setStreak(calculateStreak(user));
             }
+        } else if (!lastActivityDate.isEqual(today)) {
+            // Adds +1 days to the streak for the first study activity of today
+            user.setStreak(user.getStreak() + 1);
+        } else if (!lastActivityDate.isEqual(yesterday) && !lastActivityDate.isEqual(today)) {
+            // Returns streak to 0, if there were no activities yesterday and today
+            user.setStreak(0);
         }
 
         return userRepo.save(user);
