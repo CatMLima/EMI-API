@@ -91,6 +91,7 @@ public class StudyActivityController {
         User user = (User) httpSession.getAttribute("user");
         StudyActivity active = studyActivityService.findById(id);
         user.setIsActive(1);
+        user.setStreak(user.getStreak() + 1);
         loginService.save(user);
         active.setEnd(LocalTime.now());
         active.setIsActive(1);

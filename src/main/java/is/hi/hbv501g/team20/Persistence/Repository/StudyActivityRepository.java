@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.Date;
 import java.util.List;
 
 public interface StudyActivityRepository extends JpaRepository<StudyActivity, Long> {
@@ -39,4 +40,8 @@ public interface StudyActivityRepository extends JpaRepository<StudyActivity, Lo
         List<StudyActivity> findActiveByUser(@Param("user") User user);
 
         void deleteAllByUser(User user);
+
+        // Query to get the Dates of activities by user
+        @Query("SELECT DISTINCT sa.date FROM StudyActivity sa WHERE sa.user = :user")
+        List<Date> getActivitiesDatesByUser(@Param("user") User user);
 }

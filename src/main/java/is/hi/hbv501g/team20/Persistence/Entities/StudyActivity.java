@@ -222,6 +222,5 @@ public class StudyActivity {
 
     public void setIsActive(Integer isActive) {
         this.isActive = isActive;
-
     }
 }
