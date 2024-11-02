@@ -2,9 +2,11 @@ package is.hi.hbv501g.team20.Persistence.Entities;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name= "\"user\"")
@@ -39,6 +41,8 @@ public class User {
 
     @OneToMany(mappedBy = "admin")
     private List<StudyGroup> studyGroupsAdmin = new ArrayList<>();
+
+    private Integer streak;
 
     private Integer isActive;
 
@@ -119,4 +123,8 @@ public class User {
     }
 
     public List<StudyGroup> getStudyGroupsAdmin() { return studyGroupsAdmin; }
+
+    public Integer getStreak() { return streak; }
+
+    public void setStreak(Integer streak) { this.streak = streak; }
 }

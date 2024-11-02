@@ -92,6 +92,7 @@ public class StudyActivityController {
         StudyActivity active = studyActivityService.findById(id);
         user.setIsActive(1);
         loginService.save(user);
+        loginService.updateStreak(user.getId());
         active.setEnd(LocalTime.now());
         active.setIsActive(1);
         active.setDuration(active.getStart(),active.getEnd());

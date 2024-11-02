@@ -16,4 +16,6 @@ public interface LoginService {
     User findById(long id);
 
     void deleteUser(User user);
+
+    User updateStreak(long id);
 }
