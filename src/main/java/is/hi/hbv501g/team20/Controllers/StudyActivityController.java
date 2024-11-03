@@ -243,7 +243,7 @@ public class StudyActivityController {
         return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(activity.getActivityPicture());
     }
 
-    @RequestMapping(value = "/feed-search", method = RequestMethod.GET)
+    @RequestMapping(value = "/search", method = RequestMethod.GET)
     public String searchStudyActivities(@RequestParam("query") String query, Model model, HttpSession session) {
         // Get the user from the session
         User sessionUser = (User) session.getAttribute("user");
@@ -258,7 +258,7 @@ public class StudyActivityController {
             return "redirect:/login";  // Redirect to login page if needed
         }
 
-        return "feed";
+        return "search";
     }
 
     // Controller Method to toggle coffee for a study activity

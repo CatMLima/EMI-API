@@ -14,6 +14,15 @@
   </a>
 </div>
 
+<!-- Search form for filtering Study Activities -->
+<form th:action="@{/search}" method="get">
+  <div class="form-group">
+    <input type="text" class="form-control" name="query" placeholder="Search study activities by title, description, subject Id or subject name">
+  </div>
+  <button type="submit" class="btn btn-primary">Search</button>
+
+</form>
+
 <div th:switch="${studyactivity}">
 <h2 th:case="null">No Results</h2>
 <div th:case="*">
