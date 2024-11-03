@@ -260,6 +260,7 @@ public class StudyActivityController {
 
         return "feed";
     }
+
     // Controller Method to toggle coffee for a study activity
     @Autowired CoffeeService coffeeService;
     @RequestMapping(value = "/studyactivity/{id}/toggle-coffee", method = RequestMethod.POST)

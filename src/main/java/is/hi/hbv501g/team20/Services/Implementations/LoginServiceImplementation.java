@@ -76,62 +76,37 @@ public class LoginServiceImplementation  implements LoginService {
         userRepo.delete(user);
     }
 
-    // Just to insure correct functionality for the previous users
+
     @Override
     public User updateStreak(long id){
         User user = findById(id);
         List<StudyActivity> activities = user.getActivities();
+
+        if (activities.isEmpty()) {
+            user.setStreak(0);
+            return userRepo.save(user);
+        }
+
         LocalDate lastActivityDate = new java.sql.Date(activities.get(activities.size() - 1).getDate().getTime())
-                .toLocalDate(); // For java.sql.Date
+                    .toLocalDate(); // For java.sql.Date
+        LocalDate OneBeforeLastActivity = new java.sql.Date(activities.get(activities.size() - 2).getDate().getTime())
+                .toLocalDate();
         LocalDate today = LocalDate.now();
         LocalDate yesterday = LocalDate.now().minusDays(1);
 
-        if (Objects.isNull(user.getStreak())) {
-            if (activities.isEmpty()) {
-                user.setStreak(0);
-            } else {
-                user.setStreak(calculateStreak(user));
-            }
-        } else if (!lastActivityDate.isEqual(today)) {
-            // Adds +1 days to the streak for the first study activity of today
-            user.setStreak(user.getStreak() + 1);
-        } else if (!lastActivityDate.isEqual(yesterday)) {
-            // Returns streak to 0, if there were no activities yesterday
+
+        if (!lastActivityDate.isEqual(today) && !lastActivityDate.isBefore(today) || !OneBeforeLastActivity.isEqual(yesterday)) {
+            // If NO study activity was completed yesterday or today
             user.setStreak(0);
+        } else if (OneBeforeLastActivity.isEqual(yesterday) && lastActivityDate.isEqual(today)) {
+            // If no activity was completed yesterday
+            user.setStreak(user.getStreak() + 1);
+        } else if (!OneBeforeLastActivity.isEqual(yesterday) && lastActivityDate.isEqual(today)) {
+            // First study activity of the streak
+            user.setStreak(1);
         }
 
         return userRepo.save(user);
     }
 
-    private Integer calculateStreak(User user) {
-        Integer count = 0;
-        // For other users without a defined streak we follow the process below
-        if (Objects.isNull(user.getStreak())) {
-            List<java.util.Date> activityDates = studyActivityRepository.getActivitiesDatesByUser(user);
-
-            List<LocalDate> localDates = activityDates.stream()
-                    .map(date -> new java.sql.Date(date.getTime()).toLocalDate())
-                    .distinct()
-                    .sorted(Comparator.reverseOrder()) // Sorts in descending order
-                    .collect(Collectors.toList());
-
-            LocalDate yesterday = LocalDate.now().minusDays(1);
-
-            if (!localDates.contains(yesterday)) {
-                return count;
-            } else {
-                for (int i = 0; i < localDates.size() - 1; i++) {
-                    LocalDate currentDate = localDates.get(i);
-                    LocalDate nextDate = localDates.get(i + 1);
-
-                    if (currentDate.minusDays(1).isEqual(nextDate)) {
-                        count++;
-                    } else {
-                        break;
-                    }
-                }
-            }
-        }
-        return count;
-    }
 }

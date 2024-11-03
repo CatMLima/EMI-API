@@ -21,6 +21,8 @@ public class User {
         this.email = email;
         this.password = password;
         this.privacy = 0;
+        this.streak = 0;
+        this.isActive = 0;
     }
 
     public User() {}
