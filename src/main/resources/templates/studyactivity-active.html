@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>On Going Activity</title>
+    <link href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.3/css/bootstrap.min.css"
+          rel="stylesheet">
+    <!-- Auto-refresh the page every 10 seconds -->
+    <meta http-equiv="refresh" content="10">
+    <script type="text/javascript">
+
+    </script>
+</head>
+<body>
+<h1> <a th:text="${studyactivity.title}"></a> </h1>
+<table> <!-- info on study-activity-->
+    <thead>
+    </thead>
+    <tbody>
+    <tr>
+        <td>Description: </td>
+        <td th:text="${studyactivity.description}"></td>
+    </tr>
+    <tr>
+        <td>Duration: </td>
+        <td th:text="${studyactivity.getFormattedDuration()}"></td>
+    </tr>
+    <tr>
+        <td>SubjectId: </td>
+        <td th:text="${studyactivity.subjectID}"></td>
+    </tr>
+    <tr>
+        <td>SubjectName: </td>
+        <td th:text="${studyactivity.subjectName}"></td>
+    </tr>
+    <td>   <!-- Finish study-activity-->
+        <a th:href="@{/studyactivity-finish/{id}(id=${studyactivity.id})}" >
+            <button class="btn btn-primary" type="submit">Finish this Study Activity</button>
+        </a>
+    </td>
+    </tbody>
+</table>
+
+
+
+<div>
+    <h5></h5>
+    <a th:href="@{/feed}">
+        <button class="btn btn-primary" type="submit">Back to Feed</button>
+    </a>
+</div>
+
+</body>
+</html>

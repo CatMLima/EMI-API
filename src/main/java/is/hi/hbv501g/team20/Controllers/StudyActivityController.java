@@ -80,8 +80,21 @@ public class StudyActivityController {
         if(result.hasErrors()){
             return "studyactivity-create";
         }
+
         studyActivityService.save(studyActivity);
-        return "redirect:/feed";
+        model.addAttribute("studyactivity", studyActivity);
+
+        return "studyactivity-active";
+    }
+
+    // Go to active study acvtivity page
+    @RequestMapping(value = "/studyactivity-active/{id}", method = RequestMethod.GET)
+    public String activeStudyActivity(Model model, @PathVariable("id") long id) {
+
+        StudyActivity activeStudyActivity = studyActivityService.findById(id);
+        model.addAttribute("studyactivity", activeStudyActivity);
+
+        return "studyactivity-active";
     }
 
     // set the end time of the study activity and update the count of the location to -1 its current number.
