@@ -87,44 +87,6 @@ public class StudyActivityServiceImplementation implements StudyActivityService 
         return studyActRepo.findActiveByUser(user);
     }
 
-    /*
-    Methods related to Date, Time (start & end) and Duration
-    and their formating
-     */
-
-    @Override
-    public String getFormattedDuration(StudyActivity activity) {
-        LocalTime start = activity.getStart();
-        LocalTime end = activity.getEnd();
-        Duration duration = activity.getDuration();
-
-        if (start != null && end == null) {
-            Duration currentDuration = Duration.between(start, LocalTime.now());
-            return formatDuration(currentDuration);
-        } else if (start != null && duration != null) {
-            return formatDuration(duration);
-        }
-        return "00:00:00";
-    }
-
-    @Override
-    public String formatDuration(Duration duration) {
-        long hours = duration.toHours();
-        long minutes = (duration.toMinutes() % 60);
-        long seconds = (duration.getSeconds() % 60);
-        return String.format("%02d:%02d:%02d", hours, minutes, seconds);
-    }
-
-    @Override
-    public String formatStart(LocalTime start){
-        if (start != null) {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
-            return start.format(formatter);
-        }
-        return "1970-01-01T00:00:00";
-    }
-
-
 
     /*
     Methods related to locations
