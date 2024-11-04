@@ -61,7 +61,13 @@ public class LoginController {
 
         if (existing != null) {
             if (existing.getStreak() == null) {
+                // If necessary, it attributes a value to the streak
+                existing.setStreak(0);
+                loginService.save(existing);
+            } else if (existing.getStreak() != 0){
+                // updates the streak if an activity wasn't completed yesterday
                 existing = loginService.updateStreak(existing.getId());
+                loginService.save(existing);
             }
             if(existing.getPrivacy() == null || existing.privacy != 0 && existing.privacy != 1 ) {
                 existing = loginService.updatePrivacy(existing.getId(), 0);

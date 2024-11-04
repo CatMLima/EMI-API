@@ -8,13 +8,8 @@ import is.hi.hbv501g.team20.Services.LoginService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.ZoneId;
-import java.sql.Date;
 import java.time.LocalDate;
-import java.util.Comparator;
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Service
 public class LoginServiceImplementation  implements LoginService {
@@ -76,14 +71,16 @@ public class LoginServiceImplementation  implements LoginService {
         userRepo.delete(user);
     }
 
-
+    // Method to be called to turn streak back to 0, on logging in
+    // And at completing an activity -> Therefore, activities should not be empty
     @Override
     public User updateStreak(long id){
         User user = findById(id);
         List<StudyActivity> activities = user.getActivities();
 
-        if (activities.isEmpty()) {
-            user.setStreak(0);
+        // If method is called for the first activity
+        if (activities.size() == 1) {
+            user.setStreak(1);
             return userRepo.save(user);
         }
 
@@ -102,8 +99,10 @@ public class LoginServiceImplementation  implements LoginService {
             // If no activity was completed yesterday
             user.setStreak(user.getStreak() + 1);
         } else if (!OneBeforeLastActivity.isEqual(yesterday) && lastActivityDate.isEqual(today)) {
-            // First study activity of the streak
+            // First study activity of a new streak
             user.setStreak(1);
+            // Here we have a small logic problem, in case of a study activity that is started in one
+            // day and ended in another. - Same issue happens to the duration that starts to be a negative number.
         }
 
         return userRepo.save(user);

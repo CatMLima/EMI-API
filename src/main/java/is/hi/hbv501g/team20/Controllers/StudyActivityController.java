@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -83,6 +84,7 @@ public class StudyActivityController {
 
         studyActivityService.save(studyActivity);
         model.addAttribute("studyactivity", studyActivity);
+        model.addAttribute("startTime", studyActivity.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalTime());
 
         return "studyactivity-active";
     }
