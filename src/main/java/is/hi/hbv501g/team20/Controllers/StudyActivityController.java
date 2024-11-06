@@ -19,8 +19,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.time.LocalTime;
-import java.time.ZoneId;
+import java.time.*;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -83,8 +82,7 @@ public class StudyActivityController {
         }
 
         studyActivityService.save(studyActivity);
-        model.addAttribute("studyactivity", studyActivity);
-        model.addAttribute("startTime", studyActivity.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalTime());
+        model.addAttribute("studyActivity", studyActivity);
 
         return "studyactivity-active";
     }
@@ -93,8 +91,8 @@ public class StudyActivityController {
     @RequestMapping(value = "/studyactivity-active/{id}", method = RequestMethod.GET)
     public String activeStudyActivity(Model model, @PathVariable("id") long id) {
 
-        StudyActivity activeStudyActivity = studyActivityService.findById(id);
-        model.addAttribute("studyactivity", activeStudyActivity);
+        StudyActivity studyActivity = studyActivityService.findById(id);
+        model.addAttribute("studyActivity", studyActivity);
 
         return "studyactivity-active";
     }

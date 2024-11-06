@@ -79,30 +79,32 @@ public class LoginServiceImplementation  implements LoginService {
         List<StudyActivity> activities = user.getActivities();
 
         // If method is called for the first activity
-        if (activities.size() == 1) {
+        if (activities == null) {
+            user.setStreak(0);
+            return userRepo.save(user);
+        }
+
+
+        LocalDate lastActivityDate = new java.sql.Date(activities.get(activities.size() - 1).getDate().getTime())
+                    .toLocalDate(); // For java.sql.Date
+
+        if (activities.size() == 1 && lastActivityDate.isEqual(LocalDate.now())) {
             user.setStreak(1);
             return userRepo.save(user);
         }
 
-        LocalDate lastActivityDate = new java.sql.Date(activities.get(activities.size() - 1).getDate().getTime())
-                    .toLocalDate(); // For java.sql.Date
         LocalDate OneBeforeLastActivity = new java.sql.Date(activities.get(activities.size() - 2).getDate().getTime())
                 .toLocalDate();
         LocalDate today = LocalDate.now();
         LocalDate yesterday = LocalDate.now().minusDays(1);
 
 
-        if (!lastActivityDate.isEqual(today) && !lastActivityDate.isBefore(today) || !OneBeforeLastActivity.isEqual(yesterday)) {
-            // If NO study activity was completed yesterday or today
+        if (!lastActivityDate.isEqual(today) || !lastActivityDate.isEqual(yesterday)) {
+            // If NO study activity was completed yesterday nor today
             user.setStreak(0);
         } else if (OneBeforeLastActivity.isEqual(yesterday) && lastActivityDate.isEqual(today)) {
             // If no activity was completed yesterday
             user.setStreak(user.getStreak() + 1);
-        } else if (!OneBeforeLastActivity.isEqual(yesterday) && lastActivityDate.isEqual(today)) {
-            // First study activity of a new streak
-            user.setStreak(1);
-            // Here we have a small logic problem, in case of a study activity that is started in one
-            // day and ended in another. - Same issue happens to the duration that starts to be a negative number.
         }
 
         return userRepo.save(user);
