@@ -27,9 +27,9 @@ public interface StudyActivityRepository extends JpaRepository<StudyActivity, Lo
         @Query("SELECT sa FROM StudyActivity sa WHERE ( sa.title LIKE %:query% OR sa.description LIKE %:query% OR sa.subjectID LIKE %:query% OR sa.subjectName LIKE %:query% ) AND (sa.privacy = 0 OR sa.user = :user)")
         List<StudyActivity> searchStudyActivityPublicUser(@Param("query") String query, @Param("user") User user);
 
-        // Query to find public study activities (privacy = 0)
-        @Query("SELECT sa FROM StudyActivity sa WHERE sa.privacy = 0")
-        List<StudyActivity> findAllPublicActivities();
+        // Query to find study activities for the feed
+        @Query("SELECT sa FROM StudyActivity sa WHERE sa.privacy = 0 OR sa.user = :user")
+        List<StudyActivity> findAllPublicActivities(@Param("user") User user);
 
         // Query to find activities for a specific user by user entity
         @Query("SELECT sa FROM StudyActivity sa WHERE sa.user = :user")
@@ -42,6 +42,6 @@ public interface StudyActivityRepository extends JpaRepository<StudyActivity, Lo
         void deleteAllByUser(User user);
 
         // Query to get the Dates of activities by user
-        @Query("SELECT DISTINCT sa.date FROM StudyActivity sa WHERE sa.user = :user")
+        @Query("SELECT sa.date FROM StudyActivity sa WHERE sa.user = :user")
         List<Date> getActivitiesDatesByUser(@Param("user") User user);
 }

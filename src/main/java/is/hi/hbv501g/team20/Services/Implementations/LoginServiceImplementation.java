@@ -84,16 +84,16 @@ public class LoginServiceImplementation  implements LoginService {
             return userRepo.save(user);
         }
 
-
         LocalDate lastActivityDate = new java.sql.Date(activities.get(activities.size() - 1).getDate().getTime())
                     .toLocalDate(); // For java.sql.Date
 
+        // First activity of the user
         if (activities.size() == 1 && lastActivityDate.isEqual(LocalDate.now())) {
             user.setStreak(1);
             return userRepo.save(user);
         }
 
-        LocalDate OneBeforeLastActivity = new java.sql.Date(activities.get(activities.size() - 2).getDate().getTime())
+        LocalDate secondLastActivity = new java.sql.Date(activities.get(activities.size() - 2).getDate().getTime())
                 .toLocalDate();
         LocalDate today = LocalDate.now();
         LocalDate yesterday = LocalDate.now().minusDays(1);
@@ -102,9 +102,14 @@ public class LoginServiceImplementation  implements LoginService {
         if (!lastActivityDate.isEqual(today) || !lastActivityDate.isEqual(yesterday)) {
             // If NO study activity was completed yesterday nor today
             user.setStreak(0);
-        } else if (OneBeforeLastActivity.isEqual(yesterday) && lastActivityDate.isEqual(today)) {
-            // If no activity was completed yesterday
+        } else if (secondLastActivity.isEqual(yesterday) && lastActivityDate.isEqual(today)) {
+            // Continuing a streak
             user.setStreak(user.getStreak() + 1);
+        } else if (lastActivityDate.isEqual(today) && !secondLastActivity.isEqual(yesterday)) {
+            // Restarting a streak
+            user.setStreak(1);
+        } else if (lastActivityDate.isEqual(today) && user.getStreak()==0) {
+            user.setStreak(1);
         }
 
         return userRepo.save(user);
