@@ -2,6 +2,7 @@ package is.hi.hbv501g.team20.Controllers;
 
 import is.hi.hbv501g.team20.Persistence.Entities.User;
 import is.hi.hbv501g.team20.Services.Implementations.LoginServiceImplementation;
+import is.hi.hbv501g.team20.Services.LoginService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -12,10 +13,10 @@ import org.springframework.web.bind.annotation.*;
 @Controller
 public class LoginController {
 
-    private LoginServiceImplementation loginService;
+    private LoginService loginService;
 
     @Autowired
-    public LoginController(LoginServiceImplementation loginService){
+    public LoginController(LoginService loginService){
         this.loginService = loginService;
     }
 
@@ -83,6 +84,11 @@ public class LoginController {
         User user = (User) session.getAttribute("user");
         if (user != null) {
             model.addAttribute("user", user);
+            // add attributes related to user stats
+            model.addAttribute("totalActivityTime", loginService.totalTime(user));
+            model.addAttribute("activitiesCount", loginService.totalSessions(user));
+            model.addAttribute("averageTime", loginService.average(user));
+            model.addAttribute("favouriteLocation", loginService.favouriteLocation(user));
             System.out.println("User in session: " + user.getName());
             return "user";
         }

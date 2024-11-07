@@ -1,5 +1,6 @@
 package is.hi.hbv501g.team20.Services.Implementations;
 
+import is.hi.hbv501g.team20.Persistence.Entities.Location;
 import is.hi.hbv501g.team20.Persistence.Entities.StudyActivity;
 import is.hi.hbv501g.team20.Persistence.Entities.User;
 import is.hi.hbv501g.team20.Persistence.Repository.StudyActivityRepository;
@@ -8,12 +9,12 @@ import is.hi.hbv501g.team20.Services.LoginService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
+import java.time.LocalTime;
 import java.time.ZoneId;
 import java.sql.Date;
 import java.time.LocalDate;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -81,6 +82,10 @@ public class LoginServiceImplementation  implements LoginService {
     public User updateStreak(long id){
         User user = findById(id);
         List<StudyActivity> activities = user.getActivities();
+        LocalDate lastActivityDate = new Date(activities.get(activities.size() - 1).getDate().getTime())
+                .toLocalDate(); // For java.sql.Date
+        LocalDate today = LocalDate.now();
+        LocalDate yesterday = LocalDate.now().minusDays(1);
 
         if (Objects.isNull(user.getStreak())) {
             if (activities.isEmpty()) {
@@ -88,6 +93,12 @@ public class LoginServiceImplementation  implements LoginService {
             } else {
                 user.setStreak(calculateStreak(user));
             }
+        } else if (!lastActivityDate.isEqual(today)) {
+            // Adds +1 days to the streak for the first study activity of today
+            user.setStreak(user.getStreak() + 1);
+        } else if (!lastActivityDate.isEqual(yesterday)) {
+            // Returns streak to 0, if there were no activities yesterday
+            user.setStreak(0);
         }
 
         return userRepo.save(user);
@@ -100,7 +111,7 @@ public class LoginServiceImplementation  implements LoginService {
             List<java.util.Date> activityDates = studyActivityRepository.getActivitiesDatesByUser(user);
 
             List<LocalDate> localDates = activityDates.stream()
-                    .map(date -> new java.sql.Date(date.getTime()).toLocalDate())
+                    .map(date -> new Date(date.getTime()).toLocalDate())
                     .distinct()
                     .sorted(Comparator.reverseOrder()) // Sorts in descending order
                     .collect(Collectors.toList());
@@ -123,5 +134,53 @@ public class LoginServiceImplementation  implements LoginService {
             }
         }
         return count;
+    }
+
+    /*
+    Stat calculation service methods
+     */
+
+    // Calculate the total amount of time studied.
+    public String totalTime(User user){
+        List<StudyActivity> activities = studyActivityRepository.findByUser(user);
+        Duration duration;
+        Duration total = Duration.ZERO;
+        for (StudyActivity studyActivity : activities) {
+            total = total.plus(studyActivity.getDuration());
+        }
+        return formatDuration(total);
+    }
+
+    // Calculate the total number of study activities completed.
+    public int totalSessions(User user){
+        List<StudyActivity> activities = studyActivityRepository.findByUser(user);
+        return activities.size();
+    }
+
+    // Calculate the average study time for each activity.
+    public String average (User user){
+        List<StudyActivity> activities = studyActivityRepository.findByUser(user);
+        Duration total = Duration.ZERO;
+
+        for(StudyActivity studyActivity : activities){
+            total = total.plus(studyActivity.getDuration());
+        }
+
+        int totalSessions = totalSessions(user);
+        long average = total.getSeconds()/totalSessions;
+        return formatDuration(Duration.ofSeconds(average));
+    }
+
+    // Find favourite study spot
+    public String favouriteLocation(User user){
+        Location favourite = studyActivityRepository.findFavouriteLocationByUser(user);
+        return favourite.getBuilding().toString();
+    }
+
+    public String formatDuration(Duration duration){
+        long hours = duration.toHours();
+        long minutes = duration.toMinutes() % 60;
+        long seconds = duration.getSeconds() % 60;
+        return String.format("%02d:%02d:%02d", hours, minutes, seconds);
     }
 }
