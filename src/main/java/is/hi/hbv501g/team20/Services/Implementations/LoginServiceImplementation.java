@@ -138,7 +138,7 @@ public class LoginServiceImplementation  implements LoginService {
         LocalDate lastActivity = user.getLastActivityDate();
         LocalDate now = LocalDate.now();
 
-        if (now.isAfter(lastActivity.plusDays(1))){
+        if (lastActivity == null || now.isAfter(lastActivity.plusDays(1))){
             user.setStreak(0);
             return userRepo.save(user);
         }

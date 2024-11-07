@@ -2,52 +2,56 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>User Page</title>
-    <link href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.3/css/bootstrap.min.css"
-          rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+    <link href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.3/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-    <h1 class="text-center"> Welcome, <span th:text="${user.name}"></span>!</h1>
-    <p> Your email: <span th:text="${user.email}"></span></p>
-    <!-- Add more user details as needed -->
-    <!-- <a href="/logout">Logout</a>  Logout link -->
-    <!-- display the user picture -->
-    <div>
-        <h2> Your Profile Picture</h2>
-        <img id="picture" th:src="@{'/user/' + ${user.id} + '/profilePicture'}" alt="Profile Picture" width="150" height="150" />
+
+<div class="container my-4">
+    <!-- Header -->
+    <div class="text-center">
+        <h1 class="display-4">Welcome, <span th:text="${user.name}"></span>!</h1>
+        <p class="lead">Your email: <span th:text="${user.email}"></span></p>
     </div>
 
-    <div>
-        <h4>Your Stats</h4>
-        <p><b>Your current streak is:</b> <span th:text="${user.streak}"></span></p>
-        <p><b>You have studied for a total of:</b> <span th:text="${totalActivityTime}"></span></p>
-        <p><b>You have completed a total of <span th:text="${activitiesCount}"></span> activities.</b></p>
-        <p><b>On average, you study for <span th:text="${averageTime}"></span> at a time.</b></p>
-        <p><b>Your favourite location is <span th:text="${favouriteLocation}"></span></b></p>
+    <!-- Profile Picture Section -->
+    <div class="text-center my-4">
+        <h2>Your Profile Picture</h2>
+        <img id="picture" th:src="@{'/user/' + ${user.id} + '/profilePicture'}"
+             alt="Profile Picture" class="rounded-circle" width="150" height="150" />
     </div>
 
-    <div> <!-- View user's StudyActivities -->
-        <h4>View Your Activities</h4>
-        <a th:href="@{/studyactivity-list}">
-            <button class="btn btn-info" type="submit"> View my StudyActivities</button>
+    <!-- User Stats Section -->
+    <div class="card my-4">
+        <div class="card-body">
+            <h4 class="card-title">Your Stats</h4>
+            <p><strong>Current streak:</strong> <span th:text="${user.streak}"></span></p>
+            <p><strong>Total study time:</strong> <span th:text="${totalActivityTime}"></span></p>
+            <p><strong>Total completed activities:</strong> <span th:text="${activitiesCount}"></span></p>
+            <p><strong>Average study session time:</strong> <span th:text="${averageTime}"></span></p>
+            <p><strong>Favourite location:</strong> <span th:text="${favouriteLocation}"></span></p>
+        </div>
+    </div>
+
+    <!-- Buttons Section -->
+    <div class="text-center">
+        <!-- View Activities Button -->
+        <a th:href="@{/studyactivity-list}" class="btn btn-info m-2">
+            View My Study Activities
         </a>
-    </div>
 
-    <!-- Add the Settings button -->
-    <div>
-        <h3> Settings</h3>
-        <form th:action="@{/settings}" method="get">
-            <button class="btn btn-secondary" type="submit">Go to Settings</button>
+        <!-- Settings Button -->
+        <form th:action="@{/settings}" method="get" class="d-inline">
+            <button class="btn btn-secondary m-2">Go to Settings</button>
         </form>
-    </div>
 
-
-
-    <div> <!-- Go to feed -->
-        <h5></h5>
-        <a th:href="@{/feed}">
-            <button class="btn btn-primary" type="submit"> Back to Feed </button>
+        <!-- Back to Feed Button -->
+        <a th:href="@{/feed}" class="btn btn-primary m-2">
+            Back to Feed
         </a>
     </div>
+</div>
+
 </body>
 </html>
