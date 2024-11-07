@@ -10,10 +10,7 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -98,14 +95,14 @@ public class StudyGroupController {
         return "studygroup-view";
     }
 
-    @RequestMapping(value = "/api/post-create/{id}", method = RequestMethod.POST)
-    public String createPost(@PathVariable("id") long id, HttpSession httpSession, Post post, BindingResult result) {
+
+    @RequestMapping(value = "/api/post-create", method = RequestMethod.POST)
+    public String createPost(@RequestParam("studyGroupId") long studyGroupId, HttpSession httpSession, Post post, BindingResult result) {
         User user = (User) httpSession.getAttribute("user");
-        StudyGroup studyGroup = studyGroupService.findById(id);
+        StudyGroup studyGroup = studyGroupService.findById(studyGroupId);
         post.setUser(user);
         post.setStudygroup(studyGroup);
         postService.save(post);
-        return "redirect:/studygroup-view/" + id;
+        return "redirect:/studygroup-view/" + studyGroupId;
     }
-
 }
