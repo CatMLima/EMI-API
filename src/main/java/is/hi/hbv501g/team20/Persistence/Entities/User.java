@@ -2,8 +2,11 @@ package is.hi.hbv501g.team20.Persistence.Entities;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
-
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name= "\"user\"")
@@ -17,9 +20,12 @@ public class User {
         this.name = name;
         this.email = email;
         this.password = password;
+        this.privacy = 0;
     }
 
+    public User() {}
 
+    public Integer privacy;
     private String name;
     private String email;
     private String password;
@@ -30,11 +36,15 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<StudyActivity> activities;
 
-    private Boolean privacy;
+    @ManyToMany(mappedBy = "members")
+    private List<StudyGroup> studyGroupsMember = new ArrayList<>();
 
-    public User() {
+    @OneToMany(mappedBy = "admin")
+    private List<StudyGroup> studyGroupsAdmin = new ArrayList<>();
 
-    }
+    private Integer streak;
+
+    private Integer isActive;
 
     public void setId(Long id) {
         this.id = id;
@@ -88,11 +98,33 @@ public class User {
     }
     //can do removeactivity for delete
 
-    public Boolean getPrivacy() {
+    public Integer getPrivacy() {
         return privacy;
     }
 
-    public void setPrivacy(Boolean privacy) {
+    public void setPrivacy(Integer privacy) {
         this.privacy = privacy;
     }
+
+    public void changePrivacy(Integer privacy) {
+        this.privacy = privacy;
+    }
+
+    public Integer getIsActive() {
+        return isActive;
+    }
+
+    public void setIsActive(Integer isActive) {
+        this.isActive = isActive;
+    }
+
+    public List<StudyGroup> getStudyGroupsMember() {
+        return studyGroupsMember;
+    }
+
+    public List<StudyGroup> getStudyGroupsAdmin() { return studyGroupsAdmin; }
+
+    public Integer getStreak() { return streak; }
+
+    public void setStreak(Integer streak) { this.streak = streak; }
 }

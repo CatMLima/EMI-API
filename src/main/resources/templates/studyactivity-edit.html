@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/html">
+<head>
+  <meta charset="UTF-8">
+  <title>StudyActivity Details</title>
+  <link href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.3/css/bootstrap.min.css"
+        rel="stylesheet">
+  <script type="text/javascript">
+    // checks the size of the picture before allowing it to be submitted
+    function validFileSize(input){
+      const max = 2 * 1024 * 1024; // 2 megabytes
+      const file = input.files[0];
+      const errorMessage = document.getElementById('fileSizeError');
+
+      if (file.size > max){
+        errorMessage.innerText = "File size exceeds 2MB. Please choose a smaller file.";
+        input.value = '';
+      } else{
+        errorMessage.innerText= '';
+      }
+    }
+  </script>
+</head>
+<body>
+<h1> This is your StudyActivity</h1>
+<table> <!-- info on study-activity-->
+  <thead>
+  <tr class="myFields">
+    <th> Title:    </th>
+    <td> <a th:text="${studyactivity.title}"></a></td>
+  </tr>
+  </thead>
+  <tbody>
+  <tr>
+    <td>Description: </td>
+    <td th:text="${studyactivity.description}"></td>
+  </tr>
+  <tr>
+    <td>Date: </td>
+    <td th:text="${studyactivity.date}"></td>
+  </tr>
+  <tr>
+    <td>Start: </td>
+    <td th:text="${studyactivity.start}"></td>
+  </tr>
+  <tr>
+    <td>End: </td>
+    <td th:text="${studyactivity.end}"></td>
+  </tr>
+  <tr>
+    <td>Duration: </td>
+    <td th:text="${studyactivity.getFormattedDuration()}"></td>
+  </tr>
+  <tr>
+    <td>SubjectId: </td>
+    <td th:text="${studyactivity.subjectID}"></td>
+  </tr>
+  <tr>
+    <td>SubjectName: </td>
+    <td th:text="${studyactivity.subjectName}"></td>
+  </tr>
+  <td>   <!-- Finish study-activity-->
+    <a th:href="@{/studyactivity-finish/{id}(id=${studyactivity.id})}" >
+      <button class="btn btn-primary" type="submit">Finish this Study Activity</button>
+    </a>
+  </td>
+  <td>   <!-- Delete study-activity-->
+    <a th:href="@{/studyactivity-delete/{id}(id=${studyactivity.id})}" >
+      <button class="btn btn-danger" type="submit" onclick="return confirm('Are you sure you want to delete your studyactivity? This action cannot be undone.')">Delete this StudyActivity</button>
+    </a>
+  </td>
+  </tbody>
+</table>
+<div>
+  <h2>Activity Picture</h2>
+  <img id="activityPicture" th:src="@{'/activity/' + ${studyactivity.id} + '/activityPicture'}" alt="Activity Picture" width="150" height="150" />
+</div>
+
+<div>
+  <h5>Change Activity Picture</h5>
+  <form th:action="@{/uploadActivityPicture}" method="post" enctype="multipart/form-data">
+    <input type="file" name="activityPicture" accept="image/*" required onchange="validFileSize(this)">
+    <input type="hidden" name="activityId" th:value="${studyactivity.id}">
+    <button type="submit">Upload</button>
+  </form>
+  <span id="fileSizeError" style="color:red;"></span>
+</div>
+
+<div>
+  <h5></h5>
+  <a th:href="@{/studyactivity-list}">
+    <button class="btn btn-info" type="submit">View my StudyActivities</button>
+  </a>
+</div>
+<div>
+  <h5></h5>
+  <a th:href="@{/feed}">
+    <button class="btn btn-primary" type="submit">Back to Feed</button>
+  </a>
+</div>
+
+</body>
+</html>

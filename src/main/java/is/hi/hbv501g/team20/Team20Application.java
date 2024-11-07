@@ -22,11 +22,6 @@ public class Team20Application {
             System.out.println(repository.findAll());
         };
     }
-    *
-     */
+    **/
 
-    // this method was used to create the first entry into the database, we don't need to keep it.
-    private void insertJavaAdvocates(UserRepository userRepository) {
-        userRepository.save(new User("Catarina","cms5@hi.is","hello"));
-    }
 }

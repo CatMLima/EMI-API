@@ -1,20 +1,67 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns="http://www.w3.org/1999/html">
 <head>
     <meta charset="UTF-8">
     <title>StudyActivity Details</title>
+    <link href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.3/css/bootstrap.min.css"
+          rel="stylesheet">
 </head>
 <body>
-<h1>This is your StudyActivity</h1>
-<p>Title: <span th:text="${studyactivity.title}"></span></p>
-<p>Description: <span th:text="${studyactivity.description}"></span></p>
-<p>Date: <span th:text="${studyactivity.date}"></span></p>
-<p>Start: <span th:text="${studyactivity.start}"></span></p>
-<p>End: <span th:text="${studyactivity.end}"></span></p>
-<p>SubjectID: <span th:text="${studyactivity.subjectID}"></span></p>
-<p>SubjectName: <span th:text="${studyactivity.subjectName}"></span></p>
+<h1> This is <a th:text="${studyactivity.user.name}"></a>'s StudyActivity</h1>
+<table> <!-- info on study-activity-->
+    <thead>
+    <tr class="myFields">
+        <th> Title:    </th>
+        <td> <a th:text="${studyactivity.title}"></a></td>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td>Description: </td>
+        <td th:text="${studyactivity.description}"></td>
+    </tr>
+    <tr>
+        <td>Date: </td>
+        <td th:text="${studyactivity.date}"></td>
+    </tr>
+    <tr>
+        <td>Start: </td>
+        <td th:text="${studyactivity.start}"></td>
+    </tr>
+    <tr>
+        <td>End: </td>
+        <td th:text="${studyactivity.end}"></td>
+    </tr>
+    <tr>
+        <td>Duration: </td>
+        <td th:text="${studyactivity.getFormattedDuration()}"></td>
+    </tr>
+    <tr>
+        <td>SubjectId: </td>
+        <td th:text="${studyactivity.subjectID}"></td>
+    </tr>
+    <tr>
+        <td>SubjectName: </td>
+        <td th:text="${studyactivity.subjectName}"></td>
+    </tr>
+    </tbody>
+</table>
 
-<a href="/feed">Back to Feed</a>
+<div th:switch="${studyactivity.activityPicture}">
+    <h2 th:case="null"> </h2>
+    <div th:case="*">
+        <h2>Activity Picture</h2>
+        <img id="activityPicture" th:src="@{'/activity/' + ${studyactivity.id} + '/activityPicture'}" alt="Activity Picture" width="150" height="150" />
+
+    </div>
+</div>
+
+<div>
+    <h5></h5>
+    <a th:href="@{/feed}">
+        <button class="btn btn-primary" type="submit">Back to Feed</button>
+    </a>
+</div>
 
 </body>
 </html>

@@ -3,35 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <title>User Page</title>
+    <link href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.3/css/bootstrap.min.css"
+          rel="stylesheet">
 </head>
 <body>
-    <button onclick="window.history.back()">Return to Feed</button>
-
-    <h1>Welcome, <span th:text="${user.name}"></span>!</h1>
-    <p>Your email: <span th:text="${user.email}"></span></p>
+    <h1 class="text-center"> Welcome, <span th:text="${user.name}"></span>!</h1>
+    <p> Your email: <span th:text="${user.email}"></span></p>
     <!-- Add more user details as needed -->
     <!-- <a href="/logout">Logout</a>  Logout link -->
-
-
+    <!-- display the user picture -->
     <div>
-        <h2>Your Profile Picture</h2>
+        <h2> Your Profile Picture</h2>
         <img id="picture" th:src="@{'/user/' + ${user.id} + '/profilePicture'}" alt="Profile Picture" width="150" height="150" />
     </div>
 
-    <div>
-        <h3>Change Profile Picture</h3>
-        <form th:action="@{/api/uploadProfilePicture}" method="post" enctype="multipart/form-data">
-            <input type="file" name="profilePicture" accept="image/*" required>
-            <input type="hidden" name="userId" th:value="${user.id}">
-            <button type="submit">Upload</button>
-        </form>
+    <div> <!-- View user's StudyActivities -->
+        <h4>View Your Activities</h4>
+        <a th:href="@{/studyactivity-list}">
+            <button class="btn btn-info" type="submit"> View my StudyActivities</button>
+        </a>
     </div>
 
     <!-- Add the Settings button -->
     <div>
+        <h3> Settings</h3>
         <form th:action="@{/settings}" method="get">
-            <button type="submit">User Settings</button>
+            <button class="btn btn-secondary" type="submit">Go to Settings</button>
         </form>
+    </div>
+
+
+
+    <div> <!-- Go to feed -->
+        <h5></h5>
+        <a th:href="@{/feed}">
+            <button class="btn btn-primary" type="submit"> Back to Feed </button>
+        </a>
     </div>
 </body>
 </html>

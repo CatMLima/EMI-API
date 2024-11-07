@@ -16,18 +16,19 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Objects;
+
 @Controller
 public class UserController {
 
-    private final UserRepository userRepository;
     private LoginServiceImplementation loginService;
 
     @Autowired
     public UserController(LoginServiceImplementation loginService, UserRepository userRepository) {
         this.loginService = loginService;
-        this.userRepository = userRepository;
     }
 
+    // upload a new profile picture and save the changes to the database.
     @PostMapping("/api/uploadProfilePicture")
     public String uploadProfilePicture(@RequestParam("profilePicture") MultipartFile profilePicture,
                                        HttpSession session, Model model) {
@@ -42,7 +43,7 @@ public class UserController {
                 loginService.save(user);
                 model.addAttribute("user", user);
                 model.addAttribute("picture", user.getProfilePicture());
-                return "user";
+                return "settings";
             } catch (Exception e) {
                 e.printStackTrace();
                 return "Error uploading profile picture";
@@ -52,15 +53,14 @@ public class UserController {
         return "No picture uploaded";
     }
 
-    /*
-    Still working on this - Cat
-     */
+    // retrieve and display the user picture
     @GetMapping("/user/{id}/profilePicture")
     public ResponseEntity<byte[]> getProfilePicture(@PathVariable Long id){
         User user = loginService.findById(id);
         return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(user.getProfilePicture());
     }
 
+    // pull up the settings page
     @RequestMapping(value="/settings", method=RequestMethod.GET)
     public String getSettingsPage(Model model, HttpSession session) {
         User user = (User) session.getAttribute("user");
@@ -72,4 +72,29 @@ public class UserController {
         return "user";
     }
 
+    // Changes the users password
+    @GetMapping(value ="/change-password/{id}")
+    public String changePassword(@RequestParam String oldPassword,
+                                 @RequestParam String newPassword,
+                                 @RequestParam String newPassword2,
+                                 HttpSession session, Model model) {
+
+        User user = (User) session.getAttribute("user");
+
+        if (user == null || !Objects.equals(user.getPassword(), oldPassword)) {
+            model.addAttribute("message", "Current password is incorrect.");
+            return "redirect:/settings";
+        }
+
+        if (!Objects.equals(newPassword, newPassword2)) {
+            model.addAttribute("message", "New passwords do not match.");
+            return "redirect:/settings";
+        }
+
+        user.setPassword(newPassword);
+        loginService.save(user);
+        model.addAttribute("message", "Password changed successfully.");
+        return "redirect:/settings";
+
+    }
 }

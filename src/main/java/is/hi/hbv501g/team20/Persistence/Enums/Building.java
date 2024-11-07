@@ -1,6 +1,7 @@
 package is.hi.hbv501g.team20.Persistence.Enums;
 
 public enum Building {
+    // all the building names that are included in our application
     ADAL("Aðalbygging"),
     ASKJA("Askja"),
     ARNAGARDUR("Árnagarður"),

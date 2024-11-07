@@ -3,10 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <title>StudyActivity Create</title>
+    <link href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.3/css/bootstrap.min.css"
+          rel="stylesheet">
 </head>
 <body>
-<h1>Create your StudyActivity</h1>
-<form if="studyActivityForm" th:action="@{/api/studyactivity-create}" method="post" th:object="${studyactivity}">
+<h1 class="text-center">Create your StudyActivity</h1>
+<form id="studyActivityForm" th:action="@{/api/studyactivity-create}" method="post" th:object="${studyactivity}">
     <div th:if="${#fields.hasErrors('title')}" th:errors="*{title}" style="color:red;"></div>
     <label for="title">Title: </label>
     <input type="text" id="title" th:field="*{title}" required/> <br><br>
@@ -23,34 +25,18 @@
     <label for="subjectName">Name of subject: </label>
     <input type="text" id="subjectName" th:field="*{subjectName}" required/> <br><br>
 
+    <div th:if="${#fields.hasErrors('building')}" th:errors="*{building}" style="color:red;"></div>
+    <label for="building">Select Building: </label>
+    <select id="building" th:field="*{building}" required>
+        <option value="" disabled selected>Select a building</option>
+        <option th:each="building: ${T(is.hi.hbv501g.team20.Persistence.Enums.Building).values()}"
+                th:value="${building.name()}";
+                th:text="${building.toString()}"></option>
+    </select>
     <div>
-        <button type="submit">Post</button>
-        <a href="/feed">Cancel</a>
+        <button class="btn btn-success" type="submit">Post</button>
+        <a class="btn btn-black" href="/feed">Cancel</a>
     </div>
 </form>
-<table class="table table-striped table-bordered">
-    <tr>
-        <th>Date</th>
-        <th>Start</th>
-        <th>End</th>
-        <th>title</th>
-        <th>description</th>
-        <th>subjectID</th>
-        <th>subjectName</th>
-        <th>Created At</th>
-    </tr>
-    <tr th:if="${#lists.isEmpty(studyactivity)}">
-        <td colspan="5">No Records found. Add some...!</td>
-    </tr>
-    <tr th:each="studyactivity : ${studyactivity}">
-        <td th:text="${studyactivity.date}"></td>
-        <td th:text="${studyactivity.start}"></td>
-        <td th:text="${studyactivity.end}"></td>
-        <td th:text="${studyactivity.title}"></td>
-        <td th:text="${studyactivity.description}"></td>
-        <td th:text="${studyactivity.subjectID}"></td>
-        <td th:text="${studyactivity.subjectName}"></td>
-    </tr>
-</table>
 </body>
 </html>

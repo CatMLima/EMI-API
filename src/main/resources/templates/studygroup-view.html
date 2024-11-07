@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="https://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>StudyGroup view</title>
+    <link href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.3/css/bootstrap.min.css"
+        rel="stylesheet">
+</head>
+<body>
+  <h1 class="text-center">
+    <strong th:text="${studyGroup.name}">Name of Group</strong>
+    <form th:action="@{/studygroups-feed}">
+     <button class="btn btn-outline-secondary btn-lg" type="submit">Back to StudyGroups</button>
+    </form>
+  </h1>
+  <form id="postForm" th:action="@{/api/post-create}" method="post" th:object="${post}" class="col card mx-auto" style="max-width: 18rem ">
+    <div class="form-group">
+      <label for="title">Title: </label>
+      <input type="text" id="title" name="title" class="form-control" required>
+    </div>
+    <div class="form-group">
+      <label for="content">Content: </label>
+      <textarea id="content" name="content" class="form-control" rows="2" required></textarea>
+    </div>
+    <input type="hidden" name="studyGroupId" th:value="${studyGroup.id}">
+    <button type="submit" class="btn btn-success">Post</button>
+  </form>
+  <div th:switch="${post}">
+    <h2 th:case="null">No Posts yet</h2>
+    <div th:case="*">
+      <div class="grid-container">
+        <h2 class="text-center">Posts</h2>
+          <div th:each="post : ${post}"  class ="row row-cols-1 g-4 mx-auto">
+            <div class="card mx-auto" style="min-width: 20rem; max-width: 21rem;">
+              <div class="card-header" th:text="${post.user.name}">User:</div>
+              <div class="card-body">
+                <h5 class="card-title" th:text="${post.title}">Title</h5>
+                <p class="card-text" th:text="${post.content}">Post content</p>
+              </div>
+            </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

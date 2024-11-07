@@ -4,9 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sign Up</title>
+    <link href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.3/css/bootstrap.min.css"
+        rel="stylesheet">
 </head>
 <body>
-<h1>Create New User Profile</h1>
+<h1 class="text-center">Create New User Profile</h1>
 <form id="userForm" th:action="@{/api/signup}" method="post" th:object="${user}">
   <div th:if="${#fields.hasErrors('name')}" th:errors="*{name}" style="color:red;"></div>
     <label for="name">Name: </label>
@@ -22,8 +24,8 @@
     <label for="confirmPassword">Confirm Password:</label>
     <input type="password" id="confirmPassword" name="confirmPassword" required/><br><br>
 
-    <button type="submit">Create User</button>
-    <button type="button" onclick="window.history.back()">Cancel</button>
+    <button class="btn btn-success" type="submit">Create User</button>
+    <button class="btn btn-black" type="button" onclick="window.history.back()">Cancel</button>
 </form>
 
 <script>

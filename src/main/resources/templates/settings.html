@@ -3,60 +3,130 @@
 <head>
     <meta charset="UTF-8">
     <title>Settings</title>
+    <link href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.3/css/bootstrap.min.css"
+          rel="stylesheet">
+    <script type="text/javascript">
+        // checks the size of the picture before allowing it to be submitted
+        function validFileSize(input){
+            const max = 2 * 1024 * 1024; // 2 megabytes
+            const file = input.files[0];
+            const errorMessage = document.getElementById('fileSizeError');
+
+            if (file.size > max){
+                errorMessage.innerText = "File size exceeds 2MB. Please choose a smaller file.";
+                input.value = '';
+            } else{
+                errorMessage.innerText= '';
+            }
+        }
+
+        // Validate password requirements and match confirmation
+        function validatePasswordForm() {
+            const currentPassword = document.getElementById("oldPassword").value;
+            const userPassword = '[[${user.password}]]'; // Thymeleaf to retrieve the actual password
+            const newPassword = document.getElementById("newPassword").value;
+            const confirmPassword = document.getElementById("confirmPassword").value;
+
+            // Clear previous error messages
+            document.getElementById('passwordError').innerText = '';
+            document.getElementById('matchError').innerText = '';
+
+            // Check if current password matches
+            if (currentPassword !== userPassword) {
+                document.getElementById('passwordError').innerText = "Incorrect current password.";
+                return false;
+            }
+
+            // Validate new password length and complexity
+            const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d)[A-Za-z\d]{10,}$/;
+            if (!passwordRegex.test(newPassword)) {
+                alert('Password must be at least 10 characters long and contain both letters and numbers.')
+                return false;
+            }
+
+            // Check if new password matches confirm password
+            if (newPassword !== confirmPassword) {
+                alert("Passwords must match.");
+                return false;
+            }
+
+            return true;
+        }
+    </script>
 </head>
 <body>
+<h1><span th:text="${user.name}"></span>, (<span th:text="${user.email}"></span>)</h1>
 
-    <!-- Copied from the user.html // Change Picture -->
+    <!-- Display the user picture -->
     <div>
-    <h3>Change Profile Picture</h3>
+        <h3> Your Profile Picture</h3>
+        <img id="picture" th:src="@{'/user/' + ${user.id} + '/profilePicture'}" alt="Profile Picture" width="150" height="150" />
+    </div>
+
+<!-- Change Picture -->
+    <div>
+    <h4>Change Profile Picture</h4>
         <form th:action="@{/api/uploadProfilePicture}" method="post" enctype="multipart/form-data">
-        <input type="file" name="profilePicture" accept="image/*" required>
+        <input type="file" name="profilePicture" accept="image/*" required onchange="validFileSize(this)">
         <input type="hidden" name="userId" th:value="${user.id}">
         <button type="submit">Upload</button>
         </form>
+        <span id="fileSizeError" style="color:red;"></span>
     </div>
 
+    <!-- Call the service to change users password -->
     <div>
-        <h3>Change Password</h3>
-        <form id="changePasswordForm" th:action="@{/change-password}" method="post">
-            <div>
-                <label for="currentPassword">Current Password:</label>
-                <input type="password" id="currentPassword" name="currentPassword" placeholder="currentPassword" required>
-            </div>
-            <div>
-                <label for="newPassword">New Password:</label>
-                <input type="password" id="newPassword" name="newPassword" required>
-            </div>
-            <div>
-                <label for="confirmPassword">Confirm New Password:</label>
-                <input type="password" id="confirmPassword" name="confirmPassword" required>
-            </div>
-            <div>
-                <button type="submit">Change Password</button>
-            </div>
-        </form>
-    </div>
+        <h4>Change Password</h4>
+        <form th:action="@{/change-password/{id}}" onsubmit="return validatePasswordForm()">
+
+            <label for="oldPassword">Current Password:</label>
+            <input type="password" id="oldPassword" name="oldPassword" required/><br>
+            <span id="passwordError" style="color:red;"></span>
+
+            <label for="newPassword">New Password:</label>
+            <input type="password" id="newPassword" name="newPassword" required/><br>
+
+            <label for="confirmPassword">Confirm Password:</label>
+            <input type="password" id="confirmPassword" name="newPassword2" required/><br>
+            <span id="matchError" style="color:red;"></span><br>
+
+        <button class="btn btn-success" type="submit">Change Password</button>
+    </form>
+</div>
 
     <!-- Change Privacy Settings -->
     <div>
-        <h3>Change Privacy Settings</h3>
-        <form th:action="@{/change-privacy}" method="post">
-            <div>
-                <label for="privateAccount">Private Account:</label>
-                <input type="checkbox" id="privateAccount" name="privateAccount" th:checked="${user.privacySetting}">
-            </div>
-            <div>
-                <button type="submit">Save Privacy Settings</button>
-            </div>
+        <h4>Change Privacy Settings</h4>
+        <form th:action="@{/settings/privacy}" method="post">
+            <p>
+                <input type="radio" th:field="*{user.privacy}" value=1 id="private"
+                       th:checked="${user.privacy} == 1" />
+                <label for="private">Private</label>
+
+                <input type="radio" th:field="*{user.privacy}" value=0 id="public"
+                       th:checked="${user.privacy} == 0" />
+                <label for="public">Public</label>
+            </p>
+
+            <button class="btn btn-success" type="submit">Save</button>
         </form>
     </div>
 
     <!-- Delete Account -->
     <div>
-        <h3>Delete Account</h3>
-        <form th:action="@{/delete-account}" method="post">
-            <button type="submit" onclick="return confirm('Are you sure you want to delete your account? This action cannot be undone.')">Delete Account</button>
-        </form>
+        <h4>Delete Account</h4>
+        <a th:href="@{/delete-account/{id}(id=${user.id})}">
+            <button class="btn btn-danger" type="submit" onclick="return confirm('Are you sure you want to delete your account? This action cannot be undone.')">Delete Account</button>
+        </a>
     </div>
+<br>
+<form th:action="@{/user}" method="get">
+    <button class="btn btn-secondary" type="submit">Go to Profile</button>
+</form>
+<br>
+<form th:action="@{/feed}" method="get">
+    <button class="btn btn-primary" type="submit">Go to Feed</button>
+</form>
+
 </body>
 </html>

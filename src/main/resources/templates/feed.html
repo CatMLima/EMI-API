@@ -4,19 +4,86 @@
     <title>Feed</title>
     <link href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.3/css/bootstrap.min.css"
           rel="stylesheet">
+    <!-- Auto-refresh the page every 10 seconds -->
+    <meta http-equiv="refresh" content="10">
 </head>
 <body>
-<h1>Welcome to Your Feed</h1>
+<h1 class="text-center"> Welcome to Your Feed
+    <form th:action="@{/studygroups-feed}" method="get">
+        <button class="btn btn-outline-success btn-lg" type="submit">Go to StudyGroups!</button>
+    </form>
+</h1>
+<h4><span th:text="${user.name}"></span>, you have a streak of <span th:text="${user.streak}"></span> days!</h4>
+
+<!-- Search form for filtering Study Activities -->
+<form th:action="@{/feed-search}" method="get">
+    <div class="form-group">
+        <input type="text" class="form-control" name="query" placeholder="Search study activities by title, description, subject Id or subject name">
+    </div>
+    <button type="submit" class="btn btn-primary">Search</button>
+
+    <a href="/feed" class="btn btn-secondary mb-2 ml-2">Reset</a>
+</form>
 
 <!-- Button to go to Profile Page -->
 <form th:action="@{/user}" method="get">
-    <button type="submit">Go to Profile</button>
+    <button class="btn btn-secondary" type="submit">Go to Profile</button>
 </form>
 
-<!-- Button to start a Study Activity -->
-<form th:action="@{/studyactivity-create}" method="get">
-    <button type="submit">Create a Study Activity</button>
+<br>
+
+<!-- Active study Activity -->
+<div th:switch="${studyactivity}">
+    <!-- Display this message if 'ongoingStudyActivity' is empty -->
+    <h4 th:if="${userActive != 0}">
+        <!-- Button to start a Study Activity -->
+        <form th:action="@{/studyactivity-create}" method="get">
+            <button class="btn btn-primary" type="submit">Create a Study Activity</button>
+        </form>
+    </h4>
+
+    <div th:if="${userActive == 0}">
+        <h4>Your Active Study Activity</h4>
+        <table class="table table-striped table-bordered">
+            <thead>
+            <tr>
+                <th>Title</th>
+                <th>Description</th>
+                <th>SubjectID</th>
+                <th>SubjectName</th>
+                <th>Started at</th>
+                <th>Duration</th>
+                <th>Stop</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="activeStudyActivity : ${activeStudyActivity}">
+                <td th:text="${activeStudyActivity.title}"></td>
+                <td th:text="${activeStudyActivity.description}"></td>
+                <td th:text="${activeStudyActivity.subjectID}"></td>
+                <td th:text="${activeStudyActivity.subjectName}"></td>
+                <td th:text="${#temporals.format(activeStudyActivity.start, 'HH:mm')}"></td>
+                <td th:text="${activeStudyActivity.getFormattedDuration()}"></td>
+                <td>
+                    <!-- Button to start a Study Activity -->
+                    <form th:action="@{/studyactivity-finish/{id}(id=${activeStudyActivity.id})}" method="post">
+                        <button class="btn btn-primary" type="submit">End Study Activity</button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+<form th:action="@{/locations-list}" method="get">
+    <button class="btn btn-secondary" type="submit">View All Locations</button>
 </form>
+
+
+
+<br>
 
 <!-- Here below we can add content to the feed -->
 
@@ -27,24 +94,64 @@
         <table class="table table-striped table-bordered">
             <thead>
             <tr>
-                <th>Title</th>
-                <th>Description</th>
-                <th>SubjectID</th>
-                <th>SubjectName</th>
-                <th>Created on</th>
+                <th><a href="#" onclick="sortTable(0)">User</a></th>
+                <th><a href="#" onclick="sortTable(1)">Title</a></th>
+                <th><a href="#" onclick="sortTable(2)">Description</a></th>
+                <th><a href="#" onclick="sortTable(3)">SubjectID</a> </th>
+                <th><a href="#" onclick="sortTable(4)">SubjectName</a></th>
+                <th><a href="#" onclick="sortTable(5)">Created on</a></th>
+                <th><a href="#" onclick="sortTable(6)">Coffees</a></th>
+                <th></th>
+                <th>Details</th>
+
             </tr>
             </thead>
             <tbody>
             <tr th:each="studyactivity : ${studyactivity}">
+                <td th:text="${studyactivity.user.name}"></td>
                 <td th:text="${studyactivity.title}"></td>
                 <td th:text="${studyactivity.description}"></td>
                 <td th:text="${studyactivity.subjectID}"></td>
                 <td th:text="${studyactivity.subjectName}"></td>
                 <td th:text="${studyactivity.date}"></td>
+                <td>
+                    <span th:text="${studyactivity.coffees.size()}"></span>
+                </td>
+                <td>
+                    <!-- Toggle add/remove Coffee button -->
+                    <form th:action="@{/studyactivity/{id}/toggle-coffee(id=${studyactivity.id})}" method="post">
+                        <button class="btn"
+                                th:classappend="${userHasGivenCoffee[studyactivity.id] ?: false} ? 'btn-danger' : 'btn-success'"
+                                th:text="${userHasGivenCoffee[studyactivity.id] ?: false} ? 'Remove Coffee' : 'Give Coffee'"></button>
+                        <!-- Having ?: false will make null values return give coffee -->
+                    </form>
+                </td>
+                <td>   <!-- Button to go to study activity details page -->
+                    <form th:action="@{/studyactivity-details/{id}(id=${studyactivity.id})}" method="get">
+                        <button class="btn btn-info" type="submit">View Details</button>
+                    </form>
+                </td>
             </tr>
             </tbody>
         </table>
     </div>
 </div>
+<script>
+    function sortTable(columnIndex) {
+        const table = document.querySelector("table");
+        const rows = Array.from(table.rows).slice(1); // Skip the header row
+        const sortedRows = rows.sort((a, b) => {
+            const aText = a.cells[columnIndex].innerText.toLowerCase();
+            const bText = b.cells[columnIndex].innerText.toLowerCase();
+            return aText.localeCompare(bText);
+        });
+
+        // Remove existing rows and append sorted rows
+        while (table.rows.length > 1) {
+            table.deleteRow(1);
+        }
+        sortedRows.forEach(row => table.appendChild(row));
+    }
+</script>
 </body>
 </html>
