@@ -23,9 +23,10 @@
       <label for="content">Content: </label>
       <textarea id="content" name="content" class="form-control" rows="2" required></textarea>
     </div>
-      <button type="submit" class="btn btn-success">Post</button>
+    <button type="submit" class="btn btn-success">Post</button>
     </div>
   </form>
+
 
   <div th:switch="${post}">
     <h2 th:case="null">No Posts yet</h2>

@@ -98,14 +98,14 @@ public class StudyGroupController {
         return "studygroup-view";
     }
 
-    @RequestMapping(value = "/api/post-create/{id}", method = RequestMethod.POST)
-    public String createPost(@PathVariable("id") long id, HttpSession httpSession, Post post, BindingResult result) {
+
+    @RequestMapping(value = "/api/post-create", method = RequestMethod.POST)
+    public String createPost(@RequestParam ("studyGroupId") long studyGroupId, HttpSession httpSession, Post post, BindingResult result) {
         User user = (User) httpSession.getAttribute("user");
-        StudyGroup studyGroup = studyGroupService.findById(id);
+        StudyGroup studyGroup = studyGroupService.findById(studyGroupId);
         post.setUser(user);
         post.setStudygroup(studyGroup);
         postService.save(post);
-        return "redirect:/studygroup-view/" + id;
+        return "redirect:/studygroup-view/" + studyGroupId;
     }
-
 }
