@@ -1,5 +1,6 @@
 package is.hi.hbv501g.team20.Persistence.Repository;
 
+import is.hi.hbv501g.team20.Persistence.Entities.Location;
 import is.hi.hbv501g.team20.Persistence.Entities.StudyActivity;
 import is.hi.hbv501g.team20.Persistence.Entities.User;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -44,4 +45,9 @@ public interface StudyActivityRepository extends JpaRepository<StudyActivity, Lo
         // Query to get the Dates of activities by user
         @Query("SELECT DISTINCT sa.date FROM StudyActivity sa WHERE sa.user = :user")
         List<Date> getActivitiesDatesByUser(@Param("user") User user);
+
+        // Find user's favourite Location
+        @Query("SELECT sa.location FROM StudyActivity sa WHERE sa.user = :user GROUP BY sa.location ORDER BY COUNT(sa.location) DESC LIMIT 1")
+        Location findFavouriteLocationByUser(@Param("user") User user);
+
 }

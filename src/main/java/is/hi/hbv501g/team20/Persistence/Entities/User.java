@@ -3,6 +3,7 @@ package is.hi.hbv501g.team20.Persistence.Entities;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;

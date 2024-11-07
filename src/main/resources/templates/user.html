@@ -17,6 +17,15 @@
         <img id="picture" th:src="@{'/user/' + ${user.id} + '/profilePicture'}" alt="Profile Picture" width="150" height="150" />
     </div>
 
+    <div>
+        <h4>Your Stats</h4>
+        <p><b>Your current streak is:</b> <span th:text="${user.streak}"></span></p>
+        <p><b>You have studied for a total of:</b> <span th:text="${totalActivityTime}"></span></p>
+        <p><b>You have completed a total of <span th:text="${activitiesCount}"></span> activities.</b></p>
+        <p><b>On average, you study for <span th:text="${averageTime}"></span> at a time.</b></p>
+        <p><b>Your favourite location is <span th:text="${favouriteLocation}"></span></b></p>
+    </div>
+
     <div> <!-- View user's StudyActivities -->
         <h4>View Your Activities</h4>
         <a th:href="@{/studyactivity-list}">

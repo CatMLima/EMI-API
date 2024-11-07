@@ -1,5 +1,6 @@
 package is.hi.hbv501g.team20.Persistence.Repository;
 
+import is.hi.hbv501g.team20.Persistence.Entities.Location;
 import is.hi.hbv501g.team20.Persistence.Entities.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
