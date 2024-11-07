@@ -95,7 +95,7 @@ public class StudyActivity {
         return id;
     }
 
-    public void setId(long ID) {
+    public void setId(long id) {
         this.id = id;
     }
 
@@ -124,19 +124,27 @@ public class StudyActivity {
     }
 
     public Duration getDuration() {
-        if (end == null && LocalTime.now().isBefore(start)) {
-            return Duration.between(start, LocalTime.now()).plusHours(24);
-        } else if (end == null) {
-            return Duration.between(start, LocalTime.now());
+        if (this.isActive == 0 ) {
+            Duration durationTest = Duration.between(start, LocalTime.now());;
+            if (durationTest.isNegative()){
+                // Ensures that the time past is not negative in case of different dates
+                return durationTest.plusHours(24);
+            } else {
+                return durationTest;
+            }
+        } else{
+            return duration;
         }
-        return duration;
     }
 
     public void setDuration(LocalTime start, LocalTime end) {
-        if (end.isBefore(start) || end == null && LocalTime.now().isBefore(start)){
-            this.duration = Duration.between(start, Objects.requireNonNullElseGet(end, LocalTime::now)).plusHours(24);
+        Duration durationTest = Duration.between(start, Objects.requireNonNullElseGet(end, LocalTime::now));;
+        if (durationTest.isNegative()){
+            // Ensures that the time past is not negative in case of different dates
+            this.duration = durationTest.plusHours(24);
+        } else {
+            this.duration = durationTest;
         }
-        this.duration = Duration.between(start, Objects.requireNonNullElseGet(end, LocalTime::now));
     }
 
     public String getFormattedDuration() {

@@ -84,7 +84,9 @@ public class StudyActivityController {
         studyActivityService.save(studyActivity);
         model.addAttribute("studyActivity", studyActivity);
 
-        return "studyactivity-active";
+        long id = studyActivity.getId();
+
+        return "redirect:/studyactivity-active/" + id;
     }
 
     // Go to active study acvtivity page
