@@ -124,16 +124,24 @@ public class StudyActivity {
     }
 
     public Duration getDuration() {
+        if (end == null && LocalTime.now().isBefore(start)) {
+            return Duration.between(start, LocalTime.now()).plusHours(24);
+        } else if (end == null) {
+            return Duration.between(start, LocalTime.now());
+        }
         return duration;
     }
 
     public void setDuration(LocalTime start, LocalTime end) {
+        if (end.isBefore(start) || end == null && LocalTime.now().isBefore(start)){
+            this.duration = Duration.between(start, Objects.requireNonNullElseGet(end, LocalTime::now)).plusHours(24);
+        }
         this.duration = Duration.between(start, Objects.requireNonNullElseGet(end, LocalTime::now));
     }
 
     public String getFormattedDuration() {
         if (start != null && end == null) {
-            Duration currentDuration = Duration.between(start, LocalTime.now());
+            Duration currentDuration = getDuration();
             return formatDuration(currentDuration);
         } else if (start != null && duration != null) {
             return formatDuration(duration);

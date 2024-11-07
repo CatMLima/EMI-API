@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>On Going Study Activity - Chronometer</title>
+    <!-- Auto-refresh the page every 1 seconds -->
+    <meta http-equiv="refresh" content="1">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -42,27 +44,7 @@
             margin-top: 15px;
         }
     </style>
-    <script>
-        let time = /*[[${studyActivity.getDuration()}]]*/ 0;  // starting time in seconds
 
-        function formatTime(seconds) {
-            const hrs = String(Math.floor(seconds / 3600)).padStart(2, '0');
-            const mins = String(Math.floor((seconds % 3600) / 60)).padStart(2, '0');
-            const secs = String(seconds % 60).padStart(2, '0');
-            return `${hrs}:${mins}:${secs}`;
-        }
-
-        function updateDisplay() {
-            time += 1; // Increment the time by 1 second
-            document.getElementById('timeDisplay').textContent = formatTime(time);
-        }
-
-        function start() {
-            updateDisplay(); // Initial display update
-            intervalId = setInterval(updateDisplay, 1000);  // Start the interval
-        }
-
-    </script>
 </head>
 <body onload="start()">
 
@@ -73,7 +55,8 @@
 </div>
 
 <div class="chronometer">
-    <div id="timeDisplay" th:text="${studyActivity.getDuration()}">00:00:00</div>
+    <!-- <div id="timeDisplay" th:text="${studyActivity.getDuration().getSeconds()}">00:00:00</div> -->
+    <h1 th:text="${studyActivity.getFormattedDuration()}"></h1>
     <form th:action="@{/studyactivity-finish/{id}(id=${studyActivity.id})}" method="post">
         <button class="btn btn-primary" type="submit">End Study Activity</button>
     </form>
