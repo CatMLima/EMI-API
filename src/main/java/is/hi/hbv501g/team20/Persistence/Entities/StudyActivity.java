@@ -124,16 +124,32 @@ public class StudyActivity {
     }
 
     public Duration getDuration() {
-        return duration;
+        if (this.isActive == 0 ) {
+            Duration durationTest = Duration.between(start, LocalTime.now());;
+            if (durationTest.isNegative()){
+                // Ensures that the time past is not negative in case of different dates
+                return durationTest.plusHours(24);
+            } else {
+                return durationTest;
+            }
+        } else{
+            return duration;
+        }
     }
 
     public void setDuration(LocalTime start, LocalTime end) {
-        this.duration = Duration.between(start, Objects.requireNonNullElseGet(end, LocalTime::now));
+        Duration durationTest = Duration.between(start, Objects.requireNonNullElseGet(end, LocalTime::now));;
+        if (durationTest.isNegative()){
+            // Ensures that the time past is not negative in case of different dates
+            this.duration = durationTest.plusHours(24);
+        } else {
+            this.duration = durationTest;
+        }
     }
 
     public String getFormattedDuration() {
         if (start != null && end == null) {
-            Duration currentDuration = Duration.between(start, LocalTime.now());
+            Duration currentDuration = getDuration();
             return formatDuration(currentDuration);
         } else if (start != null && duration != null) {
             return formatDuration(duration);
@@ -147,7 +163,6 @@ public class StudyActivity {
         long seconds = (duration.getSeconds() % 60);
         return String.format("%02d:%02d:%02d", hours, minutes, seconds);
     }
-
 
     public String getTitle() { return title; }
 

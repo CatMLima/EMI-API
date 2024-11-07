@@ -81,7 +81,21 @@ public class StudyActivityController {
             return "studyactivity-create";
         }
         studyActivityService.save(studyActivity);
-        return "redirect:/feed";
+        model.addAttribute("studyActivity", studyActivity);
+
+        long id = studyActivity.getId();
+
+        return "redirect:/studyactivity-active/" + id;
+    }
+
+    // Go to active study acvtivity page
+    @RequestMapping(value = "/studyactivity-active/{id}", method = RequestMethod.GET)
+    public String activeStudyActivity(Model model, @PathVariable("id") long id) {
+
+        StudyActivity studyActivity = studyActivityService.findById(id);
+        model.addAttribute("studyActivity", studyActivity);
+
+        return "studyactivity-active";
     }
 
     // set the end time of the study activity and update the count of the location to -1 its current number.
@@ -89,15 +103,15 @@ public class StudyActivityController {
     public String finishStudyActivity(HttpSession httpSession, @PathVariable("id") long id, Model model) {
 
         User user = (User) httpSession.getAttribute("user");
-        StudyActivity active = studyActivityService.findById(id);
+        StudyActivity studyActivity = studyActivityService.findById(id);
         user.setIsActive(1);
         user.setStreak(user.getStreak() + 1);
         loginService.save(user);
-        active.setEnd(LocalTime.now());
-        active.setIsActive(1);
-        active.setDuration(active.getStart(),active.getEnd());
-        studyActivityService.save(active);
-        Location location = active.getLocation();
+        studyActivity.setEnd(LocalTime.now());
+        studyActivity.setIsActive(1);
+        studyActivity.setDuration(studyActivity.getStart(),studyActivity.getEnd());
+        studyActivityService.save(studyActivity);
+        Location location = studyActivity.getLocation();
         location.setUserCount(location.getUserCount() - 1);
         studyActivityService.save(location);
 
@@ -253,12 +267,13 @@ public class StudyActivityController {
             // Pass the managed User entity to the service
             List<StudyActivity> searchResults = studyActivityService.searchByTitleOrDescription(query, sessionUser);
             model.addAttribute("studyactivity", searchResults);
+
         } else {
             // Handle the case where the user is not logged in or session has expired
             return "redirect:/login";  // Redirect to login page if needed
         }
 
-        return "feed";
+        return "search";
     }
     // Controller Method to toggle coffee for a study activity
     @Autowired CoffeeService coffeeService;
