@@ -10,12 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
-import java.time.LocalTime;
-import java.time.ZoneId;
 import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.List;
 
 @Service
 public class LoginServiceImplementation  implements LoginService {
@@ -88,10 +84,13 @@ public class LoginServiceImplementation  implements LoginService {
     // Calculate the total amount of time studied.
     public String totalTime(User user){
         List<StudyActivity> activities = studyActivityRepository.findByUser(user);
-        Duration duration;
         Duration total = Duration.ZERO;
         for (StudyActivity studyActivity : activities) {
-            total = total.plus(studyActivity.getDuration());
+            Duration duration = studyActivity.getDuration();
+            if (duration != null) {
+                total = total.plus(duration);
+
+            }
         }
         return formatDuration(total);
     }
@@ -108,13 +107,17 @@ public class LoginServiceImplementation  implements LoginService {
         Duration total = Duration.ZERO;
 
         for(StudyActivity studyActivity : activities){
-            total = total.plus(studyActivity.getDuration());
-        }
+            Duration duration = studyActivity.getDuration();
+            if(duration != null){
+            total = total.plus(duration);
+        }}
 
         int totalSessions = totalSessions(user);
         long average = total.getSeconds()/totalSessions;
         return formatDuration(Duration.ofSeconds(average));
     }
+
+
 
     // Find favourite study spot
     public String favouriteLocation(User user){

@@ -176,14 +176,17 @@ public class StudyActivityController {
     // Displays feed page
     @RequestMapping("/feed")
     public String showFeed(HttpSession session, Model model) {
+        //gets the logged in user and all public and user study activities
         User user = (User) session.getAttribute("user");
         List<StudyActivity> allStudyActivities = studyActivityService.findAllPublicAndUserActivities(user);
         model.addAttribute("studyactivity", allStudyActivities);
 
+        //gets the logged in user's active study activities
         Integer userActive = user.getIsActive();
         List<StudyActivity> activeStudyActivity = studyActivityService.findActiveStudyActivity(user);
         model.addAttribute("activeStudyActivity", activeStudyActivity);
 
+        //code needed to display the right toggle coffee button
         Map<Long, Boolean> userHasGivenCoffee = new HashMap<>(); // Map to track user's coffee status
         model.addAttribute("userHasGivenCoffee", userHasGivenCoffee);
         for (StudyActivity activity : allStudyActivities) {
@@ -280,7 +283,7 @@ public class StudyActivityController {
         }
         return "redirect:/feed"; // Redirect to the feed page after toggling coffee
     }
-    
+
 
     //End of feed page stuff
 }
