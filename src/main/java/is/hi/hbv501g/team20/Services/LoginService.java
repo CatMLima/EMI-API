@@ -16,10 +16,10 @@ public interface LoginService {
     User findByEmail(String username);
     User login(User user);
     User findById(long id);
-
+    User checkStreak(User user);
+    User updateStreak(User user);
+    User initializeStreak(User user);
     void deleteUser(User user);
-
-    User updateStreak(long id);
 
     String totalTime (User user);
     String average(User user);

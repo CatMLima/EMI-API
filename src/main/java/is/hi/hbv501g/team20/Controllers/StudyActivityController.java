@@ -19,6 +19,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Date;
 import java.util.HashMap;
@@ -91,8 +92,8 @@ public class StudyActivityController {
         User user = (User) httpSession.getAttribute("user");
         StudyActivity active = studyActivityService.findById(id);
         user.setIsActive(1);
+        user = loginService.updateStreak(user);
         loginService.save(user);
-        loginService.updateStreak(user.getId());
         active.setEnd(LocalTime.now());
         active.setIsActive(1);
         active.setDuration(active.getStart(),active.getEnd());

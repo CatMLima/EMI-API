@@ -12,8 +12,8 @@ import org.springframework.stereotype.Service;
 import java.time.Duration;
 import java.time.LocalTime;
 import java.time.ZoneId;
-import java.sql.Date;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -62,6 +62,7 @@ public class LoginServiceImplementation  implements LoginService {
         return userRepo.findById(id).orElse(null);
     }
 
+
     @Override
     public User updatePrivacy(long id, int privacy){
         User user = findById(id);
@@ -77,67 +78,11 @@ public class LoginServiceImplementation  implements LoginService {
         userRepo.delete(user);
     }
 
-    // Just to insure correct functionality for the previous users
-    @Override
-    public User updateStreak(long id){
-        User user = findById(id);
-        List<StudyActivity> activities = user.getActivities();
-        LocalDate lastActivityDate = new Date(activities.get(activities.size() - 1).getDate().getTime())
-                .toLocalDate(); // For java.sql.Date
-        LocalDate today = LocalDate.now();
-        LocalDate yesterday = LocalDate.now().minusDays(1);
+    // Insert Streak Logic
 
-        if (Objects.isNull(user.getStreak())) {
-            if (activities.isEmpty()) {
-                user.setStreak(0);
-            } else {
-                user.setStreak(calculateStreak(user));
-            }
-        } else if (!lastActivityDate.isEqual(today)) {
-            // Adds +1 days to the streak for the first study activity of today
-            user.setStreak(user.getStreak() + 1);
-        } else if (!lastActivityDate.isEqual(yesterday)) {
-            // Returns streak to 0, if there were no activities yesterday
-            user.setStreak(0);
-        }
-
-        return userRepo.save(user);
-    }
-
-    private Integer calculateStreak(User user) {
-        Integer count = 0;
-        // For other users without a defined streak we follow the process below
-        if (Objects.isNull(user.getStreak())) {
-            List<java.util.Date> activityDates = studyActivityRepository.getActivitiesDatesByUser(user);
-
-            List<LocalDate> localDates = activityDates.stream()
-                    .map(date -> new Date(date.getTime()).toLocalDate())
-                    .distinct()
-                    .sorted(Comparator.reverseOrder()) // Sorts in descending order
-                    .collect(Collectors.toList());
-
-            LocalDate yesterday = LocalDate.now().minusDays(1);
-
-            if (!localDates.contains(yesterday)) {
-                return count;
-            } else {
-                for (int i = 0; i < localDates.size() - 1; i++) {
-                    LocalDate currentDate = localDates.get(i);
-                    LocalDate nextDate = localDates.get(i + 1);
-
-                    if (currentDate.minusDays(1).isEqual(nextDate)) {
-                        count++;
-                    } else {
-                        break;
-                    }
-                }
-            }
-        }
-        return count;
-    }
 
     /*
-    Stat calculation service methods
+    Stats calculation service methods
      */
 
     // Calculate the total amount of time studied.
@@ -177,10 +122,51 @@ public class LoginServiceImplementation  implements LoginService {
         return favourite.getBuilding().toString();
     }
 
+    // Format the data before showing it.
     public String formatDuration(Duration duration){
         long hours = duration.toHours();
         long minutes = duration.toMinutes() % 60;
         long seconds = duration.getSeconds() % 60;
         return String.format("%02d:%02d:%02d", hours, minutes, seconds);
+    }
+
+    // Streak related methods
+    public User checkStreak(User user){
+        LocalDate lastActivity = user.getLastActivityDate();
+        LocalDate now = LocalDate.now();
+
+        if (now.isAfter(lastActivity.plusDays(1))){
+            user.setStreak(0);
+            return userRepo.save(user);
+        }
+        return userRepo.save(user);
+    }
+
+    // updating the streak when a user finishes an activity
+    @Override
+    public User updateStreak(User user) {
+        LocalDate lastActivity = user.getLastActivityDate();
+        LocalDate now = LocalDate.now();
+
+        if (lastActivity == null){
+            user.setLastActivityDate(now);
+            user.setStreak(1);
+        }
+
+        if (lastActivity != null && lastActivity.equals(now)){
+            user.setLastActivityDate(now);
+        }
+
+        if (lastActivity != null && !lastActivity.equals(now)){
+            user.setLastActivityDate(now);
+            user.setStreak(user.getStreak() + 1);
+        }
+        return userRepo.save(user);
+    }
+
+    @Override
+    public User initializeStreak(User user) {
+        user.setStreak(0);
+        return userRepo.save(user);
     }
 }

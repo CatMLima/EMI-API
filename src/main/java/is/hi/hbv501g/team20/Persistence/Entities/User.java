@@ -22,7 +22,10 @@ public class User {
         this.email = email;
         this.password = password;
         this.privacy = 0;
+        this.lastActivityDate = null;
+        this.streak = 0;
     }
+
 
     public User() {}
 
@@ -128,4 +131,13 @@ public class User {
     public Integer getStreak() { return streak; }
 
     public void setStreak(Integer streak) { this.streak = streak; }
+
+    private LocalDate lastActivityDate;
+
+    public LocalDate getLastActivityDate() {
+        return lastActivityDate;
+    }
+    public void setLastActivityDate(LocalDate lastActivityDate) {
+        this.lastActivityDate = lastActivityDate;
+    }
 }

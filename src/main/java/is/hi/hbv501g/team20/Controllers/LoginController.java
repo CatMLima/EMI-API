@@ -61,8 +61,11 @@ public class LoginController {
         User existing = loginService.findByEmail(user.getEmail());
 
         if (existing != null) {
-            if (existing.getStreak() == null) {
-                existing = loginService.updateStreak(existing.getId());
+            if (existing.getStreak() == null){
+                existing = loginService.initializeStreak(existing);
+            }
+            if (existing.getStreak() != 0){
+                existing = loginService.checkStreak(existing);
             }
             if(existing.getPrivacy() == null || existing.privacy != 0 && existing.privacy != 1 ) {
                 existing = loginService.updatePrivacy(existing.getId(), 0);
