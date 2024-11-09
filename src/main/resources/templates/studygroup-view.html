@@ -13,6 +13,21 @@
      <button class="btn btn-outline-secondary btn-lg" type="submit">Back to StudyGroups</button>
     </form>
   </h1>
+
+  <div class="text-warning text-center card"  th:if="${studyGroup.admin.id == user.id}">
+    <strong>Admin Tools</strong>
+    <form id="adminForm" th:action="@{/api/admin-join}" method="post" th:object="${studyGroup}" class="col mx-auto" style="max-width: 18rem ">
+        <div th:if="${#fields.hasErrors('lookingForMembers')}" th:errors="*{lookingForMembers}" style="color:red;"></div>
+        <label for="lookingForMembers"> Allow users to join this StudyGroup: </label>
+        <select type="int" id="lookingForMembers" th:field="*{lookingForMembers}">
+          <option th:value="0" th:text="No"></option>
+          <option th:value="1" th:text="Yes"></option>
+        </select>
+      <input type="hidden" name="studyGroupId" th:value="${studyGroup.id}">
+      <button type="submit" class="btn btn-outline-warning">Change</button>
+    </form>
+  </div>
+
   <form id="postForm" th:action="@{/api/post-create}" method="post" th:object="${post}" class="col card mx-auto" style="max-width: 18rem ">
     <div class="form-group">
       <label for="title">Title: </label>

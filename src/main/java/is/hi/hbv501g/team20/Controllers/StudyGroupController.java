@@ -84,20 +84,30 @@ public class StudyGroupController {
 
     // Displays a page containing a list of the user's studyactivities
     @RequestMapping(value="/studygroup-view/{id}", method= RequestMethod.GET)
-    public String getStudyGroupViewPage(@PathVariable("id") long id, Model model) {
+    public String getStudyGroupViewPage(@PathVariable("id") long id, HttpSession httpSession, Model model) {
         StudyGroup studyGroup = studyGroupService.findById(id);
         List<Post> posts = postService.findByStudyGroup(studyGroup);
         Collections.reverse(posts);
         model.addAttribute("studyGroup", studyGroup);
-        if (posts != null) {
+
+        User user = (User) httpSession.getAttribute("user");
+        if (posts != null && user != null) {
             model.addAttribute("post", posts);
+            model.addAttribute("user", user);
         }
         return "studygroup-view";
     }
 
+    @RequestMapping(value = "/api/admin-join", method = RequestMethod.POST)
+    public String changeLookingForMembers(@RequestParam("studyGroupId") long studyGroupId, @RequestParam("lookingForMembers") int lookingForMembers) {
+        StudyGroup studyGroup = studyGroupService.findById(studyGroupId);
+        studyGroup.setLookingForMembers(lookingForMembers);
+        studyGroupService.save(studyGroup);
+        return "redirect:/studygroup-view/" + studyGroupId;
+    }
 
     @RequestMapping(value = "/api/post-create", method = RequestMethod.POST)
-    public String createPost(@RequestParam("studyGroupId") long studyGroupId, HttpSession httpSession, Post post, BindingResult result) {
+    public String createPost(@RequestParam("studyGroupId") long studyGroupId, HttpSession httpSession, Post post) {
         User user = (User) httpSession.getAttribute("user");
         StudyGroup studyGroup = studyGroupService.findById(studyGroupId);
         post.setUser(user);

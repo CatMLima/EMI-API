@@ -24,10 +24,9 @@
     <div th:if="${#fields.hasErrors('lookingForMembers')}" th:errors="*{lookingForMembers}" style="color:red;"></div>
     <label for="lookingForMembers"> Allow users to join this StudyGroup: </label>
     <select type="int" id="lookingForMembers" th:field="*{lookingForMembers}">
-        <option th:value="1" th:text="Yes"></option>
         <option th:value="0" th:text="No"></option>
+        <option th:value="1" th:text="Yes"></option>
     </select>
-
     <div>
         <button class="btn btn-success" type="submit">Post</button>
         <a class="btn btn-black" href="/studygroups-feed">Cancel</a>
