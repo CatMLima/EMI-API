@@ -5,7 +5,7 @@ import is.hi.hbv501g.team20.Persistence.Entities.StudyActivity;
 import is.hi.hbv501g.team20.Persistence.Entities.User;
 import is.hi.hbv501g.team20.Persistence.Repository.StudyActivityRepository;
 import is.hi.hbv501g.team20.Persistence.Repository.UserRepository;
-import is.hi.hbv501g.team20.Services.LoginService;
+import is.hi.hbv501g.team20.Services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,7 +14,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Service
-public class LoginServiceImplementation  implements LoginService {
+public class UserServiceImplementation implements UserService {
 
     @Autowired
     UserRepository userRepo;
@@ -23,7 +23,7 @@ public class LoginServiceImplementation  implements LoginService {
     @Autowired
     private StudyActivityRepository studyActivityRepository;
 
-    public LoginServiceImplementation(UserRepository userRepo) {
+    public UserServiceImplementation(UserRepository userRepo) {
         this.userRepo = userRepo;
     }
 
@@ -43,21 +43,9 @@ public class LoginServiceImplementation  implements LoginService {
     }
 
     @Override
-    public User login(User user) {
-        User doesExist = findByEmail(user.getEmail());
-        if(doesExist != null){
-            if(doesExist.getPassword().equals(user.getPassword())){
-                return doesExist;
-            }
-        }
-        return null;
-    }
-
-    @Override
     public User findById(long id){
         return userRepo.findById(id).orElse(null);
     }
-
 
     @Override
     public User updatePrivacy(long id, int privacy){
@@ -73,13 +61,6 @@ public class LoginServiceImplementation  implements LoginService {
         studyActivityServiceImplementation.deleteAllByUser(user);
         userRepo.delete(user);
     }
-
-    // Insert Streak Logic
-
-
-    /*
-    Stats calculation service methods
-     */
 
     // Calculate the total amount of time studied.
     public String totalTime(User user){
@@ -113,16 +94,23 @@ public class LoginServiceImplementation  implements LoginService {
         }}
 
         int totalSessions = totalSessions(user);
-        long average = total.getSeconds()/totalSessions;
+        long average;
+        if (totalSessions == 0) {
+            average = 0;
+        } else {
+            average = total.getSeconds()/totalSessions;
+        }
         return formatDuration(Duration.ofSeconds(average));
     }
-
-
 
     // Find favourite study spot
     public String favouriteLocation(User user){
         Location favourite = studyActivityRepository.findFavouriteLocationByUser(user);
-        return favourite.getBuilding().toString();
+        if (favourite == null) {
+            return "";
+        } else {
+            return favourite.getBuilding().toString();
+        }
     }
 
     // Format the data before showing it.

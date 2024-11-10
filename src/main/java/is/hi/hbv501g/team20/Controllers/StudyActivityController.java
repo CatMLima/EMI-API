@@ -7,7 +7,7 @@ import is.hi.hbv501g.team20.Persistence.Entities.User;
 import is.hi.hbv501g.team20.Persistence.Enums.Building;
 import is.hi.hbv501g.team20.Persistence.Repository.LocationRepository;
 import is.hi.hbv501g.team20.Services.CoffeeService;
-import is.hi.hbv501g.team20.Services.LoginService;
+import is.hi.hbv501g.team20.Services.UserService;
 import is.hi.hbv501g.team20.Services.StudyActivityService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +19,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Date;
 import java.util.HashMap;
@@ -28,15 +27,17 @@ import java.util.Map;
 
 @Controller
 public class StudyActivityController {
+
     private StudyActivityService studyActivityService;
-    private LoginService loginService;
+    private UserService userService;
+
     @Autowired
     private LocationRepository locationRepository;
 
     @Autowired
-    public StudyActivityController(StudyActivityService studyActivityService, LoginService loginService) {
+    public StudyActivityController(StudyActivityService studyActivityService, UserService userService) {
         this.studyActivityService = studyActivityService;
-        this.loginService = loginService;
+        this.userService = userService;
     }
 
     // Displays the Create a studyactivity page
@@ -54,7 +55,7 @@ public class StudyActivityController {
 
         User user = (User) httpSession.getAttribute("user");
         user.setIsActive(0);
-        loginService.save(user);
+        userService.save(user);
         studyActivity.setUser(user);
         studyActivity.setPrivacy(user);
         studyActivity.setDate(new Date());
@@ -106,8 +107,8 @@ public class StudyActivityController {
         User user = (User) httpSession.getAttribute("user");
         StudyActivity studyActivity = studyActivityService.findById(id);
         user.setIsActive(1);
-        user = loginService.updateStreak(user);
-        loginService.save(user);
+        user = userService.updateStreak(user);
+        userService.save(user);
         studyActivity.setEnd(LocalTime.now());
         studyActivity.setIsActive(1);
         studyActivity.setDuration(studyActivity.getStart(),studyActivity.getEnd());
@@ -298,7 +299,4 @@ public class StudyActivityController {
         }
         return "redirect:/feed"; // Redirect to the feed page after toggling coffee
     }
-
-
-    //End of feed page stuff
 }

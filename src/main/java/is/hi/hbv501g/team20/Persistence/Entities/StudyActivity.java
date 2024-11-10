@@ -23,6 +23,19 @@ public class StudyActivity {
     @JoinColumn(name = "user_id")
     private User user;
 
+    @OneToMany(mappedBy = "activity", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Coffee> coffees = new ArrayList<>();
+
+    @Lob
+    private byte[] activityPicture;
+
+    @Enumerated(EnumType.STRING)
+    private Building building;
+
+    @ManyToOne
+    @JoinColumn(name = "location_id")
+    private Location location;
+
     @Temporal(TemporalType.DATE)
     private Date date;
 
@@ -35,29 +48,12 @@ public class StudyActivity {
     @Temporal(TemporalType.TIME)
     private Duration duration;
 
+    private Integer isActive;
+    private Integer privacy;
     private String title;
     private String description;
     private String subjectID;
     private String subjectName;
-
-
-    @OneToMany(mappedBy = "activity", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Coffee> coffees = new ArrayList<>();
-    @Lob
-    private byte[] activityPicture;
-
-    private Integer privacy;
-
-
-    @Enumerated(EnumType.STRING)
-    private Building building;
-
-    @ManyToOne
-    @JoinColumn(name = "location_id")
-    private Location location;
-
-    private Integer isActive;
-
 
     public StudyActivity(Date date,
                          LocalTime start,
@@ -207,19 +203,11 @@ public class StudyActivity {
     public void setPrivacy(User user) {
         this.privacy = userPrivacy();
     }
-//used if we want to get the list somehow
-    public List<Coffee> getCoffees() {
-        return coffees;
-    }
-
-    public void setCoffees(List<Coffee> coffees) {
-        this.coffees = coffees;
-    }
-
 
     public Building getBuilding() {
         return building;
     }
+
     public void setBuilding(Building building) {
         this.building = building;
     }
@@ -227,6 +215,7 @@ public class StudyActivity {
     public Location getLocation() {
         return location;
     }
+
     public void setLocation(Location location) {
         this.location = location;
     }

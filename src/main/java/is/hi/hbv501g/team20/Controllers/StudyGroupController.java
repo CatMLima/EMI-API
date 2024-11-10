@@ -3,7 +3,7 @@ package is.hi.hbv501g.team20.Controllers;
 import is.hi.hbv501g.team20.Persistence.Entities.*;
 import is.hi.hbv501g.team20.Persistence.Enums.Building;
 import is.hi.hbv501g.team20.Persistence.Repository.StudyGroupRepository;
-import is.hi.hbv501g.team20.Services.LoginService;
+import is.hi.hbv501g.team20.Services.UserService;
 import is.hi.hbv501g.team20.Services.PostService;
 import is.hi.hbv501g.team20.Services.StudyGroupService;
 import jakarta.servlet.http.HttpSession;
@@ -22,12 +22,10 @@ import java.util.List;
 public class StudyGroupController {
 
     private StudyGroupService studyGroupService;
-    private LoginService loginService;
     private PostService postService;
 
-    public StudyGroupController(StudyGroupService studyGroupService, LoginService loginService, PostService postService) {
+    public StudyGroupController(StudyGroupService studyGroupService, PostService postService) {
         this.studyGroupService = studyGroupService;
-        this.loginService = loginService;
         this.postService = postService;
     }
 

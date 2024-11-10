@@ -72,6 +72,10 @@ public class StudyGroup {
         members.add(user);
     }
 
+    public void removeMember(User user) {
+        members.remove(user);
+    }
+
     public void setAdmin(User admin) {
         this.admin = admin;
     }

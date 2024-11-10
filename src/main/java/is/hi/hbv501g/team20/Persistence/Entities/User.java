@@ -17,23 +17,6 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    public User(String name, String email, String password) {
-        this.name = name;
-        this.email = email;
-        this.password = password;
-        this.privacy = 0;
-        this.lastActivityDate = null;
-        this.streak = 0;
-    }
-
-
-    public User() {}
-
-    public Integer privacy;
-    private String name;
-    private String email;
-    private String password;
-
     @Lob
     private byte[] profilePicture;
 
@@ -46,9 +29,24 @@ public class User {
     @OneToMany(mappedBy = "admin")
     private List<StudyGroup> studyGroupsAdmin = new ArrayList<>();
 
-    private Integer streak;
-
     private Integer isActive;
+    public Integer privacy;
+    private Integer streak;
+    private String name;
+    private String email;
+    private String password;
+
+    public User(String name, String email, String password) {
+        this.name = name;
+        this.email = email;
+        this.password = password;
+        this.privacy = 0;
+        this.lastActivityDate = null;
+        this.streak = 0;
+    }
+
+
+    public User() {}
 
     public void setId(Long id) {
         this.id = id;
@@ -69,9 +67,11 @@ public class User {
     public String getPassword() {
         return password;
     }
+
     public void setPassword(String password) {
         this.password = password;
     }
+
     public String getEmail() {
         return email;
     }
@@ -88,19 +88,13 @@ public class User {
         this.profilePicture = profilePicture;
     }
 
+    public List<StudyGroup> getStudyGroupsMember() {
+        return studyGroupsMember;
+    }
+
     public List<StudyActivity> getActivities() {
         return activities;
     }
-
-    public void setActivities(List<StudyActivity> activities) {
-        this.activities = activities;
-    }
-
-    public void addActivity(StudyActivity activity) {
-        this.activities.add(activity);
-      //  activity.setUser(this); might be something we would need
-    }
-    //can do removeactivity for delete
 
     public Integer getPrivacy() {
         return privacy;
@@ -122,12 +116,6 @@ public class User {
         this.isActive = isActive;
     }
 
-    public List<StudyGroup> getStudyGroupsMember() {
-        return studyGroupsMember;
-    }
-
-    public List<StudyGroup> getStudyGroupsAdmin() { return studyGroupsAdmin; }
-
     public Integer getStreak() { return streak; }
 
     public void setStreak(Integer streak) { this.streak = streak; }
@@ -137,6 +125,7 @@ public class User {
     public LocalDate getLastActivityDate() {
         return lastActivityDate;
     }
+
     public void setLastActivityDate(LocalDate lastActivityDate) {
         this.lastActivityDate = lastActivityDate;
     }

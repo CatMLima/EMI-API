@@ -13,6 +13,6 @@ public interface StudyGroupService {
     List<StudyGroup> findByUserId(long id);
     List<StudyGroup> findAllExceptUser(long id);
     List<StudyGroup> findAll();
-
+    void removeUserFromStudyGroups(User user);
 
 }

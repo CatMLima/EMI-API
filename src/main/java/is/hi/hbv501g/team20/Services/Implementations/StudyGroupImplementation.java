@@ -45,4 +45,13 @@ public class StudyGroupImplementation implements StudyGroupService {
         return studyGroupRepo.findAll();
     }
 
+    @Override
+    public void removeUserFromStudyGroups(User user) {
+        List<StudyGroup> studyGroups = user.getStudyGroupsMember();
+        for (StudyGroup studyGroup : studyGroups) {
+            studyGroup.removeMember(user);
+        }
+    }
+
+
 }
