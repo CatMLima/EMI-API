@@ -54,10 +54,6 @@ public class LoginController {
             user.setPrivacy(0);
         }
 
-        if (result.hasErrors()) {
-            return "login";
-        }
-
         User existing = loginService.findByEmail(user.getEmail());
 
         if (existing != null) {
@@ -77,7 +73,8 @@ public class LoginController {
             }
         }
 
-        return "redirect:/login";
+        model.addAttribute("loginError", true);
+        return "/login";
     }
 
 
