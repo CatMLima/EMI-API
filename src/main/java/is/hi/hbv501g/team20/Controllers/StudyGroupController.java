@@ -29,9 +29,9 @@ public class StudyGroupController {
         this.postService = postService;
     }
 
-    // Displays a page containing a list of the user's studyactivities
+    // Displays a page containing a list of the user's studygroups
     @RequestMapping(value="/studygroups-feed", method= RequestMethod.GET)
-    public String getStudyGroupfeed(HttpSession session, Model model) {
+    public String getStudyGroupFeed(HttpSession session, Model model) {
         User user = (User) session.getAttribute("user");
         if (user != null) {
             List<StudyGroup> isMemberStudyGroups = studyGroupService.findByUserId(user.getId());
@@ -42,16 +42,18 @@ public class StudyGroupController {
         return "studygroups-feed";
     }
 
-    // Displays the Create a studyactivity page
+    // Displays the Create a studygroup page
     @RequestMapping(value = "/studygroup-create", method = RequestMethod.GET)
     public String createStudyGroupGet(Model model) {
         model.addAttribute("studygroup", new StudyGroup());
         return "studygroup-create";
     }
 
+    //create a new StudyGroup
     @RequestMapping(value = "/api/studygroup-create", method = RequestMethod.POST)
     public String createStudyGroup(HttpSession httpSession, StudyGroup studyGroup, BindingResult result){
 
+        //set user (that created the group) as admin
         User admin = (User) httpSession.getAttribute("user");
         studyGroup.setAdmin(admin);
         studyGroup.addMember(admin);
@@ -80,11 +82,13 @@ public class StudyGroupController {
         return "redirect:/studygroups-feed";
     }
 
-    // Displays a page containing a list of the user's studyactivities
+    // Displays a page containing a list of the user's studygroups
     @RequestMapping(value="/studygroup-view/{id}", method= RequestMethod.GET)
     public String getStudyGroupViewPage(@PathVariable("id") long id, HttpSession httpSession, Model model) {
         StudyGroup studyGroup = studyGroupService.findById(id);
         List<Post> posts = postService.findByStudyGroup(studyGroup);
+
+        //sort posts so the most recent post in at the top
         Collections.reverse(posts);
         model.addAttribute("studyGroup", studyGroup);
 
@@ -96,6 +100,7 @@ public class StudyGroupController {
         return "studygroup-view";
     }
 
+    //update lookingForMembers attribute of a studygroup
     @RequestMapping(value = "/api/admin-join", method = RequestMethod.POST)
     public String changeLookingForMembers(@RequestParam("studyGroupId") long studyGroupId, @RequestParam("lookingForMembers") int lookingForMembers) {
         StudyGroup studyGroup = studyGroupService.findById(studyGroupId);
@@ -104,6 +109,7 @@ public class StudyGroupController {
         return "redirect:/studygroup-view/" + studyGroupId;
     }
 
+    // create a new post in a studygroup
     @RequestMapping(value = "/api/post-create", method = RequestMethod.POST)
     public String createPost(@RequestParam("studyGroupId") long studyGroupId, HttpSession httpSession, Post post) {
         User user = (User) httpSession.getAttribute("user");

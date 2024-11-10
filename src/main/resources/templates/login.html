@@ -8,6 +8,11 @@
 </head>
 <body>
 <h1>Log in to your account</h1>
+
+<div th:if="${loginError}" class="alert alert-danger">
+    <p> You inserted the wrong password or wrong email. Please try again.</p>
+</div>
+
 <form id="userForm" th:action="@{/api/login}" method="post" th:object="${user}">
     <input type="email" name="email" placeholder="Email" required>
     <br>

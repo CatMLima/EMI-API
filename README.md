@@ -2,11 +2,13 @@
 Project of HBV501G - Software Project 1
 
 # EMI - Educational Meeting/Motivational Interface
-- Record study session duration and location
-- People can like/interact with the activity
-- Tracks duration of study for each topic
-- Join a study group
-- Looking for study group "signal"
+- Record study session.
+- Keep track of duration and location, and add your comments in your description and adding photos.
+- People can like/give coffees study activities.
+- Allows you to see the number of user studying in the different location.
+- Tracks duration of study for each topic, and your frequency studying.
+- Join a study group and interact with members through posts.
+
 
 # Team members:
 - Brynjar Steinn Traustasson (140296-2529) bst4@hi.is

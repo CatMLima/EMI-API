@@ -89,10 +89,6 @@ public class UserController {
             user.setPrivacy(0);
         }
 
-        if (result.hasErrors()) {
-            return "login";
-        }
-
         User existing = userService.findByEmail(user.getEmail());
 
         if (existing != null) {
@@ -111,7 +107,9 @@ public class UserController {
                 return "redirect:/feed";
             }
         }
-        return "redirect:/login";
+
+        model.addAttribute("loginError", true);
+        return "/login";
     }
 
     @PostMapping("/settings/privacy")
