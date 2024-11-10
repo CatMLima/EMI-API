@@ -2,6 +2,7 @@ package is.hi.hbv501g.team20.Persistence.Repository;
 
 import is.hi.hbv501g.team20.Persistence.Entities.Post;
 import is.hi.hbv501g.team20.Persistence.Entities.StudyGroup;
+import is.hi.hbv501g.team20.Persistence.Entities.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

@@ -2,6 +2,7 @@ package is.hi.hbv501g.team20.Services.Implementations;
 
 import is.hi.hbv501g.team20.Persistence.Entities.Post;
 import is.hi.hbv501g.team20.Persistence.Entities.StudyGroup;
+import is.hi.hbv501g.team20.Persistence.Entities.User;
 import is.hi.hbv501g.team20.Persistence.Repository.PostRepository;
 import is.hi.hbv501g.team20.Services.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,4 +33,5 @@ public class PostServiceImplementation implements PostService {
     public List<Post> findByStudyGroup(StudyGroup studyGroup) {
         return postRepo.findByStudyGroup(studyGroup);
     }
+
 }

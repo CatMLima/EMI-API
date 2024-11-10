@@ -119,6 +119,13 @@ public class StudyActivity {
         this.end = end;
     }
 
+    public List<Coffee> getCoffees() {
+        return coffees;
+    }
+
+    public void setCoffees(List<Coffee> coffees) {
+        this.coffees = coffees;
+    }
     public Duration getDuration() {
         if (this.isActive == 0 ) {
             Duration durationTest = Duration.between(start, LocalTime.now());;

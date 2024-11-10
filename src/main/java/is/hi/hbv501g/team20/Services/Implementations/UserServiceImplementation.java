@@ -21,6 +21,8 @@ public class UserServiceImplementation implements UserService {
     @Autowired
     StudyActivityServiceImplementation studyActivityServiceImplementation;
     @Autowired
+    PostServiceImplementation postServiceImplementation;
+    @Autowired
     private StudyActivityRepository studyActivityRepository;
 
     public UserServiceImplementation(UserRepository userRepo) {

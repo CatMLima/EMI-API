@@ -76,6 +76,10 @@ public class StudyGroup {
         members.remove(user);
     }
 
+    public void removePost(Post post) {
+        posts.remove(post);
+    }
+
     public void setAdmin(User admin) {
         this.admin = admin;
     }

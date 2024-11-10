@@ -29,6 +29,9 @@ public class User {
     @OneToMany(mappedBy = "admin")
     private List<StudyGroup> studyGroupsAdmin = new ArrayList<>();
 
+    @OneToMany(mappedBy = "user")
+    private List<Post> posts = new ArrayList<>();
+
     private Integer isActive;
     public Integer privacy;
     private Integer streak;
@@ -44,7 +47,6 @@ public class User {
         this.lastActivityDate = null;
         this.streak = 0;
     }
-
 
     public User() {}
 
@@ -90,6 +92,14 @@ public class User {
 
     public List<StudyGroup> getStudyGroupsMember() {
         return studyGroupsMember;
+    }
+
+    public List<StudyGroup> getStudyGroupsAdmin() {
+        return studyGroupsAdmin;
+    }
+
+    public List<Post> getPosts() {
+        return posts;
     }
 
     public List<StudyActivity> getActivities() {

@@ -1,6 +1,9 @@
 package is.hi.hbv501g.team20.Controllers;
 
+import is.hi.hbv501g.team20.Persistence.Entities.Post;
+import is.hi.hbv501g.team20.Persistence.Entities.StudyGroup;
 import is.hi.hbv501g.team20.Persistence.Entities.User;
+import is.hi.hbv501g.team20.Services.PostService;
 import is.hi.hbv501g.team20.Services.StudyGroupService;
 import is.hi.hbv501g.team20.Services.UserService;
 import jakarta.servlet.http.HttpSession;
@@ -13,6 +16,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
 import java.util.Objects;
 
 @Controller
@@ -20,11 +24,13 @@ public class UserController {
 
     private UserService userService;
     private StudyGroupService studyGroupService;
+    private PostService postService;
 
     @Autowired
-    public UserController(UserService userService, StudyGroupService studyGroupService) {
+    public UserController(UserService userService, StudyGroupService studyGroupService, PostService postService) {
         this.userService = userService;
         this.studyGroupService = studyGroupService;
+        this.postService = postService;
     }
 
     // Displays the login page
@@ -152,6 +158,11 @@ public class UserController {
             return "redirect:/login"; // Or any other error page
         }
 
+        List<Post> posts = user.getPosts();
+        for (Post post : posts) {
+            StudyGroup studyGroup = post.getStudygroup();
+            studyGroup.removePost(post);
+        }
         studyGroupService.removeUserFromStudyGroups(user);
         userService.deleteUser(user);
         session.invalidate(); // Invalidate session after account deletion

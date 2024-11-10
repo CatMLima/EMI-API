@@ -4,6 +4,7 @@ import is.hi.hbv501g.team20.Persistence.Entities.Location;
 import is.hi.hbv501g.team20.Persistence.Entities.StudyActivity;
 import is.hi.hbv501g.team20.Persistence.Entities.User;
 import is.hi.hbv501g.team20.Persistence.Enums.Building;
+import is.hi.hbv501g.team20.Persistence.Repository.CoffeeRepository;
 import is.hi.hbv501g.team20.Persistence.Repository.LocationRepository;
 import is.hi.hbv501g.team20.Persistence.Repository.StudyActivityRepository;
 import is.hi.hbv501g.team20.Persistence.Repository.UserRepository;
@@ -17,11 +18,9 @@ import java.util.List;
 @Service
 public class StudyActivityServiceImplementation implements StudyActivityService {
 
-    //UserRepository userRepo;
+
     @Autowired
     StudyActivityRepository studyActRepo;
-    @Autowired
-    UserRepository userRepo;
 
     @Autowired
     LocationRepository locRepo;
@@ -42,7 +41,9 @@ public class StudyActivityServiceImplementation implements StudyActivityService 
     }
 
     @Override
-    public void deleteAllByUser(User user) { studyActRepo.deleteAllByUser(user); }
+    public void deleteAllByUser(User user) {
+        studyActRepo.deleteAllByUser(user);
+    }
 
     @Override
     public boolean existsById(Long id) {

@@ -16,11 +16,6 @@ public class StudyGroupImplementation implements StudyGroupService {
     @Autowired
     StudyGroupRepository studyGroupRepo;
 
-    @Autowired
-    UserRepository userRepo;
-    @Autowired
-    private StudyGroupRepository studyGroupRepository;
-
     @Override
     public StudyGroup save(StudyGroup studyGroup) {return studyGroupRepo.save(studyGroup);}
 
@@ -51,6 +46,8 @@ public class StudyGroupImplementation implements StudyGroupService {
         for (StudyGroup studyGroup : studyGroups) {
             studyGroup.removeMember(user);
         }
+        List<StudyGroup> adminStudyGroups = user.getStudyGroupsAdmin();
+        studyGroupRepo.deleteAll(adminStudyGroups);
     }
 
 
