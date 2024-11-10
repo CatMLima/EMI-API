@@ -59,7 +59,8 @@
     <td>SubjectName: </td>
     <td th:text="${studyactivity.subjectName}"></td>
   </tr>
-  <td>   <!-- Finish study-activity-->
+  <!-- Finish study-activity - It appears only if activity is on going-->
+  <td th:if="studyactivity.isActive == 0">
     <a th:href="@{/studyactivity-finish/{id}(id=${studyactivity.id})}" >
       <button class="btn btn-primary" type="submit">Finish this Study Activity</button>
     </a>
