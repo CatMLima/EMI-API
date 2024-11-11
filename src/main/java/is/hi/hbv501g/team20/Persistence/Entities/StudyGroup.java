@@ -73,6 +73,7 @@ public class StudyGroup {
     }
 
     public void removeMember(User user) {
+        memberCount--;
         members.remove(user);
     }
 

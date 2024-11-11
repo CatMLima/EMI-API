@@ -41,8 +41,6 @@ public interface StudyActivityRepository extends JpaRepository<StudyActivity, Lo
         @Query("SELECT sa FROM StudyActivity sa WHERE sa.user = :user AND sa.isActive = 0")
         List<StudyActivity> findActiveByUser(@Param("user") User user);
 
-        void deleteAllByUser(User user);
-
         // Query to get the Dates of activities by user
         @Query("SELECT DISTINCT sa.date FROM StudyActivity sa WHERE sa.user = :user")
         List<Date> getActivitiesDatesByUser(@Param("user") User user);

@@ -21,7 +21,7 @@ public class UserServiceImplementation implements UserService {
     @Autowired
     StudyActivityServiceImplementation studyActivityServiceImplementation;
     @Autowired
-    PostServiceImplementation postServiceImplementation;
+    CoffeeServiceImplementation coffeeServiceImplementation;
     @Autowired
     private StudyActivityRepository studyActivityRepository;
 
@@ -61,6 +61,7 @@ public class UserServiceImplementation implements UserService {
     @Override
     public void deleteUser(User user){
         studyActivityServiceImplementation.deleteAllByUser(user);
+        coffeeServiceImplementation.deleteAllByUser(user);
         userRepo.delete(user);
     }
 

@@ -1,8 +1,7 @@
 package is.hi.hbv501g.team20.Controllers;
 
-import is.hi.hbv501g.team20.Persistence.Entities.Post;
-import is.hi.hbv501g.team20.Persistence.Entities.StudyGroup;
-import is.hi.hbv501g.team20.Persistence.Entities.User;
+import is.hi.hbv501g.team20.Persistence.Entities.*;
+import is.hi.hbv501g.team20.Services.CoffeeService;
 import is.hi.hbv501g.team20.Services.PostService;
 import is.hi.hbv501g.team20.Services.StudyGroupService;
 import is.hi.hbv501g.team20.Services.UserService;
@@ -25,12 +24,17 @@ public class UserController {
     private UserService userService;
     private StudyGroupService studyGroupService;
     private PostService postService;
+    private CoffeeService coffeeService;
 
     @Autowired
-    public UserController(UserService userService, StudyGroupService studyGroupService, PostService postService) {
+    public UserController(UserService userService,
+                          StudyGroupService studyGroupService,
+                          PostService postService,
+                          CoffeeService coffeeService) {
         this.userService = userService;
         this.studyGroupService = studyGroupService;
         this.postService = postService;
+        this.coffeeService = coffeeService;
     }
 
     // Displays the login page
@@ -157,12 +161,8 @@ public class UserController {
             model.addAttribute("error", "User not found.");
             return "redirect:/login"; // Or any other error page
         }
-
-        List<Post> posts = user.getPosts();
-        for (Post post : posts) {
-            StudyGroup studyGroup = post.getStudygroup();
-            studyGroup.removePost(post);
-        }
+        postService.deletePostByUser(user);
+        coffeeService.deleteCoffeesByUser(user);
         studyGroupService.removeUserFromStudyGroups(user);
         userService.deleteUser(user);
         session.invalidate(); // Invalidate session after account deletion

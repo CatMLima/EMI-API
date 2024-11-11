@@ -42,7 +42,7 @@ public class StudyActivityServiceImplementation implements StudyActivityService 
 
     @Override
     public void deleteAllByUser(User user) {
-        studyActRepo.deleteAllByUser(user);
+        studyActRepo.deleteAll(user.getActivities());
     }
 
     @Override
@@ -67,7 +67,6 @@ public class StudyActivityServiceImplementation implements StudyActivityService 
     public List<StudyActivity> searchByTitleOrDescription(String query, User user) {
             return studyActRepo.searchStudyActivityPublicUser(query, user);
         }
-
 
     @Override
     public List<StudyActivity> findAllPublicAndUserActivities(User user){

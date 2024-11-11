@@ -32,6 +32,9 @@ public class User {
     @OneToMany(mappedBy = "user")
     private List<Post> posts = new ArrayList<>();
 
+    @OneToMany(mappedBy = "user")
+    private List<Coffee> coffees = new ArrayList<>();
+
     private Integer isActive;
     public Integer privacy;
     private Integer streak;
@@ -104,6 +107,10 @@ public class User {
 
     public List<StudyActivity> getActivities() {
         return activities;
+    }
+
+    public List<Coffee> getCoffees() {
+        return coffees;
     }
 
     public Integer getPrivacy() {

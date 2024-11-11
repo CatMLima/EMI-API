@@ -12,4 +12,5 @@ public interface PostService {
     void delete(Post post);
     List<Post> findAll();
     List<Post> findByStudyGroup(StudyGroup studyGroup);
+    void deletePostByUser(User user);
 }

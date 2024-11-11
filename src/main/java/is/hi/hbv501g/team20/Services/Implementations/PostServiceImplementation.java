@@ -25,6 +25,15 @@ public class PostServiceImplementation implements PostService {
     }
 
     @Override
+    public void deletePostByUser(User user) {
+        List<Post> posts = user.getPosts();
+        for (Post post : posts) {
+            StudyGroup studyGroup = post.getStudygroup();
+            studyGroup.removePost(post);
+        }
+    }
+
+    @Override
     public List<Post> findAll() {
         return postRepo.findAll();
     }
@@ -33,5 +42,6 @@ public class PostServiceImplementation implements PostService {
     public List<Post> findByStudyGroup(StudyGroup studyGroup) {
         return postRepo.findByStudyGroup(studyGroup);
     }
+
 
 }

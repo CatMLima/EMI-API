@@ -8,6 +8,7 @@ import is.hi.hbv501g.team20.Services.CoffeeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -20,6 +21,15 @@ public class CoffeeServiceImplementation implements CoffeeService {
     public Coffee giveCoffee(User user, StudyActivity activity) {
         Coffee coffee = new Coffee(user, activity);
         return coffeeRepo.save(coffee);
+    }
+
+    @Override
+    public void deleteCoffeesByUser(User user) {
+        List<Coffee> coffees = user.getCoffees();
+        for (Coffee coffee : coffees) {
+            StudyActivity studyActivity = coffee.getActivity();
+            studyActivity.removeCoffee(coffee);
+        }
     }
 
 
@@ -40,4 +50,8 @@ public class CoffeeServiceImplementation implements CoffeeService {
         return coffeeRepo.countByActivity(activity);
     }
 
+    @Override
+    public void deleteAllByUser(User user) {
+        coffeeRepo.deleteAll(user.getCoffees());
+    }
 }
