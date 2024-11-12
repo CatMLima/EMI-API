@@ -13,7 +13,7 @@
     <p> You inserted the wrong password or wrong email. Please try again.</p>
 </div>
 
-<form id="userForm" th:action="@{/api/login}" method="post" th:object="${user}">
+<form id="userForm" th:action="@{/login}" method="post" th:object="${user}">
     <input type="email" name="email" placeholder="Email" required>
     <br>
     <br>
