@@ -32,9 +32,6 @@ public class StudyActivityController {
     private UserService userService;
 
     @Autowired
-    private LocationRepository locationRepository;
-
-    @Autowired
     public StudyActivityController(StudyActivityService studyActivityService, UserService userService) {
         this.studyActivityService = studyActivityService;
         this.userService = userService;

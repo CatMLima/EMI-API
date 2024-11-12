@@ -9,7 +9,7 @@
 </head>
 <body>
 <h1 class="text-center">Create New User Profile</h1>
-<form id="userForm" th:action="@{/api/signup}" method="post" th:object="${user}">
+<form id="userForm" th:action="@{/signup}" method="post" th:object="${user}">
   <div th:if="${#fields.hasErrors('name')}" th:errors="*{name}" style="color:red;"></div>
     <label for="name">Name: </label>
     <input type="text" id="name" th:field="*{name}" required/> <br><br>

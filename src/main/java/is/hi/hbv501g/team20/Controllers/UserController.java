@@ -78,7 +78,7 @@ public class UserController {
     }
 
     // Checks if the user is a new one before allowing them to create an account and saving it to the database.
-    @RequestMapping(value="/api/signup", method= RequestMethod.POST)
+    @RequestMapping(value="/signup", method= RequestMethod.POST)
     public String signupPOST(User user, BindingResult result, Model model){
         if (result.hasErrors()) {
             return "redirect:/signup";
@@ -93,7 +93,7 @@ public class UserController {
     }
 
     // When an existing user logs in, we add them as a session and model attribute while they are online.
-    @RequestMapping(value="/api/login", method=RequestMethod.POST)
+    @RequestMapping(value="/login", method=RequestMethod.POST)
     public String loginPOST(@ModelAttribute("user") User user, BindingResult result, Model model, HttpSession session){
         if (user.getPrivacy() == null) {
             user.setPrivacy(0);
@@ -173,7 +173,7 @@ public class UserController {
     }
 
     // upload a new profile picture and save the changes to the database.
-    @PostMapping("/api/uploadProfilePicture")
+    @PostMapping("/uploadProfilePicture")
     public String uploadProfilePicture(@RequestParam("profilePicture") MultipartFile profilePicture,
                                        HttpSession session, Model model) {
         // Find the user by ID (you might use a service here to get the user)
