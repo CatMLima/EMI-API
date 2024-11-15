@@ -21,7 +21,7 @@ public class User {
     private byte[] profilePicture;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<StudyActivity> activities;
+    private List<StudyActivity> activities = new ArrayList<>();
 
     @ManyToMany(mappedBy = "members")
     private List<StudyGroup> studyGroupsMember = new ArrayList<>();
