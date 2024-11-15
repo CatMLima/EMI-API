@@ -3,7 +3,7 @@ WORKDIR /app
 COPY . .
 RUN mvn clean package -DskipTests
 
-FROM openjdk:17.0.0-jdk-slim
+FROM openjdk:17.0.0-jdk-slim-buster
 WORKDIR /app
 COPY --from=build /app/target/team20-0.0.1-SNAPSHOT.jar team20.jar
 EXPOSE 8080
