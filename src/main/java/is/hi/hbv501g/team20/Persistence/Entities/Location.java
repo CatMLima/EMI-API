@@ -4,7 +4,7 @@ import is.hi.hbv501g.team20.Persistence.Enums.Building;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "location")
+@Table(name = "\"location\"")
 public class Location {
 
     @Id

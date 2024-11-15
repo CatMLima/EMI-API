@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "studygroup")
+@Table(name = "\"studygroup\"")
 public class StudyGroup {
 
     @Id

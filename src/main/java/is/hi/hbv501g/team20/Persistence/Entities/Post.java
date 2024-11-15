@@ -3,7 +3,7 @@ package is.hi.hbv501g.team20.Persistence.Entities;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "post")
+@Table(name = "\"post\"")
 public class Post {
 
     @Id
