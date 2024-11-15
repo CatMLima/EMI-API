@@ -3,6 +3,6 @@ COPY . .
 RUN mvn clean package -DskipTests
 
 FROM openjdk:17.0.1-jdk-slim
-COPY --from=build /target/team20-0.0.1-SNAPSHOT.jar team20.jar
+COPY --from=build /target/Team20-0.0.1-SNAPSHOT.jar Team20.jar
 EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "team20.jar"]
+ENTRYPOINT ["java", "-jar", "/Team20.jar"]
