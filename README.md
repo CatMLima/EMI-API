@@ -6,7 +6,9 @@ with 4 phases: Inception, Elaboration, Construction and Transition.
 Here we present you 
 
 <img width="281" alt="EMI" src="https://github.com/user-attachments/assets/97395c3c-eee5-4019-90e5-d35db765e06b">
+
 # EMI - Educational Meeting and Motivational Interface
+
 A platform to record study sessions, keep track of the duration of your sessions, 
 even as specific as the topic and your frequency of studying. 
 You can also see your favourite locations within the
