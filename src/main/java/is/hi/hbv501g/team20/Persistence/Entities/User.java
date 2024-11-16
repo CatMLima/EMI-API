@@ -18,6 +18,7 @@ public class User {
     private Long id;
 
     @Lob
+    @Column(name="profile_picture", columnDefinition = "bytea")
     private byte[] profilePicture;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
