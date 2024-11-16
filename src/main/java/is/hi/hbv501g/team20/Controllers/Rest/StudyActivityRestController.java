@@ -95,9 +95,9 @@ public class StudyActivityRestController {
         user = userService.updateStreak(user);
         userService.save(user);
 
-        studyActivity.setEnd(LocalTime.now());
+        studyActivity.setEnd_time(LocalTime.now());
         studyActivity.setIsActive(1);
-        studyActivity.setDuration(studyActivity.getStart(), studyActivity.getEnd());
+        studyActivity.setDuration(studyActivity.getStart(), studyActivity.getEnd_time());
         studyActivityService.save(studyActivity);
 
         Location location = studyActivity.getLocation();
@@ -121,7 +121,7 @@ public class StudyActivityRestController {
     public ResponseEntity<StudyActivity> getStudyActivityDetails(@PathVariable Long id) {
         StudyActivity studyActivity = studyActivityService.findById(id);
         if (studyActivity != null && studyActivity.getDuration() == null) {
-            studyActivity.setDuration(studyActivity.getStart(), studyActivity.getEnd());
+            studyActivity.setDuration(studyActivity.getStart(), studyActivity.getEnd_time());
             studyActivityService.save(studyActivity);
         }
         return studyActivity != null ? ResponseEntity.ok(studyActivity) : ResponseEntity.notFound().build();
@@ -133,7 +133,7 @@ public class StudyActivityRestController {
         if (studyActivity != null) {
             // Ensure that the old study activity has an updated duration if it's null
             if (studyActivity.getDuration() == null) {
-                studyActivity.setDuration(studyActivity.getStart(), studyActivity.getEnd());
+                studyActivity.setDuration(studyActivity.getStart(), studyActivity.getEnd_time());
                 studyActivityService.save(studyActivity);
             }
             return ResponseEntity.ok(studyActivity);

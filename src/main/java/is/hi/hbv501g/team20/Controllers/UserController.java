@@ -178,16 +178,20 @@ public class UserController {
                                        HttpSession session, Model model) {
         // Find the user by ID (you might use a service here to get the user)
         User user = (User) session.getAttribute("user");
-        System.out.println(user.toString());
 
         if (!profilePicture.isEmpty()) {
             try{
-                byte[] bytes = profilePicture.getBytes();
-                user.setProfilePicture(bytes);
-                userService.save(user);
-                model.addAttribute("user", user);
-                model.addAttribute("picture", user.getProfilePicture());
-                return "settings";
+                String contentType = profilePicture.getContentType();
+                if (contentType != null && (contentType.equals("image/jpeg") || contentType.equals("image/png") || contentType.equals("image/git"))) {
+                    byte[] bytes = profilePicture.getBytes();
+                    user.setProfilePicture(bytes);
+                    userService.save(user);
+
+                    model.addAttribute("user", user);
+                    model.addAttribute("picture", user.getProfilePicture());
+                    return "settings";
+                }
+
             } catch (Exception e) {
                 e.printStackTrace();
                 return "Error uploading profile picture";
@@ -201,7 +205,10 @@ public class UserController {
     @GetMapping("/user/{id}/profilePicture")
     public ResponseEntity<byte[]> getProfilePicture(@PathVariable Long id){
         User user = userService.findById(id);
-        return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(user.getProfilePicture());
+        if (user != null && user.getProfilePicture() != null) {
+            return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(user.getProfilePicture());
+        }
+        return ResponseEntity.notFound().build();
     }
 
     // Changes the users password
