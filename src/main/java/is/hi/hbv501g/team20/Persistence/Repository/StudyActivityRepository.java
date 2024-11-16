@@ -25,7 +25,7 @@ public interface StudyActivityRepository extends JpaRepository<StudyActivity, Lo
         //things to implement later: findBySubject, findByDuration,edit(studyActivity)
 
         // Query to search public activities
-        @Query("SELECT sa FROM StudyActivity sa WHERE ( sa.title LIKE %:query% OR sa.description ILIKE %:query% OR sa.subjectID ILIKE %:query% OR sa.subjectName ILIKE %:query% ) AND (sa.privacy = 0 OR sa.user = :user)")
+        @Query("SELECT sa FROM StudyActivity sa WHERE ( sa.title ILIKE %:query% OR sa.description ILIKE %:query% OR sa.subjectID ILIKE %:query% OR sa.subjectName ILIKE %:query% ) AND (sa.privacy = 0 OR sa.user = :user)")
         List<StudyActivity> searchStudyActivityPublicUser(@Param("query") String query, @Param("user") User user);
 
         // Query to get study activities for the feed (all public ones, and the users)
