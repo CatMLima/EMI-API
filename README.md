@@ -1,13 +1,23 @@
-# HBV501G-Team20
-Project of HBV501G - Software Project 1
+# HBV501G - Team20
 
-# EMI - Educational Meeting/Motivational Interface
-- Record study session.
-- Keep track of duration and location, and add your comments in your description and adding photos.
-- People can like/give coffees study activities.
-- Allows you to see the number of user studying in the different location.
-- Tracks duration of study for each topic, and your frequency studying.
-- Join a study group and interact with members through posts.
+As the project for HBV501G - Software Project 1, using a plan-driven development, more especially a Unified Process Structure 
+with 4 phases: Inception, Elaboration, Construction and Transition.
+
+Here we present you 
+
+<img width="281" alt="EMI" src="https://github.com/user-attachments/assets/97395c3c-eee5-4019-90e5-d35db765e06b">
+
+# EMI - Educational Meeting and Motivational Interface
+
+A platform to record study sessions, keep track of the duration of your sessions, 
+even as specific as the topic and your frequency of studying. 
+You can also see your favourite locations within the
+University, and the number of people studying at them.
+Using Emi, you can add your comments, thoughts, and more to each individual study activity,
+your description and even photos.
+
+People can interact with others' study activities by giving coffee, 
+join study groups and interact with members through posts.
 
 
 # Team members:
