@@ -43,7 +43,7 @@ public class StudyActivity {
     private LocalTime start; //eða Timer timer?
 
     @Temporal(TemporalType.TIME)
-    private LocalTime end;
+    private LocalTime end_time;
 
     @Temporal(TemporalType.TIME)
     private Duration duration;
@@ -111,12 +111,12 @@ public class StudyActivity {
         this.start = start;
     }
 
-    public LocalTime getEnd() {
-        return end;
+    public LocalTime getEnd_time() {
+        return end_time;
     }
 
-    public void setEnd(LocalTime end) {
-        this.end = end;
+    public void setEnd_time(LocalTime end) {
+        this.end_time = end;
     }
 
     public List<Coffee> getCoffees() {
@@ -155,7 +155,7 @@ public class StudyActivity {
     }
 
     public String getFormattedDuration() {
-        if (start != null && end == null) {
+        if (start != null && end_time == null) {
             Duration currentDuration = getDuration();
             return formatDuration(currentDuration);
         } else if (start != null && duration != null) {

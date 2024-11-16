@@ -5,7 +5,6 @@ import is.hi.hbv501g.team20.Persistence.Entities.Location;
 import is.hi.hbv501g.team20.Persistence.Entities.StudyActivity;
 import is.hi.hbv501g.team20.Persistence.Entities.User;
 import is.hi.hbv501g.team20.Persistence.Enums.Building;
-import is.hi.hbv501g.team20.Persistence.Repository.LocationRepository;
 import is.hi.hbv501g.team20.Services.CoffeeService;
 import is.hi.hbv501g.team20.Services.UserService;
 import is.hi.hbv501g.team20.Services.StudyActivityService;
@@ -106,9 +105,9 @@ public class StudyActivityController {
         user.setIsActive(1);
         user = userService.updateStreak(user);
         userService.save(user);
-        studyActivity.setEnd(LocalTime.now());
+        studyActivity.setEnd_time(LocalTime.now());
         studyActivity.setIsActive(1);
-        studyActivity.setDuration(studyActivity.getStart(),studyActivity.getEnd());
+        studyActivity.setDuration(studyActivity.getStart(),studyActivity.getEnd_time());
         studyActivityService.save(studyActivity);
         Location location = studyActivity.getLocation();
         location.setUserCount(location.getUserCount() - 1);
@@ -134,7 +133,7 @@ public class StudyActivityController {
 
         // To ensure that old study activity has an "updated" duration, other than null
         if (studyActivity.getDuration() == null) {
-            studyActivity.setDuration(studyActivity.getStart(), studyActivity.getEnd());
+            studyActivity.setDuration(studyActivity.getStart(), studyActivity.getEnd_time());
             studyActivityService.save(studyActivity);
         }
 
@@ -149,7 +148,7 @@ public class StudyActivityController {
 
         // To ensure that old study activity has an "updated" duration, other than null
         if (studyActivity.getDuration() == null) {
-            studyActivity.setDuration(studyActivity.getStart(), studyActivity.getEnd());
+            studyActivity.setDuration(studyActivity.getStart(), studyActivity.getEnd_time());
             studyActivityService.save(studyActivity);
         }
 
