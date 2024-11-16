@@ -27,6 +27,7 @@ public class StudyActivity {
     private List<Coffee> coffees = new ArrayList<>();
 
     @Lob
+    @Column(columnDefinition = "BYTEA")
     private byte[] activityPicture;
 
     @Enumerated(EnumType.STRING)
