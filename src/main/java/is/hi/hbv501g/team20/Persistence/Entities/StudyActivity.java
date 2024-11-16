@@ -26,8 +26,7 @@ public class StudyActivity {
     @OneToMany(mappedBy = "activity", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Coffee> coffees = new ArrayList<>();
 
-    @Lob
-    @Column(name = "activity_picture", columnDefinition = "BYTEA")
+    @Column(name = "activity_picture")
     private byte[] activityPicture;
 
     @Enumerated(EnumType.STRING)
