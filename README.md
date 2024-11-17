@@ -26,6 +26,13 @@ join study groups and interact with members through posts.
 - Luiza V Sampaio Ramos (280291-5449) lvs2@hi.is
 - Steinunn María Bergþórsdóttir (180501-2230) smb23@hi.is
 
+# Installation Details:
+- Maven model 4.0.0
+- Spring boot framework version 3.3.4
+- Java version 17
+- Thymeleaf utilized to render the html pages.
+- The program needs a Postgres SQL database in order to work. If you are not using the deployed version of the program, you would need to create a database and add its information to the application.properties file (datasource url, username and password for a local database).
+
 # UML Diagrams:
 
 ## State Machine Diagram
