@@ -27,11 +27,34 @@ join study groups and interact with members through posts.
 - Steinunn María Bergþórsdóttir (180501-2230) smb23@hi.is
 
 # Installation Details:
-- Maven model 4.0.0
+- Maven model 3.8 or higher.
 - Spring boot framework version 3.3.4
-- Java version 17
+- Java version 17 or higher.
+- PostgreSQL version 13 or higher.
 - Thymeleaf utilized to render the html pages.
-- The program needs a Postgres SQL database in order to work. If you are not using the deployed version of the program, you would need to create a database and add its information to the application.properties file (datasource url, username and password for a local database).
+- A postgresql database must be utilized in order for the application to run locally:
+  - Create database by doing:
+    ```sql
+    CREATE DATABASE emidb;
+    ```
+  - In the application.properties file add the following (you may replace username and password with that you use in your system):
+    ```properties
+    spring.datasource.url=jdbc:postgresql://localhost:5432/emidb
+    spring.datasource.username=root
+    spring.datasource.password=password
+    spring.datasource.driver-class-name=org.postgresql.Driver
+    spring.jpa.hibernate.ddl-auto=update
+    spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
+    ```
+  - Build the project using Maven:
+  ```bash
+  mvn clean install
+  ```
+  - Run the application:
+  ```bash
+  mvn spring-boot:run
+  ```
+  - Upon running the application should become available through: [http://localhost:8080](http://localhost:8080)
 
 # UML Diagrams:
 
