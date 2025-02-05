@@ -38,8 +38,8 @@ public class UserRestController {
     @Autowired
     private CoffeeService coffeeService;
 
-    //new sign up method, called register!
-    // user will get an encrypter password that only gets decrypted when checking
+    // Pre: User is not currently registered.
+    // Post: New user account is created and their information displayed.
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody User user){
         try {
@@ -50,7 +50,8 @@ public class UserRestController {
         }
     }
 
-    // I have yet to reprogram this
+    // Pre: user exists, user password matches the password encrypted in the database
+    // Post: token generated that can be used to validate the user's actions
     @PostMapping("/login")
     public ResponseEntity<?> loginUser(@RequestBody User user){
         try {
@@ -64,6 +65,8 @@ public class UserRestController {
         }
     }
 
+    // Pre: User must exist, token must be valid.
+    // Post: Current signed in user's information is sent.
     @GetMapping("/get/user")
     public ResponseEntity<User> getCurrentUser(){
 
@@ -86,6 +89,9 @@ public class UserRestController {
         return ResponseEntity.ok(userUpdated);
     }
 
+
+    // Pre: user token must be valid, new privacy integer value must be provided, 0 <= privacy <= 1
+    // Post: the user's privacy is changed, success message issued.
     @PostMapping("/settings/change_privacy")
     public ResponseEntity<?> changePrivacy(@RequestParam int privacy){
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -108,7 +114,8 @@ public class UserRestController {
 
     }
 
-
+    // Pre: valid token, user's old password is correct, user's new password match
+    // Post: user assigned new password and must log in again (the token will change)
     @PutMapping("/settings/change_password")
     public ResponseEntity<?> changePassword(@RequestBody ChangePasswordRequest request){
 
