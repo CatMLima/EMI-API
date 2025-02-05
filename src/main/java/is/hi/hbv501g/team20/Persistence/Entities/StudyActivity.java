@@ -5,10 +5,7 @@ import jakarta.persistence.*;
 
 import java.time.Duration;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 
 @Entity
@@ -237,5 +234,27 @@ public class StudyActivity {
 
     public void setIsActive(Integer isActive) {
         this.isActive = isActive;
+    }
+
+    @Override
+    public String toString() {
+        return "StudyActivity{" +
+                "id=" + id +
+                ", user=" + user +
+                ", coffees=" + coffees +
+                ", activityPicture=" + Arrays.toString(activityPicture) +
+                ", building=" + building +
+                ", location=" + location +
+                ", date=" + date +
+                ", start=" + start +
+                ", end_time=" + end_time +
+                ", duration=" + duration +
+                ", isActive=" + isActive +
+                ", privacy=" + privacy +
+                ", title='" + title + '\'' +
+                ", description='" + description + '\'' +
+                ", subjectID='" + subjectID + '\'' +
+                ", subjectName='" + subjectName + '\'' +
+                '}';
     }
 }

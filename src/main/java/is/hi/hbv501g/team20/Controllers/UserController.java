@@ -86,7 +86,7 @@ public class UserController {
 
         User alreadyExisting = userService.findByEmail(user.getEmail());
         if (alreadyExisting == null) {
-            userService.save(user);
+            userService.registerNewUser(user);
         }
         return "redirect:/login";
 
@@ -111,7 +111,7 @@ public class UserController {
             if(existing.getPrivacy() == null || existing.privacy != 0 && existing.privacy != 1 ) {
                 existing = userService.updatePrivacy(existing.getId(), 0);
             }
-            if (existing.getPassword().equals(user.getPassword())) {
+            if (userService.checkPassword(existing,user.getPassword())) {
                 session.setAttribute("user", existing); // saves user to the session
                 model.addAttribute("user", existing);
                 return "redirect:/feed";
@@ -220,20 +220,20 @@ public class UserController {
 
         User user = (User) session.getAttribute("user");
 
-        if (user == null || !Objects.equals(user.getPassword(), oldPassword)) {
+        if (userService.checkPassword(user, oldPassword)) {
             model.addAttribute("message", "Current password is incorrect.");
             return "redirect:/settings";
         }
 
-        if (!Objects.equals(newPassword, newPassword2)) {
+        if (userService.checkNewPassword(newPassword, newPassword2)) {
             model.addAttribute("message", "New passwords do not match.");
             return "redirect:/settings";
         }
 
         user.setPassword(newPassword);
-        userService.save(user);
-        model.addAttribute("message", "Password changed successfully.");
-        return "redirect:/settings";
+        userService.registerNewUser(user);
+        model.addAttribute("message", "Password changed successfully, sign in again.");
+        return "home";
 
     }
 }

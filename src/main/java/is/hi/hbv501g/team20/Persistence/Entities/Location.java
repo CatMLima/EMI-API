@@ -30,4 +30,12 @@ public class Location {
     public void setUserCount(int userCount){ this.userCount = userCount; }
     public int getUserCount(){ return userCount; }
 
+    @Override
+    public String toString() {
+        return "Location{" +
+                "id=" + id +
+                ", building=" + building +
+                ", userCount=" + userCount +
+                '}';
+    }
 }

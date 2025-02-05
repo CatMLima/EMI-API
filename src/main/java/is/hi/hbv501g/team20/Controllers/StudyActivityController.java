@@ -112,6 +112,7 @@ public class StudyActivityController {
         Location location = studyActivity.getLocation();
         location.setUserCount(location.getUserCount() - 1);
         studyActivityService.save(location);
+        model.addAttribute(user);
 
         return "redirect:/feed";
 

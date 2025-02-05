@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -145,5 +146,25 @@ public class User {
 
     public void setLastActivityDate(LocalDate lastActivityDate) {
         this.lastActivityDate = lastActivityDate;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", profilePicture=" + Arrays.toString(profilePicture) +
+                ", activities=" + activities +
+                ", studyGroupsMember=" + studyGroupsMember +
+                ", studyGroupsAdmin=" + studyGroupsAdmin +
+                ", posts=" + posts +
+                ", coffees=" + coffees +
+                ", isActive=" + isActive +
+                ", privacy=" + privacy +
+                ", streak=" + streak +
+                ", name='" + name + '\'' +
+                ", email='" + email + '\'' +
+                ", password='" + password + '\'' +
+                ", lastActivityDate=" + lastActivityDate +
+                '}';
     }
 }
