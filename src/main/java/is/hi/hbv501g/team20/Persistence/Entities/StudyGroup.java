@@ -91,4 +91,18 @@ public class StudyGroup {
 
     public List<User> getMembers() {return members;}
 
+    @Override
+    public String toString() {
+        return "StudyGroup{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", subjectId='" + subjectId + '\'' +
+                ", lookingForMembers=" + lookingForMembers +
+                ", memberCount=" + memberCount +
+                ", admin=" + admin +
+                ", members=" + members +
+                ", posts=" + posts +
+                '}';
+    }
 }

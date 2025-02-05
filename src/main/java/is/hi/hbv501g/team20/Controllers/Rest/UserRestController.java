@@ -5,133 +5,149 @@ import is.hi.hbv501g.team20.Services.CoffeeService;
 import is.hi.hbv501g.team20.Services.PostService;
 import is.hi.hbv501g.team20.Services.StudyGroupService;
 import is.hi.hbv501g.team20.Services.UserService;
+import is.hi.hbv501g.team20.dto.ChangePasswordRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
+@RequestMapping("/rest")
 public class UserRestController {
 
-    private final UserService userService;
-    private final StudyGroupService studyGroupService;
-    private final PostService postService;
-    private final CoffeeService coffeeService;
+    @Autowired
+    private UserService userService;
 
     @Autowired
-    public UserRestController(UserService userService, StudyGroupService studyGroupService, PostService postService, CoffeeService coffeeService) {
-        this.userService = userService;
-        this.studyGroupService = studyGroupService;
-        this.postService = postService;
-        this.coffeeService = coffeeService;
+    private StudyGroupService studyGroupService;
+
+    @Autowired
+    private PostService postService;
+
+    @Autowired
+    private CoffeeService coffeeService;
+
+    //new sign up method, called register!
+    // user will get an encrypter password that only gets decrypted when checking
+    @PostMapping("/register")
+    public ResponseEntity<?> register(@RequestBody User user){
+        try {
+            User registeredUser = userService.registerNewUser(user);
+            return ResponseEntity.ok(registeredUser);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
-    @GetMapping("/rest/login")
-    public ResponseEntity<String> getLogInPage(){
-        return ResponseEntity.ok("Please proceed to the login page.");
+    // I have yet to reprogram this
+    @PostMapping("/login")
+    public ResponseEntity<?> loginUser(@RequestBody User user){
+        try {
+            String token = userService.verify(user);
+            if (token.equals("Failed")){
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            }
+            return ResponseEntity.ok(token);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
-    @GetMapping("/rest/sign-up")
-    public ResponseEntity<User> getSignUpPage(){
-        return ResponseEntity.ok(new User());
-    }
+    @GetMapping("/get/user")
+    public ResponseEntity<User> getCurrentUser(){
 
-    @GetMapping("/rest/user")
-    public ResponseEntity<?> getUserPage(HttpSession session){
-        User user = (User) session.getAttribute("user");
-        if (user == null){
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Please log in");
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+        if (auth == null || !(auth.getPrincipal() instanceof UserDetails)){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        Map<String,Object> userData = new HashMap<>();
-        userData.put("user",user);
-        userData.put("totalActivityTime", userService.totalTime(user));
-        userData.put("activitiesCount", userService.totalSessions(user));
-        userData.put("averageTime", userService.average(user));
-        userData.put("favouriteLocation", userService.favouriteLocation(user));
+        String username = ((UserDetails) auth.getPrincipal()).getUsername();
 
-        return ResponseEntity.ok(userData);
-    }
-
-    @GetMapping("/rest/settings")
-    public ResponseEntity<?> getSettingsPage(HttpSession session){
-        User user = (User) session.getAttribute("user");
-        if (user == null){
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not logged in.");
-        }
-        return ResponseEntity.ok(user);
-    }
-
-    @PostMapping("/rest/signup")
-    public ResponseEntity<?> signUpUser(@RequestBody User user){
-        User existingUser = userService.findByEmail(user.getEmail());
-        if (existingUser != null){
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("User already exists.");
-        }
-        userService.save(user);
-        return ResponseEntity.status(HttpStatus.CREATED).body("User has been created.");
-    }
-
-    @PostMapping("/rest/login")
-    public ResponseEntity<?> loginUser(@RequestBody User user, HttpSession session){
-        User existingUser = userService.findByEmail(user.getEmail());
-
-        if(existingUser == null || !existingUser.getPassword().equals(user.getPassword())){
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Wrong password or email.");
-        }
-
-        if(existingUser.getStreak() == null){
-            existingUser = userService.initializeStreak(user);
-        } else if (existingUser.getStreak() != 0){
-            existingUser = userService.checkStreak(existingUser);
-        }
-
-        if (existingUser.getPrivacy() == null || (existingUser.getPrivacy() != 0 && existingUser.getPrivacy() != 1)){
-            existingUser = userService.updatePrivacy(existingUser.getId(), 0);
-        }
-
-        session.setAttribute("user", existingUser);
-        return ResponseEntity.ok("Logged in successfullly.");
-    }
-
-    @PostMapping("/rest/settings/privacy")
-    public ResponseEntity<?> changePrivacy(@RequestParam int privacy, HttpSession session){
-        User user = (User) session.getAttribute("user");
+        User user = userService.findByEmail(username);
 
         if (user == null){
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not logged in.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
 
-        user = userService.updatePrivacy(user.getId(), privacy);
-        session.setAttribute("user", user);
+        User userUpdated = userService.updateUser(user);
 
-        return ResponseEntity.ok("Privacy changed successfully.");
+        return ResponseEntity.ok(userUpdated);
     }
 
-    @DeleteMapping("/rest/delete-account/{id}")
-    public ResponseEntity<?> deleteAccount(@PathVariable("id") long id, HttpSession session){
-        User user = userService.findById(id);
+    @PostMapping("/settings/change_privacy")
+    public ResponseEntity<?> changePrivacy(@RequestParam int privacy){
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+        if (auth == null || !(auth.getPrincipal() instanceof UserDetails)){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        String username = ((UserDetails) auth.getPrincipal()).getUsername();
+
+        User user = userService.findByEmail(username);
+
+        if (user == null){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+
+        userService.updatePrivacy(user.getId(),privacy);
+
+        return ResponseEntity.ok().body("Privacy changed successfully.");
+
+    }
+
+
+    @PutMapping("/settings/change_password")
+    public ResponseEntity<?> changePassword(@RequestBody ChangePasswordRequest request){
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+        if (auth == null || !(auth.getPrincipal() instanceof UserDetails)){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized user.");
+        }
+
+        String username = ((UserDetails) auth.getPrincipal()).getUsername();
+
+        User user = userService.findByEmail(username);
 
         if (user == null){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found.");
         }
 
-        postService.deletePostByUser(user);
-        coffeeService.deleteCoffeesByUser(user);
-        studyGroupService.removeUserFromStudyGroups(user);
-        userService.deleteUser(user);
 
-        session.invalidate();
-        return ResponseEntity.ok("User has been deleted.");
+        if (!userService.checkOldPassword(user,request.getOldPassword())) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Old password incorrect.");
+        }
+
+        if (!userService.checkNewPassword(request.getNewPassword(),request.getConfirmPassword())){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("New passwords don't match or are invalid.");
+        }
+
+        userService.changePassword(user,request.getNewPassword());
+
+        SecurityContextHolder.clearContext();
+
+        return ResponseEntity.ok("Password changed successfully. Please log in again.");
+
     }
 
-    @PostMapping("/rest/uploadProfilePicture")
+
+
+
+// THIS NEXT
+    @PostMapping("/uploadProfilePicture")
     public ResponseEntity<?> uploadPicture(@RequestParam("profilePicture") MultipartFile profilePicture, HttpSession session){
         User user = (User) session.getAttribute("user");
 
@@ -149,7 +165,7 @@ public class UserRestController {
         }
     }
 
-    @GetMapping("/rest/user/{id}/profilePicture")
+    @GetMapping("/user/{id}/profilePicture")
     public ResponseEntity<byte[]> getProfilePicture(@PathVariable Long id){
         User user = userService.findById(id);
         if (user == null || user.getProfilePicture() == null){
@@ -159,27 +175,39 @@ public class UserRestController {
         return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(user.getProfilePicture());
     }
 
-    @PutMapping("/rest/change-password/{id}")
-    public ResponseEntity<Map<String, String>> changePassword(@PathVariable Long id, @RequestParam String oldPassword, @RequestParam String newPassword, @RequestParam String newPassword2, HttpSession session){
-        User sessionUser = (User) session.getAttribute("user");
-
-        if (sessionUser == null || !sessionUser.getId().equals(id)){
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("Message", "Unauthorized access"));
-        }
-
+    @DeleteMapping("/delete-account/{id}")
+    public ResponseEntity<?> deleteAccount(@PathVariable("id") long id, HttpSession session){
         User user = userService.findById(id);
-        if (user == null || !user.getPassword().equals(oldPassword)){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("Message", "Current password is incorrect."));
+
+        if (user == null){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found.");
         }
 
-        if (!newPassword.equals(newPassword2)){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("Message", "Passwords do not match."));
-        }
+        postService.deletePostByUser(user);
+        coffeeService.deleteCoffeesByUser(user);
+        studyGroupService.removeUserFromStudyGroups(user);
+        userService.deleteUser(user);
 
-        user.setPassword(newPassword);
-        userService.save(user);
-
-        return ResponseEntity.ok(Map.of("Message", "Password changed successfully"));
+        session.invalidate();
+        return ResponseEntity.ok("User has been deleted.");
     }
+
+
+
+
+
+    /* These are all part of a testing thing.
+     */
+    private List<User> users = new ArrayList<>(List.of(
+            new User("Cat","cms5@hi.is","somegoodpassowrd"),
+            new User("josh", "josh@hi.is", "someotherpassword")
+    ));
+
+    @GetMapping("/rest/userslist")
+    public List<User> getUsers(){
+        return users;
+    }
+
+    /* testing thing ends here */
 
 }

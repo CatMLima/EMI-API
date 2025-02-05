@@ -5,8 +5,13 @@ import is.hi.hbv501g.team20.Persistence.Entities.StudyActivity;
 import is.hi.hbv501g.team20.Persistence.Entities.User;
 import is.hi.hbv501g.team20.Persistence.Repository.StudyActivityRepository;
 import is.hi.hbv501g.team20.Persistence.Repository.UserRepository;
+import is.hi.hbv501g.team20.Services.JWTService;
 import is.hi.hbv501g.team20.Services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
@@ -24,6 +29,14 @@ public class UserServiceImplementation implements UserService {
     CoffeeServiceImplementation coffeeServiceImplementation;
     @Autowired
     private StudyActivityRepository studyActivityRepository;
+
+    private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
+
+    @Autowired
+    AuthenticationManager authManager;
+
+    @Autowired
+    private JWTService jwtService;
 
     public UserServiceImplementation(UserRepository userRepo) {
         this.userRepo = userRepo;
@@ -115,6 +128,72 @@ public class UserServiceImplementation implements UserService {
             return favourite.getBuilding().toString();
         }
     }
+
+
+    // method used by the rest api user controller and normal controller
+    @Override
+    public User registerNewUser(User user) {
+        user.setPassword(encoder.encode(user.getPassword()));
+        return userRepo.save(user);
+    }
+
+    @Override
+    public boolean checkPassword(User user,String password){
+        return encoder.matches(password,user.getPassword());
+    }
+
+
+    // Used by the REST controller for logging in
+    @Override
+    public String verify(User user) {
+        Authentication auth = authManager.authenticate(new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword()));
+
+        if(auth.isAuthenticated())
+            return jwtService.generateToken(user.getEmail());
+
+        return "Failed";
+    }
+
+    // used by rest controller for changing password (ALL THE BELOW THREE METHODS)
+    @Override
+    public boolean checkOldPassword(User user, String oldPassword){
+        return encoder.matches(oldPassword, user.getPassword());
+    }
+
+    @Override
+    public boolean checkNewPassword(String newPassword, String confirmPassword){
+        return newPassword.equals(confirmPassword);
+    }
+
+    @Override
+    public User changePassword(User user, String newPassword){
+        user.setPassword(encoder.encode(newPassword));
+        return userRepo.save(user);
+    }
+
+
+    // Used by REST user controller when a user is fetched to refresh their data in case something about them has not been updated.
+    @Override
+    public User updateUser(User user) {
+        if (user.getPrivacy() == null){
+            user.setPrivacy(0);
+        }
+
+        if (user.getStreak() == null){
+            user = initializeStreak(user);
+        }
+
+        if (user.getStreak() != 0){
+            checkStreak(user);
+        }
+
+        if (user.getPrivacy() == null || user.privacy != 0 && user.privacy != 1){
+            updatePrivacy(user.getId(),0);
+        }
+
+        return user;
+    }
+
 
     // Format the data before showing it.
     public String formatDuration(Duration duration){

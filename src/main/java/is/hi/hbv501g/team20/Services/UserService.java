@@ -21,4 +21,17 @@ public interface UserService {
     int totalSessions(User user);
     String favouriteLocation(User user);
 
+    // method called by the rest api
+    User registerNewUser(User user);
+
+    String verify(User user);
+
+    boolean checkOldPassword(User user, String oldPassword);
+    boolean checkNewPassword(String newPassword, String confirmPassword);
+
+    User changePassword(User user, String newPassword);
+
+    User updateUser(User user);
+
+    boolean checkPassword(User user, String password);
 }
