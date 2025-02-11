@@ -7,6 +7,7 @@ import is.hi.hbv501g.team20.Persistence.Repository.StudyActivityRepository;
 import is.hi.hbv501g.team20.Persistence.Repository.UserRepository;
 import is.hi.hbv501g.team20.Services.JWTService;
 import is.hi.hbv501g.team20.Services.UserService;
+import is.hi.hbv501g.team20.dto.LoginRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -145,7 +146,9 @@ public class UserServiceImplementation implements UserService {
 
     // Used by the REST controller for logging in
     @Override
-    public String verify(User user) {
+    public String verify(LoginRequest loginRequest) {
+        // if I don't like it, change it to verify User again and take away this line under
+        User user = userRepo.findByEmail(loginRequest.getEmail());
         Authentication auth = authManager.authenticate(new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword()));
 
         if(auth.isAuthenticated())

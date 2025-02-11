@@ -1,6 +1,7 @@
 package is.hi.hbv501g.team20.Services;
 
 import is.hi.hbv501g.team20.Persistence.Entities.User;
+import is.hi.hbv501g.team20.dto.LoginRequest;
 
 import java.util.List;
 
@@ -24,7 +25,7 @@ public interface UserService {
     // method called by the rest api
     User registerNewUser(User user);
 
-    String verify(User user);
+    String verify(LoginRequest loginRequest);
 
     boolean checkOldPassword(User user, String oldPassword);
     boolean checkNewPassword(String newPassword, String confirmPassword);
