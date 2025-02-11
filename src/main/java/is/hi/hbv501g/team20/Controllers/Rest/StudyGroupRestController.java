@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
+@RequestMapping("/rest")
 public class StudyGroupRestController {
 
     private final StudyGroupService studyGroupService;
@@ -26,7 +27,7 @@ public class StudyGroupRestController {
         this.postService = postService;
     }
 
-    @GetMapping("/rest/studygroups-feed")
+    @GetMapping("/studygroups-feed")
     public ResponseEntity<?> getStudyGroupFeed(HttpSession session) {
         User user = (User) session.getAttribute("user");
 
@@ -44,13 +45,13 @@ public class StudyGroupRestController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/rest/studygroup-create")
+    @GetMapping("/studygroup-create")
     public ResponseEntity<StudyGroup> getStudyGroupTemplate(){
         StudyGroup studyGroup = new StudyGroup();
         return ResponseEntity.ok(studyGroup);
     }
 
-    @PostMapping("/rest/api/studygroup-create")
+    @PostMapping("/studygroup-create")
     public ResponseEntity<?> createStudyGroup(HttpSession session, @RequestBody StudyGroup studyGroup) {
         User admin = (User) session.getAttribute("user");
         if (admin == null) {
@@ -66,7 +67,7 @@ public class StudyGroupRestController {
         return ResponseEntity.status(HttpStatus.CREATED).body(studyGroup);
     }
 
-    @PostMapping("/rest/studygroup-join/{id}")
+    @PostMapping("/studygroup-join/{id}")
     public ResponseEntity<?> joinStudyGroup(@PathVariable Long id, HttpSession session){
         User user = (User) session.getAttribute("user");
         if (user == null) {
@@ -83,7 +84,7 @@ public class StudyGroupRestController {
         return ResponseEntity.ok().body("Joined study group successfully!");
     }
 
-    @GetMapping("/rest/studygroup-view/{id}")
+    @GetMapping("/studygroup-view/{id}")
     public ResponseEntity<?> viewStudyGroup(@PathVariable("id") Long id, HttpSession session) {
         StudyGroup studyGroup = studyGroupService.findById(id);
         if (studyGroup == null) {
@@ -100,7 +101,7 @@ public class StudyGroupRestController {
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/rest/api/admin-join")
+    @PostMapping("/admin-join")
     public ResponseEntity<?> changeLookingForMembers(@RequestParam("studyGroupId") long studyGroupId,
                                                      @RequestParam("lookingForMembers") int lookingForMembers) {
         StudyGroup studyGroup = studyGroupService.findById(studyGroupId);
@@ -113,7 +114,7 @@ public class StudyGroupRestController {
         return ResponseEntity.ok().body("Updated looking for members status.");
     }
 
-    @PostMapping("/rest/api/post-create")
+    @PostMapping("/post-create")
     public ResponseEntity<?> createPost(@RequestParam("studyGroupId") long studyGroupId, HttpSession session,
                                         @RequestBody Post post){
         User user = (User) session.getAttribute("user");
