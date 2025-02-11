@@ -6,6 +6,7 @@ import is.hi.hbv501g.team20.Services.PostService;
 import is.hi.hbv501g.team20.Services.StudyGroupService;
 import is.hi.hbv501g.team20.Services.UserService;
 import is.hi.hbv501g.team20.dto.ChangePasswordRequest;
+import is.hi.hbv501g.team20.dto.LoginRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -52,10 +53,24 @@ public class UserRestController {
 
     // Pre: user exists, user password matches the password encrypted in the database
     // Post: token generated that can be used to validate the user's actions
+//    @PostMapping("/login")
+//    public ResponseEntity<?> loginUser(@RequestBody User user){
+//        try {
+//            String token = userService.verify(user);
+//            if (token.equals("Failed")){
+//                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+//            }
+//            return ResponseEntity.ok(token);
+//        } catch (Exception e) {
+//            return ResponseEntity.badRequest().build();
+//        }
+//    }
+
     @PostMapping("/login")
-    public ResponseEntity<?> loginUser(@RequestBody User user){
+    public ResponseEntity<?> loginUser(@RequestBody LoginRequest loginRequest){
         try {
-            String token = userService.verify(user);
+            // if I don't like it, change it to RequestBody User.
+            String token = userService.verify(loginRequest);
             if (token.equals("Failed")){
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
             }
