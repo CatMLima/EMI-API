@@ -25,7 +25,7 @@ public interface UserService {
     // method called by the rest api
     User registerNewUser(User user);
 
-    String verify(String email, String password);
+    String verify(User user);
 
     boolean checkOldPassword(User user, String oldPassword);
     boolean checkNewPassword(String newPassword, String confirmPassword);

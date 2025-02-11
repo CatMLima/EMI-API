@@ -146,8 +146,7 @@ public class UserServiceImplementation implements UserService {
 
     // Used by the REST controller for logging in
     @Override
-    public String verify(String email, String password) {
-        User user = userRepo.findByEmail(email);
+    public String verify(User user) {
         Authentication auth = authManager.authenticate(new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword()));
 
         if(auth.isAuthenticated())
