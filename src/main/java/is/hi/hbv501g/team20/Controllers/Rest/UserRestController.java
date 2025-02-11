@@ -67,10 +67,10 @@ public class UserRestController {
 //    }
 
     @PostMapping("/login")
-    public ResponseEntity<?> loginUser(@RequestBody LoginRequest loginRequest){
+    public ResponseEntity<?> loginUser(@RequestParam String email, @RequestParam String password){
         try {
             // if I don't like it, change it to RequestBody User.
-            String token = userService.verify(loginRequest);
+            String token = userService.verify(email,password);
             if (token.equals("Failed")){
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
             }
