@@ -33,19 +33,31 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
+//        http
+//                .csrf(customizer -> customizer.disable())
+//                .authorizeHttpRequests(request -> request
+//                        .requestMatchers("rest/register","rest/login","login","home","sign-up","rest/home","/","rest/userslist")
+//                        .permitAll()
+//                        .anyRequest().authenticated())
+//                .httpBasic(Customizer.withDefaults())
+//        // Can remove this later to maintain a session.
+//                .sessionManagement(session ->
+//                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+//                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+
+        //http.formLogin(Customizer.withDefaults());
+
         http
                 .csrf(customizer -> customizer.disable())
                 .authorizeHttpRequests(request -> request
-                        .requestMatchers("rest/register","rest/login","login","home","sign-up","rest/home","/")
-                        .permitAll()
-                        .anyRequest().authenticated())
+                        .requestMatchers("rest/userslist","rest/home","rest/login","rest/register","/").permitAll()
+                        .requestMatchers("rest/**").authenticated()
+                        .anyRequest().permitAll())
                 .httpBasic(Customizer.withDefaults())
-        // Can remove this later to maintain a session.
+                // Can remove this later to maintain a session.
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
-
-        //http.formLogin(Customizer.withDefaults());
 
         return http.build();
     }

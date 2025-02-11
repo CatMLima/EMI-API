@@ -210,7 +210,7 @@ public class UserRestController {
             new User("josh", "josh@hi.is", "someotherpassword")
     ));
 
-    @GetMapping("/rest/userslist")
+    @GetMapping("/userslist")
     public List<User> getUsers(){
         return users;
     }
