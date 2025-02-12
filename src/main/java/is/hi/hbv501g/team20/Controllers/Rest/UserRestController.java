@@ -1,10 +1,7 @@
 package is.hi.hbv501g.team20.Controllers.Rest;
 
 import is.hi.hbv501g.team20.Persistence.Entities.User;
-import is.hi.hbv501g.team20.Services.CoffeeService;
-import is.hi.hbv501g.team20.Services.PostService;
-import is.hi.hbv501g.team20.Services.StudyGroupService;
-import is.hi.hbv501g.team20.Services.UserService;
+import is.hi.hbv501g.team20.Services.*;
 import is.hi.hbv501g.team20.dto.ChangePasswordRequest;
 import is.hi.hbv501g.team20.dto.LoginRequest;
 import jakarta.servlet.http.HttpSession;
@@ -39,6 +36,10 @@ public class UserRestController {
     @Autowired
     private CoffeeService coffeeService;
 
+    @Autowired
+    private UserAuthService userAuthService;
+
+
     // Pre: User is not currently registered.
     // Post: New user account is created and their information displayed.
     @PostMapping("/register")
@@ -51,20 +52,8 @@ public class UserRestController {
         }
     }
 
-    // Pre: user exists, user password matches the password encrypted in the database
-    // Post: token generated that can be used to validate the user's actions
-//    @PostMapping("/login")
-//    public ResponseEntity<?> loginUser(@RequestBody User user){
-//        try {
-//            String token = userService.verify(user);
-//            if (token.equals("Failed")){
-//                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-//            }
-//            return ResponseEntity.ok(token);
-//        } catch (Exception e) {
-//            return ResponseEntity.badRequest().build();
-//        }
-//    }
+    // Pre: Receives email and password
+    // Post: if valid information, a token is given which allows user to be authenticated in other method calls.
 
     @PostMapping("/login")
     public ResponseEntity<?> loginUser(@RequestBody User user){
@@ -85,15 +74,7 @@ public class UserRestController {
     @GetMapping("/get/user")
     public ResponseEntity<User> getCurrentUser(){
 
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-
-        if (auth == null || !(auth.getPrincipal() instanceof UserDetails)){
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-
-        String username = ((UserDetails) auth.getPrincipal()).getUsername();
-
-        User user = userService.findByEmail(username);
+        User user = userAuthService.getAuthenticatedUser();
 
         if (user == null){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
@@ -101,7 +82,57 @@ public class UserRestController {
 
         User userUpdated = userService.updateUser(user);
 
-        return ResponseEntity.ok(userUpdated);
+        User smallerUser = new User(null,userUpdated.getEmail(), userUpdated.getPassword());
+
+        return ResponseEntity.ok(smallerUser);
+    }
+
+    /*
+    A bunch of GET MAPPINGS to get the information about the User.
+     */
+
+    @GetMapping("/get/isActive")
+    public ResponseEntity<Integer> getIsActive() {
+        User user = userAuthService.getAuthenticatedUser();
+
+        if (user == null || user.getIsActive() == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+
+        return ResponseEntity.ok(user.getIsActive());
+    }
+
+    @GetMapping("/get/privacy")
+    public ResponseEntity<Integer> getPrivacy() {
+        User user = userAuthService.getAuthenticatedUser();
+
+        if (user == null || user.getPrivacy() == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+
+        return ResponseEntity.ok(user.getPrivacy());
+    }
+
+    @GetMapping("/get/streak")
+    public ResponseEntity<Integer> getStreak() {
+        User user = userAuthService.getAuthenticatedUser();
+
+        if (user == null || user.getStreak() == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+
+        return ResponseEntity.ok(user.getStreak());
+    }
+
+    @GetMapping("/get/name")
+    public ResponseEntity<String> getName() {
+        User user = userAuthService.getAuthenticatedUser();
+
+        if (user == null || user.getName() == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+
+        return ResponseEntity.ok(user.getName());
     }
 
 
@@ -109,15 +140,7 @@ public class UserRestController {
     // Post: the user's privacy is changed, success message issued.
     @PostMapping("/settings/change_privacy")
     public ResponseEntity<?> changePrivacy(@RequestParam int privacy){
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-
-        if (auth == null || !(auth.getPrincipal() instanceof UserDetails)){
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-
-        String username = ((UserDetails) auth.getPrincipal()).getUsername();
-
-        User user = userService.findByEmail(username);
+        User user = userAuthService.getAuthenticatedUser();
 
         if (user == null){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
@@ -134,15 +157,7 @@ public class UserRestController {
     @PutMapping("/settings/change_password")
     public ResponseEntity<?> changePassword(@RequestBody ChangePasswordRequest request){
 
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-
-        if (auth == null || !(auth.getPrincipal() instanceof UserDetails)){
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized user.");
-        }
-
-        String username = ((UserDetails) auth.getPrincipal()).getUsername();
-
-        User user = userService.findByEmail(username);
+        User user = userAuthService.getAuthenticatedUser();
 
         if (user == null){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found.");
@@ -165,16 +180,23 @@ public class UserRestController {
 
     }
 
+    @GetMapping("/get/profilePicture")
+    public ResponseEntity<byte[]> getProfilePicture(){
+        User user = userAuthService.getAuthenticatedUser();
 
+        if (user == null || user.getProfilePicture() == null){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
 
+        return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(user.getProfilePicture());
+    }
 
-// THIS NEXT
-    @PostMapping("/uploadProfilePicture")
-    public ResponseEntity<?> uploadPicture(@RequestParam("profilePicture") MultipartFile profilePicture, HttpSession session){
-        User user = (User) session.getAttribute("user");
+    @PostMapping("/set/profilePicture")
+    public ResponseEntity<String> uploadPicture(@RequestParam("file") MultipartFile profilePicture){
+        User user = userAuthService.getAuthenticatedUser();
 
-        if (user == null || profilePicture.isEmpty()){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User not logged in or no picture provided.");
+        if (user == null){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
 
         try{
@@ -187,35 +209,27 @@ public class UserRestController {
         }
     }
 
-    @GetMapping("/user/{id}/profilePicture")
-    public ResponseEntity<byte[]> getProfilePicture(@PathVariable Long id){
-        User user = userService.findById(id);
-        if (user == null || user.getProfilePicture() == null){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-        }
-
-        return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(user.getProfilePicture());
-    }
-
     @DeleteMapping("/delete-account/{id}")
-    public ResponseEntity<?> deleteAccount(@PathVariable("id") long id, HttpSession session){
-        User user = userService.findById(id);
+    public ResponseEntity<String> deleteAccount(){
+        User user = userAuthService.getAuthenticatedUser();
 
         if (user == null){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
 
-        postService.deletePostByUser(user);
-        coffeeService.deleteCoffeesByUser(user);
-        studyGroupService.removeUserFromStudyGroups(user);
-        userService.deleteUser(user);
+        try {
+            postService.deletePostByUser(user);
+            coffeeService.deleteCoffeesByUser(user);
+            studyGroupService.removeUserFromStudyGroups(user);
+            userService.deleteUser(user);
 
-        session.invalidate();
-        return ResponseEntity.ok("User has been deleted.");
+            SecurityContextHolder.clearContext();
+
+            return ResponseEntity.ok("User has been deleted.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error deleting user.");
+        }
     }
-
-
-
 
 
     /* These are all part of a testing thing.
