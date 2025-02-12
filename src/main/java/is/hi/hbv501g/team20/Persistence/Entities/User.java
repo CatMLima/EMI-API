@@ -163,8 +163,6 @@ public class User {
                 ", streak=" + streak +
                 ", name='" + name + '\'' +
                 ", email='" + email + '\'' +
-                ", password='" + password + '\'' +
-                ", lastActivityDate=" + lastActivityDate +
                 '}';
     }
 }
