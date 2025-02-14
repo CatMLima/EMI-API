@@ -82,7 +82,7 @@ public class UserRestController {
 
         User userUpdated = userService.updateUser(user);
 
-        User smallerUser = new User(null,userUpdated.getEmail(), userUpdated.getPassword());
+        User smallerUser = new User(user.getName(),userUpdated.getEmail(), userUpdated.getPassword());
 
         return ResponseEntity.ok(smallerUser);
     }
