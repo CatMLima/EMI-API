@@ -220,18 +220,17 @@ public class UserController {
 
         User user = (User) session.getAttribute("user");
 
-        if (userService.checkPassword(user, oldPassword)) {
+        if (!userService.checkOldPassword(user, oldPassword)) {
             model.addAttribute("message", "Current password is incorrect.");
             return "redirect:/settings";
         }
 
-        if (userService.checkNewPassword(newPassword, newPassword2)) {
+        if (!userService.checkNewPassword(newPassword, newPassword2)) {
             model.addAttribute("message", "New passwords do not match.");
             return "redirect:/settings";
         }
 
-        user.setPassword(newPassword);
-        userService.registerNewUser(user);
+        userService.changePassword(user,newPassword);
         model.addAttribute("message", "Password changed successfully, sign in again.");
         return "home";
 
