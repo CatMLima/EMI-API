@@ -20,38 +20,6 @@
             }
         }
 
-        // Validate password requirements and match confirmation
-        function validatePasswordForm() {
-            const currentPassword = document.getElementById("oldPassword").value;
-            const userPassword = '[[${user.password}]]'; // Thymeleaf to retrieve the actual password
-            const newPassword = document.getElementById("newPassword").value;
-            const confirmPassword = document.getElementById("confirmPassword").value;
-
-            // Clear previous error messages
-            document.getElementById('passwordError').innerText = '';
-            document.getElementById('matchError').innerText = '';
-
-            // Check if current password matches
-            if (currentPassword !== userPassword) {
-                document.getElementById('passwordError').innerText = "Incorrect current password.";
-                return false;
-            }
-
-            // Validate new password length and complexity
-            const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d)[A-Za-z\d]{10,}$/;
-            if (!passwordRegex.test(newPassword)) {
-                alert('Password must be at least 10 characters long and contain both letters and numbers.')
-                return false;
-            }
-
-            // Check if new password matches confirm password
-            if (newPassword !== confirmPassword) {
-                alert("Passwords must match.");
-                return false;
-            }
-
-            return true;
-        }
     </script>
 </head>
 <body>
@@ -75,9 +43,11 @@
     </div>
 
     <!-- Call the service to change users password -->
+
+
     <div>
         <h4>Change Password</h4>
-        <form th:action="@{/change-password/{id}}" onsubmit="return validatePasswordForm()">
+        <form th:action="@{/change-password/{id}}" >
 
             <label for="oldPassword">Current Password:</label>
             <input type="password" id="oldPassword" name="oldPassword" required/><br>
