@@ -7,6 +7,7 @@ import is.hi.hbv501g.team20.Persistence.Entities.User;
 import is.hi.hbv501g.team20.Persistence.Enums.Building;
 import is.hi.hbv501g.team20.Services.CoffeeService;
 import is.hi.hbv501g.team20.Services.StudyActivityService;
+import is.hi.hbv501g.team20.Services.UserAuthService;
 import is.hi.hbv501g.team20.Services.UserService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,8 +23,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+
 @RestController
 public class StudyActivityRestController {
+
+    @Autowired
+    private UserAuthService userAuthService;
 
     private final StudyActivityService studyActivityService;
     private final UserService userService;
@@ -42,12 +47,12 @@ public class StudyActivityRestController {
     }
 
     @PostMapping("/rest/api/studyactivity-create")
-    public ResponseEntity<String> createStudyActivityPost(HttpSession session, @RequestBody StudyActivity studyActivity) {
-        User user = (User) session.getAttribute("user");
-        if (user == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not logged in.");
-        }
+    public ResponseEntity<String> createStudyActivityPost(@RequestBody StudyActivity studyActivity) {
+        User user = userAuthService.getAuthenticatedUser();
 
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
         user.setIsActive(0);
         userService.save(user);
 
