@@ -209,7 +209,7 @@ public class UserRestController {
         }
     }
 
-    @DeleteMapping("/delete-account/{id}")
+    @DeleteMapping("/delete_account")
     public ResponseEntity<String> deleteAccount(){
         User user = userAuthService.getAuthenticatedUser();
 
