@@ -47,7 +47,7 @@ public class StudyActivityRestController {
     }
 
     @PostMapping("/rest/api/studyactivity-create")
-    public ResponseEntity<String> createStudyActivityPost(@RequestBody StudyActivity studyActivity) {
+    public ResponseEntity<?> createStudyActivityPost(@RequestBody StudyActivity studyActivity) {
         User user = userAuthService.getAuthenticatedUser();
 
         if (user == null) {
