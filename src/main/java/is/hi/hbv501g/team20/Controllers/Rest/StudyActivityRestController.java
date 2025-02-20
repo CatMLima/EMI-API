@@ -60,9 +60,10 @@ public class StudyActivityRestController {
         //Convert DTO into StudyActivity entity
         StudyActivity studyActivity = new StudyActivity();
         studyActivity.setUser(user);
+        studyActivity.setSubjectName(request.getSubject_name());
         studyActivity.setTitle(request.getTitle());
         studyActivity.setDescription(request.getDescription());
-        studyActivity.setSubjectID(request.getSubjectID());
+        studyActivity.setSubjectID(request.getSubjectid());
         studyActivity.setBuilding(request.getBuilding());
 
         studyActivity.setPrivacy(user);

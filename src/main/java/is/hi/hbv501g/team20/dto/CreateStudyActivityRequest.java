@@ -11,12 +11,12 @@ public class CreateStudyActivityRequest {
         this.description = description;
     }
 
-    public String getSubjectID() {
-        return subjectID;
+    public String getSubjectid() {
+        return subjectid;
     }
 
-    public void setSubjectID(String subjectID) {
-        this.subjectID = subjectID;
+    public void setSubjectid(String subjectid) {
+        this.subjectid = subjectid;
     }
 
     public String getTitle() {
@@ -27,12 +27,12 @@ public class CreateStudyActivityRequest {
         this.title = title;
     }
 
-    public String getSubjectName() {
-        return subjectName;
+    public String getSubject_name() {
+        return subject_name;
     }
 
-    public void setSubjectName(String subjectName) {
-        this.subjectName = subjectName;
+    public void setSubject_name(String subject_name) {
+        this.subject_name = subject_name;
     }
 
     public Building getBuilding() {
@@ -45,8 +45,8 @@ public class CreateStudyActivityRequest {
 
     private String title;
     private String description;
-    private String subjectID;
-    private String subjectName;
+    private String subjectid;
+    private String subject_name;
     private Building building;
 
     public CreateStudyActivityRequest(){}
@@ -54,8 +54,8 @@ public class CreateStudyActivityRequest {
     public CreateStudyActivityRequest(String title, String description, String subjectID, String subjectName, Building building){
         this.title = title;
         this.description = description;
-        this.subjectID = subjectID;
-        this.subjectName = subjectName;
+        this.subjectid = subjectID;
+        this.subject_name = subjectName;
         this.building = building;
     }
 
