@@ -9,6 +9,7 @@ import is.hi.hbv501g.team20.Services.CoffeeService;
 import is.hi.hbv501g.team20.Services.StudyActivityService;
 import is.hi.hbv501g.team20.Services.UserAuthService;
 import is.hi.hbv501g.team20.Services.UserService;
+import is.hi.hbv501g.team20.dto.CreateStudyActivityRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -47,7 +48,7 @@ public class StudyActivityRestController {
     }
 
     @PostMapping("/rest/api/studyactivity-create")
-    public ResponseEntity<String> createStudyActivityPost(@RequestBody StudyActivity studyActivity) {
+    public ResponseEntity<String> createStudyActivityPost(@RequestBody CreateStudyActivityRequest request) {
         User user = userAuthService.getAuthenticatedUser();
 
         if (user == null) {
@@ -56,7 +57,14 @@ public class StudyActivityRestController {
         user.setIsActive(0);
         userService.save(user);
 
+        //Convert DTO into StudyActivity entity
+        StudyActivity studyActivity = new StudyActivity();
         studyActivity.setUser(user);
+        studyActivity.setTitle(request.getTitle());
+        studyActivity.setDescription(request.getDescription());
+        studyActivity.setSubjectID(request.getSubjectID());
+        studyActivity.setBuilding(request.getBuilding());
+
         studyActivity.setPrivacy(user);
         studyActivity.setDate(new Date());
         studyActivity.setStart(LocalTime.now());
