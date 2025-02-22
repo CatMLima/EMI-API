@@ -209,7 +209,7 @@ public class UserServiceImplementation implements UserService {
         LocalDate lastActivity = user.getLastActivityDate();
         LocalDate now = LocalDate.now();
 
-        if (lastActivity == null || now.isAfter(lastActivity.plusDays(1))){
+        if (user.getStreak() == null || lastActivity == null || now.isAfter(lastActivity.plusDays(1))){
             user.setStreak(0);
             return userRepo.save(user);
         }

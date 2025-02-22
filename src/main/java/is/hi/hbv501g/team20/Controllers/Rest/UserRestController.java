@@ -116,12 +116,13 @@ public class UserRestController {
     @GetMapping("/get/streak")
     public ResponseEntity<Integer> getStreak() {
         User user = userAuthService.getAuthenticatedUser();
+        User streakCheckedUser = userService.checkStreak(user);
 
-        if (user == null || user.getStreak() == null) {
+        if (user == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
 
-        return ResponseEntity.ok(user.getStreak());
+        return ResponseEntity.ok(streakCheckedUser.getStreak());
     }
 
     @GetMapping("/get/name")
