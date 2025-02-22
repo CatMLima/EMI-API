@@ -175,7 +175,7 @@ public class StudyActivityRestController {
     }
 
     @GetMapping("/rest/feed")
-    public ResponseEntity<Map<String, Object>> showFeed(HttpSession session) {
+    public ResponseEntity<Map<String, Object>> showFeed() {
         User user = userAuthService.getAuthenticatedUser();
         if (user == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
