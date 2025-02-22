@@ -16,9 +16,6 @@ import java.util.stream.Collectors;
 
 @Entity
 @Table(name= "\"user\"")
-@JsonIdentityInfo(
-        generator = ObjectIdGenerators.PropertyGenerator.class,
-        property = "id")
 public class User {
 
     @Id
