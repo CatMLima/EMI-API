@@ -98,10 +98,10 @@ public class StudyActivityRestController {
     }
 
     @PostMapping("/rest/studyactivity-finish/{id}")
-    public ResponseEntity<String> finishStudyActivity(HttpSession session, @PathVariable Long id) {
-        User user = (User) session.getAttribute("user");
+    public ResponseEntity<String> finishStudyActivity(@PathVariable Long id) {
+        User user = userAuthService.getAuthenticatedUser();
         if (user == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not logged in.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User not logged in.");
         }
 
         StudyActivity studyActivity = studyActivityService.findById(id);
@@ -158,7 +158,7 @@ public class StudyActivityRestController {
 
     @GetMapping("/rest/studyactivity-list")
     public ResponseEntity<List<StudyActivity>> getStudyActivityDetails(HttpSession session) {
-        User user = (User) session.getAttribute("user");
+        User user = userAuthService.getAuthenticatedUser();
         if (user != null) {
             List<StudyActivity> studyActivities = studyActivityService.findByUser(user);
             return ResponseEntity.ok(studyActivities);
@@ -175,10 +175,10 @@ public class StudyActivityRestController {
     }
 
     @GetMapping("/rest/feed")
-    public ResponseEntity<Map<String, Object>> showFeed(HttpSession session) {
-        User user = (User) session.getAttribute("user");
+    public ResponseEntity<Map<String, Object>> showFeed() {
+        User user = userAuthService.getAuthenticatedUser();
         if (user == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
 
         List<StudyActivity> allStudyActivities = studyActivityService.findAllPublicAndUserActivities(user);
@@ -198,8 +198,8 @@ public class StudyActivityRestController {
     }
 
     @GetMapping("/rest/profile")
-    public ResponseEntity<User> getUserProfile(HttpSession session) {
-        User user = (User) session.getAttribute("user");
+    public ResponseEntity<User> getUserProfile() {
+        User user = userAuthService.getAuthenticatedUser();
         if (user != null) {
             return ResponseEntity.ok(user);
         } else {
@@ -215,7 +215,7 @@ public class StudyActivityRestController {
 
     @PostMapping("/rest/uploadActivityPicture")
     public ResponseEntity<String> uploadActivityPicture(@RequestParam("activityPicture") MultipartFile activityPicture,
-                                                        @PathVariable("activityId") Long activityId, HttpSession session) {
+                                                        @PathVariable("activityId") Long activityId) {
         StudyActivity studyActivity = studyActivityService.findById(activityId);
 
         if (studyActivity != null && !activityPicture.isEmpty()) {
@@ -243,20 +243,20 @@ public class StudyActivityRestController {
     }
 
     @GetMapping("/rest/feed-search")
-    public ResponseEntity<List<StudyActivity>> searchStudyActivities(@RequestParam("query") String query, HttpSession session) {
-        User sessionUser = (User) session.getAttribute("user");
-        if (sessionUser != null) {
-            List<StudyActivity> searchResults = studyActivityService.searchByTitleOrDescription(query, sessionUser);
+    public ResponseEntity<List<StudyActivity>> searchStudyActivities(@RequestParam("query") String query) {
+        User user = userAuthService.getAuthenticatedUser();
+        if (user != null) {
+            List<StudyActivity> searchResults = studyActivityService.searchByTitleOrDescription(query, user);
             return ResponseEntity.ok(searchResults);
         } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
     }
 
 
     @GetMapping("/rest/studyactivity/{id}/toggle-coffee")
-    public ResponseEntity<String> toggleCoffee(@PathVariable Long id, HttpSession session) {
-        User user = (User) session.getAttribute("user");
+    public ResponseEntity<String> toggleCoffee(@PathVariable Long id) {
+        User user = userAuthService.getAuthenticatedUser();
         if (user == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not logged in.");
         }
