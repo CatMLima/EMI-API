@@ -26,6 +26,7 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<StudyActivity> activities = new ArrayList<>();
 
+    @JsonIgnore
     @ManyToMany(mappedBy = "members")
     private List<StudyGroup> studyGroupsMember = new ArrayList<>();
 
@@ -33,9 +34,11 @@ public class User {
     @OneToMany(mappedBy = "admin")
     private List<StudyGroup> studyGroupsAdmin = new ArrayList<>();
 
+    @JsonIgnore
     @OneToMany(mappedBy = "user")
     private List<Post> posts = new ArrayList<>();
 
+    @JsonIgnore
     @OneToMany(mappedBy = "user")
     private List<Coffee> coffees = new ArrayList<>();
 
