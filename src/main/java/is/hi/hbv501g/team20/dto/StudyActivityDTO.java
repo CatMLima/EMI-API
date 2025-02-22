@@ -17,7 +17,7 @@ public class StudyActivityDTO {
     private Building building;
     private Location location;
     private Date date;
-    private Duration duration;
+    private String duration;
     private String title;
     private String description;
     private String subjectID;
@@ -25,7 +25,7 @@ public class StudyActivityDTO {
 
     public StudyActivityDTO(Long id, Long userID, List<Coffee> coffees,
                             byte[] activityPicture, Building building, Location location,
-                            Date date, Duration duration,  String title,
+                            Date date, String duration,  String title,
                             String description, String subjectID, String subjectName) {
         this.id = id;
         this.userID = userID;
@@ -55,8 +55,8 @@ public class StudyActivityDTO {
     public void setLocation(Location location) { this.location = location; }
     public Date getDate() { return date; }
     public void setDate(Date date) { this.date = date; }
-    public Duration getDuration() { return duration; }
-    public void setDuration(Duration duration) { this.duration = duration; }
+    public String getDuration() { return duration; }
+    public void setDuration(String duration) { this.duration = duration; }
     public String getTitle() { return title; }
     public void setTitle(String title) { this.title = title; }
     public String getDescription() { return description; }

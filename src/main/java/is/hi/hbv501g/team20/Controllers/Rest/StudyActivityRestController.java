@@ -205,7 +205,7 @@ public class StudyActivityRestController {
         for (StudyActivity sa : allStudyActivities) {
             StudyActivityDTO dto = new StudyActivityDTO(sa.getId(), sa.getUser().getId(), sa.getCoffees(),
                     sa.getActivityPicture(), sa.getBuilding(), sa.getLocation(), sa.getDate(),
-                    sa.getDuration(), sa.getTitle(), sa.getDescription(), sa.getSubjectName(), sa.getSubjectID());
+                    sa.getFormattedDuration(), sa.getTitle(), sa.getDescription(), sa.getSubjectName(), sa.getSubjectID());
             dtoList.add(dto);
         }
         return ResponseEntity.ok(dtoList);
