@@ -4,7 +4,6 @@ import is.hi.hbv501g.team20.Persistence.Entities.Coffee;
 import is.hi.hbv501g.team20.Persistence.Entities.Location;
 import is.hi.hbv501g.team20.Persistence.Enums.Building;
 
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -19,12 +18,14 @@ public class StudyActivityDTO {
     private String duration;
     private String title;
     private String description;
+    private String userName;
     private String subjectID;
     private String subjectName;
 
     public StudyActivityDTO(Long id, Long userID, byte[] activityPicture, Building building,
-                            Location location, Date date, String duration, String title,
-                            String description, String subjectID, String subjectName) {
+                            Location location, Date date, String duration,  String title,
+                            String description, String userName, String subjectID,
+                            String subjectName) {
         this.id = id;
         this.userID = userID;
         this.activityPicture = activityPicture;
@@ -34,6 +35,7 @@ public class StudyActivityDTO {
         this.duration = duration;
         this.title = title;
         this.description = description;
+        this.userName = userName;
         this.subjectID = subjectID;
         this.subjectName = subjectName;
     }
@@ -56,6 +58,8 @@ public class StudyActivityDTO {
     public void setTitle(String title) { this.title = title; }
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
+    public String getUserName() { return userName; }
+    public void setUserName(String userName) {this.userName = userName;}
     public String getSubjectID() { return subjectID; }
     public void setSubjectID(String subjectID) { this.subjectID = subjectID; }
     public String getSubjectName() { return subjectName; }
