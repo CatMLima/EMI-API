@@ -1,6 +1,7 @@
 package is.hi.hbv501g.team20.Persistence.Entities;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import is.hi.hbv501g.team20.Persistence.Enums.Building;
 import jakarta.persistence.*;
 
@@ -17,11 +18,12 @@ public class StudyActivity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
+    //@JsonBackReference
     @ManyToOne
     @JoinColumn(name = "user_id")
-    @JsonBackReference
     private User user;
 
+    //@JsonManagedReference
     @OneToMany(mappedBy = "activity", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Coffee> coffees = new ArrayList<>();
 

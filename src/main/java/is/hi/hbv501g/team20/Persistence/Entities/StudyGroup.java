@@ -22,22 +22,22 @@ public class StudyGroup {
     private int lookingForMembers;
     private int memberCount;
 
+    //@JsonBackReference
     @ManyToOne
     @JoinColumn(name = "admin_id", nullable = false)
-    @JsonBackReference
     private User admin;
 
+    //@JsonIgnore
     @ManyToMany
     @JoinTable(
             name = "studygroup_members",
             joinColumns = @JoinColumn(name = "studygroup_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id")
     )
-    @JsonIgnore
     private List<User> members = new ArrayList<>();
 
+    //@JsonManagedReference
     @OneToMany(mappedBy = "studygroup", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
     private List<Post> posts = new ArrayList<>();
 
     public StudyGroup(String name, String description, String subjectId, int lookingForMembers) {

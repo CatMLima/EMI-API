@@ -13,12 +13,12 @@ public class Post {
 
     @ManyToOne
     @JoinColumn(name = "group_id")
-    @JsonBackReference
+    //@JsonBackReference
     private StudyGroup studygroup;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    @JsonBackReference
+    //@JsonBackReference
     private User user;
     private String title;
     private String content;
