@@ -167,7 +167,6 @@ public class StudyActivityRestController {
         }
     }
 
-
     @GetMapping("/rest/locations-list")
     public ResponseEntity<List<Location>> getLocationsList(@RequestParam(required = false) Integer userCount) {
         List<Location> locations = (userCount != null) ? studyActivityService.findByUserCountLessThanEqual(userCount) : studyActivityService.findBuildingAlphabetically();
