@@ -242,7 +242,7 @@ public class StudyActivity {
     public String toString() {
         return "StudyActivity{" +
                 "id=" + id +
-                ", user=" + user +
+                ", userID=" + user.getId()+
                 ", coffees=" + coffees +
                 ", activityPicture=" + Arrays.toString(activityPicture) +
                 ", building=" + building +
