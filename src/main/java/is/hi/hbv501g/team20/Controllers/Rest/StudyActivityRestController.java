@@ -203,7 +203,7 @@ public class StudyActivityRestController {
         List<StudyActivity> allStudyActivities = studyActivityService.findAllPublicAndUserActivities(user);
         List<StudyActivityDTO> dtoList = new ArrayList<>();
         for (StudyActivity sa : allStudyActivities) {
-            StudyActivityDTO dto = new StudyActivityDTO(sa.getId(), sa.getUser().getId(), sa.getCoffees(),
+            StudyActivityDTO dto = new StudyActivityDTO(sa.getId(), sa.getUser().getId(),
                     sa.getActivityPicture(), sa.getBuilding(), sa.getLocation(), sa.getDate(),
                     sa.getFormattedDuration(), sa.getTitle(), sa.getDescription(), sa.getSubjectName(), sa.getSubjectID());
             dtoList.add(dto);

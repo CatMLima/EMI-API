@@ -12,7 +12,6 @@ import java.util.List;
 public class StudyActivityDTO {
     private Long id;
     private Long userID;
-    private List<Coffee> coffees = new ArrayList<>();
     private byte[] activityPicture;
     private Building building;
     private Location location;
@@ -23,13 +22,11 @@ public class StudyActivityDTO {
     private String subjectID;
     private String subjectName;
 
-    public StudyActivityDTO(Long id, Long userID, List<Coffee> coffees,
-                            byte[] activityPicture, Building building, Location location,
-                            Date date, String duration,  String title,
+    public StudyActivityDTO(Long id, Long userID, byte[] activityPicture, Building building,
+                            Location location, Date date, String duration, String title,
                             String description, String subjectID, String subjectName) {
         this.id = id;
         this.userID = userID;
-        this.coffees = coffees;
         this.activityPicture = activityPicture;
         this.building = building;
         this.location = location;
@@ -45,8 +42,6 @@ public class StudyActivityDTO {
     public void setId(Long id) { this.id = id; }
     public Long getUserID() { return userID; }
     public void setUserID(Long userID) { this.userID = userID; }
-    public List<Coffee> getCoffees() { return coffees; }
-    public void setCoffees(List<Coffee> coffees) { this.coffees = coffees; }
     public byte[] getActivityPicture() { return activityPicture; }
     public void setActivityPicture(byte[] activityPicture) { this.activityPicture = activityPicture; }
     public Building getBuilding() { return building; }
