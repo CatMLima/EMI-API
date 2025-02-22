@@ -1,7 +1,9 @@
 package is.hi.hbv501g.team20.Persistence.Entities;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import is.hi.hbv501g.team20.Persistence.Enums.Building;
 import jakarta.persistence.*;
 
@@ -9,7 +11,9 @@ import java.time.Duration;
 import java.time.LocalTime;
 import java.util.*;
 
-
+@JsonIdentityInfo(
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "id")
 @Entity
 @Table(name = "\"studyactivity\"")
 public class StudyActivity {
