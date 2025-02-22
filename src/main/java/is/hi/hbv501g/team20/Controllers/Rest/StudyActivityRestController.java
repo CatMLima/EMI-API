@@ -196,6 +196,16 @@ public class StudyActivityRestController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/rest/getFeedActivities")
+    public ResponseEntity<List<StudyActivity>> getFeedActivities() {
+        User user = userAuthService.getAuthenticatedUser();
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+        List<StudyActivity> allStudyActivities = studyActivityService.findAllPublicAndUserActivities(user);
+        return ResponseEntity.ok(allStudyActivities);
+    }
+
     @GetMapping("/rest/profile")
     public ResponseEntity<User> getUserProfile() {
         User user = userAuthService.getAuthenticatedUser();
