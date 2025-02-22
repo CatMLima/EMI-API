@@ -12,12 +12,12 @@ public class Coffee {
 
         @ManyToOne
         @JoinColumn(name = "user_id")
-        @JsonBackReference
+        //@JsonBackReference
         private User user;
 
         @ManyToOne
         @JoinColumn(name = "activity_id")
-        @JsonBackReference
+        //@JsonBackReference
         private StudyActivity activity;
         //@Temporal(TemporalType.DATE)
        // private Date date;

@@ -23,23 +23,23 @@ public class User {
     @Column(name="profile_picture")
     private byte[] profilePicture;
 
-    @JsonManagedReference
+    //@JsonManagedReference
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<StudyActivity> activities = new ArrayList<>();
 
-    @JsonIgnore
+    //@JsonIgnore
     @ManyToMany(mappedBy = "members")
     private List<StudyGroup> studyGroupsMember = new ArrayList<>();
 
-    @JsonManagedReference
+    //@JsonManagedReference
     @OneToMany(mappedBy = "admin")
     private List<StudyGroup> studyGroupsAdmin = new ArrayList<>();
 
-    @JsonManagedReference
+    //@JsonManagedReference
     @OneToMany(mappedBy = "user")
     private List<Post> posts = new ArrayList<>();
 
-    @JsonManagedReference
+    //@JsonManagedReference
     @OneToMany(mappedBy = "user")
     private List<Coffee> coffees = new ArrayList<>();
 
