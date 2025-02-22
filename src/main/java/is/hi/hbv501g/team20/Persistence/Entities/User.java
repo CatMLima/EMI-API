@@ -1,5 +1,6 @@
 package is.hi.hbv501g.team20.Persistence.Entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -21,12 +22,14 @@ public class User {
     @Column(name="profile_picture")
     private byte[] profilePicture;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<StudyActivity> activities = new ArrayList<>();
 
     @ManyToMany(mappedBy = "members")
     private List<StudyGroup> studyGroupsMember = new ArrayList<>();
 
+    @JsonIgnore
     @OneToMany(mappedBy = "admin")
     private List<StudyGroup> studyGroupsAdmin = new ArrayList<>();
 
