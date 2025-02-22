@@ -1,5 +1,8 @@
 package is.hi.hbv501g.team20.Persistence.Entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
@@ -21,6 +24,7 @@ public class StudyGroup {
 
     @ManyToOne
     @JoinColumn(name = "admin_id", nullable = false)
+    @JsonBackReference
     private User admin;
 
     @ManyToMany
@@ -29,9 +33,11 @@ public class StudyGroup {
             joinColumns = @JoinColumn(name = "studygroup_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id")
     )
+    @JsonIgnore
     private List<User> members = new ArrayList<>();
 
     @OneToMany(mappedBy = "studygroup", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<Post> posts = new ArrayList<>();
 
     public StudyGroup(String name, String description, String subjectId, int lookingForMembers) {
