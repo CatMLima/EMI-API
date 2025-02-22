@@ -1,5 +1,6 @@
 package is.hi.hbv501g.team20.Persistence.Entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 
 @Entity
@@ -12,10 +13,12 @@ public class Post {
 
     @ManyToOne
     @JoinColumn(name = "group_id")
+    @JsonBackReference
     private StudyGroup studygroup;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
+    @JsonBackReference
     private User user;
     private String title;
     private String content;

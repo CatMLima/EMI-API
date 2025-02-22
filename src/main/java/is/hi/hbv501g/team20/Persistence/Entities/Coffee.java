@@ -1,5 +1,6 @@
 package is.hi.hbv501g.team20.Persistence.Entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 
 @Entity
@@ -11,10 +12,12 @@ public class Coffee {
 
         @ManyToOne
         @JoinColumn(name = "user_id")
+        @JsonBackReference
         private User user;
 
         @ManyToOne
         @JoinColumn(name = "activity_id")
+        @JsonBackReference
         private StudyActivity activity;
         //@Temporal(TemporalType.DATE)
        // private Date date;

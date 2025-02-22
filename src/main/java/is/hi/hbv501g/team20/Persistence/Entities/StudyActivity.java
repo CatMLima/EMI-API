@@ -1,5 +1,6 @@
 package is.hi.hbv501g.team20.Persistence.Entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import is.hi.hbv501g.team20.Persistence.Enums.Building;
 import jakarta.persistence.*;
 
@@ -18,6 +19,7 @@ public class StudyActivity {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
+    @JsonBackReference
     private User user;
 
     @OneToMany(mappedBy = "activity", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
