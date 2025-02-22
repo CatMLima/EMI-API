@@ -10,6 +10,7 @@ import is.hi.hbv501g.team20.Services.StudyActivityService;
 import is.hi.hbv501g.team20.Services.UserAuthService;
 import is.hi.hbv501g.team20.Services.UserService;
 import is.hi.hbv501g.team20.dto.CreateStudyActivityRequest;
+import is.hi.hbv501g.team20.dto.StudyActivityDTO;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,10 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalTime;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 @RestController
@@ -197,13 +195,20 @@ public class StudyActivityRestController {
     }
 
     @GetMapping("/rest/getFeedActivities")
-    public ResponseEntity<List<StudyActivity>> getFeedActivities() {
+    public ResponseEntity<List<StudyActivityDTO>> getFeedActivities() {
         User user = userAuthService.getAuthenticatedUser();
         if (user == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         List<StudyActivity> allStudyActivities = studyActivityService.findAllPublicAndUserActivities(user);
-        return ResponseEntity.ok(allStudyActivities);
+        List<StudyActivityDTO> dtoList = new ArrayList<>();
+        for (StudyActivity sa : allStudyActivities) {
+            StudyActivityDTO dto = new StudyActivityDTO(sa.getId(), sa.getUser().getId(), sa.getCoffees(),
+                    sa.getActivityPicture(), sa.getBuilding(), sa.getLocation(), sa.getDate(),
+                    sa.getDuration(), sa.getTitle(), sa.getDescription(), sa.getSubjectName(), sa.getSubjectID());
+            dtoList.add(dto);
+        }
+        return ResponseEntity.ok(dtoList);
     }
 
     @GetMapping("/rest/profile")
