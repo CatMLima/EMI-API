@@ -98,7 +98,7 @@ public class StudyActivityRestController {
     }
 
     @PostMapping("/rest/studyactivity-finish/{id}")
-    public ResponseEntity<String> finishStudyActivity(HttpSession session, @PathVariable Long id) {
+    public ResponseEntity<String> finishStudyActivity(@PathVariable Long id) {
         User user = userAuthService.getAuthenticatedUser();
         if (user == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User not logged in.");
@@ -198,7 +198,7 @@ public class StudyActivityRestController {
     }
 
     @GetMapping("/rest/profile")
-    public ResponseEntity<User> getUserProfile(HttpSession session) {
+    public ResponseEntity<User> getUserProfile() {
         User user = userAuthService.getAuthenticatedUser();
         if (user != null) {
             return ResponseEntity.ok(user);
@@ -215,7 +215,7 @@ public class StudyActivityRestController {
 
     @PostMapping("/rest/uploadActivityPicture")
     public ResponseEntity<String> uploadActivityPicture(@RequestParam("activityPicture") MultipartFile activityPicture,
-                                                        @PathVariable("activityId") Long activityId, HttpSession session) {
+                                                        @PathVariable("activityId") Long activityId) {
         StudyActivity studyActivity = studyActivityService.findById(activityId);
 
         if (studyActivity != null && !activityPicture.isEmpty()) {
@@ -243,7 +243,7 @@ public class StudyActivityRestController {
     }
 
     @GetMapping("/rest/feed-search")
-    public ResponseEntity<List<StudyActivity>> searchStudyActivities(@RequestParam("query") String query, HttpSession session) {
+    public ResponseEntity<List<StudyActivity>> searchStudyActivities(@RequestParam("query") String query) {
         User user = userAuthService.getAuthenticatedUser();
         if (user != null) {
             List<StudyActivity> searchResults = studyActivityService.searchByTitleOrDescription(query, user);
@@ -255,7 +255,7 @@ public class StudyActivityRestController {
 
 
     @GetMapping("/rest/studyactivity/{id}/toggle-coffee")
-    public ResponseEntity<String> toggleCoffee(@PathVariable Long id, HttpSession session) {
+    public ResponseEntity<String> toggleCoffee(@PathVariable Long id) {
         User user = userAuthService.getAuthenticatedUser();
         if (user == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not logged in.");
