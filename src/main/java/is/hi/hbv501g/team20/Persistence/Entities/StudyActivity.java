@@ -11,9 +11,6 @@ import java.time.Duration;
 import java.time.LocalTime;
 import java.util.*;
 
-@JsonIdentityInfo(
-        generator = ObjectIdGenerators.PropertyGenerator.class,
-        property = "id")
 @Entity
 @Table(name = "\"studyactivity\"")
 public class StudyActivity {
