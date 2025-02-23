@@ -121,12 +121,21 @@ public class StudyActivityRestController {
 
     @DeleteMapping("/rest/studyactivity-delete/{id}")
     public ResponseEntity<String> deleteStudyActivity(@PathVariable Long id) {
-        StudyActivity studyActivity = studyActivityService.findById(id);
-        if (studyActivity != null) {
-            studyActivityService.delete(studyActivity);
-            return ResponseEntity.ok("Study activity deleted.");
+
+        User user = userAuthService.getAuthenticatedUser(); // Pass token if required by your service
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not logged in.");
         }
-        return ResponseEntity.notFound().build();
+        StudyActivity studyActivity = studyActivityService.findById(id);
+        if (studyActivity == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+if (!studyActivity.getUser().getId().equals(user.getId())) {
+    return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You can only delete your own study activities.");
+}
+        studyActivityService.delete(studyActivity);
+        return ResponseEntity.ok("Study activity deleted.");
     }
 
     @GetMapping("/rest/studyactivity-details/{id}")
