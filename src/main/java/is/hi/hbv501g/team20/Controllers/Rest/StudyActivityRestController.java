@@ -231,7 +231,7 @@ if (!studyActivity.getUser().getId().equals(user.getId())) {
         }
     }
 
-    @PostMapping("/rest/studyactivity-create")
+    @PostMapping(value = "/rest/studyactivity-create", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<StudyActivity> createStudyActivity(@RequestBody StudyActivity studyActivity) {
         User user = userAuthService.getAuthenticatedUser();
         if (user == null) {
