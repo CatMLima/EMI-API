@@ -3,22 +3,17 @@ package is.hi.hbv501g.team20.Controllers.Rest;
 import is.hi.hbv501g.team20.Persistence.Entities.User;
 import is.hi.hbv501g.team20.Services.*;
 import is.hi.hbv501g.team20.dto.ChangePasswordRequest;
-import is.hi.hbv501g.team20.dto.LoginRequest;
-import jakarta.servlet.http.HttpSession;
+import is.hi.hbv501g.team20.dto.LoginResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/rest")
@@ -63,7 +58,10 @@ public class UserRestController {
             if (token.equals("Failed")){
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
             }
-            return ResponseEntity.ok(token);
+
+            Long userId = userService.findByEmail(user.getEmail()).getId();
+            LoginResponse response = new LoginResponse(token, userId);
+            return ResponseEntity.ok(response);
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }
