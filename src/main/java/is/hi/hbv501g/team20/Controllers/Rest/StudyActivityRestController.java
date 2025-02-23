@@ -224,6 +224,10 @@ public class StudyActivityRestController {
 
     @PostMapping("/rest/studyactivity-create")
     public ResponseEntity<StudyActivity> createStudyActivity(@RequestBody StudyActivity studyActivity) {
+        User user = userAuthService.getAuthenticatedUser();
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
         StudyActivity studyActivityCreated = studyActivityService.save(studyActivity);
         return ResponseEntity.status(HttpStatus.CREATED).body(studyActivityCreated);
     }
