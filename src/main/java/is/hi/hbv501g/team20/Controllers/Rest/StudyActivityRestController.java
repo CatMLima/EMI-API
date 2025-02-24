@@ -232,10 +232,16 @@ if (!studyActivity.getUser().getId().equals(user.getId())) {
         List<StudyActivity> allStudyActivities = studyActivityService.findAllPublicAndUserActivities(user);
         List<StudyActivityDTO> dtoList = new ArrayList<>();
         for (StudyActivity sa : allStudyActivities) {
+            Coffee coffeeCheck = coffeeService.findCoffeeByUserAndActivity(user,sa);
+            boolean hasCoffee = false;
+
+            if (coffeeCheck != null) {
+                hasCoffee = true;
+            }
             StudyActivityDTO dto = new StudyActivityDTO(sa.getId(), sa.getUser().getId(),
                     sa.getActivityPicture(), sa.getBuilding(), sa.getLocation(), sa.getDate(),
                     sa.getFormattedDuration(), sa.getTitle(), sa.getDescription(), sa.getUser().getName(),
-                    sa.getSubjectName(), sa.getSubjectID());
+                    sa.getSubjectName(), sa.getSubjectID(), sa.getCoffees().size(),hasCoffee);
             dtoList.add(dto);
         }
         return ResponseEntity.ok(dtoList);
@@ -260,6 +266,35 @@ if (!studyActivity.getUser().getId().equals(user.getId())) {
         StudyActivity studyActivityCreated = studyActivityService.save(studyActivity);
         return ResponseEntity.status(HttpStatus.CREATED).body(studyActivityCreated);
     }
+
+    @PutMapping("/rest/studyactivity/{id}/toggle-coffee")
+    public ResponseEntity<String> toggleCoffee(@PathVariable Long id) {
+        User user = userAuthService.getAuthenticatedUser();
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not logged in.");
+        }
+
+        StudyActivity studyActivity = studyActivityService.findById(id);
+        if (studyActivity == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Coffee coffee = coffeeService.findCoffeeByUserAndActivity(user,studyActivity);
+        if (coffee != null) {
+            coffeeService.removeCoffee(user,studyActivity);
+            return ResponseEntity.ok("Coffee removed.");
+        }else{
+            coffeeService.giveCoffee(user,studyActivity);
+            return ResponseEntity.ok("Coffee added.");
+        }
+    }
+
+
+
+
+    /*
+    Methods that have yet to be adapted to correct rest format
+     */
 
     @PostMapping("/rest/uploadActivityPicture")
     public ResponseEntity<String> uploadActivityPicture(@RequestParam("activityPicture") MultipartFile activityPicture,
@@ -302,25 +337,7 @@ if (!studyActivity.getUser().getId().equals(user.getId())) {
     }
 
 
-    @GetMapping("/rest/studyactivity/{id}/toggle-coffee")
-    public ResponseEntity<String> toggleCoffee(@PathVariable Long id) {
-        User user = userAuthService.getAuthenticatedUser();
-        if (user == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not logged in.");
-        }
 
-        StudyActivity studyActivity = studyActivityService.findById(id);
-        if (studyActivity != null) {
-            Coffee existingCoffee = coffeeService.findCoffeeByUserAndActivity(user,studyActivity);
-            if (existingCoffee != null){
-                coffeeService.removeCoffee(user, studyActivity);
-            } else{
-                coffeeService.giveCoffee(user, studyActivity);
-            }
-            return ResponseEntity.ok("Coffee toggled successfully.");
-        }
-        return ResponseEntity.notFound().build();
-    }
 
 
 }
