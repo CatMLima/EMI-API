@@ -45,11 +45,6 @@ public class StudyActivityRestController {
         this.coffeeService = coffeeService;
     }
 
-    @GetMapping("/rest/studyactivity-create")
-    public ResponseEntity<StudyActivity> createStudyActivityGet() {
-        return ResponseEntity.ok(new StudyActivity());
-    }
-
     @PostMapping("/rest/api/studyactivity-create")
     public ResponseEntity<OngoingResponse> createStudyActivityPost(@RequestBody CreateStudyActivityRequest request) {
         User user = userAuthService.getAuthenticatedUser();
@@ -107,12 +102,6 @@ public class StudyActivityRestController {
                 formattedStart
         );
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
-    }
-
-    @GetMapping("/rest/studyactivity-active/{id}")
-    public ResponseEntity<StudyActivity> activeStudyActivityGet(@PathVariable Long id) {
-        StudyActivity studyActivity = studyActivityService.findById(id);
-        return studyActivity != null ? ResponseEntity.ok(studyActivity) : ResponseEntity.notFound().build();
     }
 
     @PostMapping("/rest/studyactivity-finish/{id}")
@@ -287,6 +276,31 @@ if (!studyActivity.getUser().getId().equals(user.getId())) {
             coffeeService.giveCoffee(user,studyActivity);
             return ResponseEntity.ok("Coffee added.");
         }
+    }
+
+    @GetMapping("/rest/get_active_study_activity")
+    public ResponseEntity<OngoingResponse> getActiveStudyActivity() {
+        User user = userAuthService.getAuthenticatedUser();
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        List<StudyActivity> activeStudyActivity = studyActivityService.findActiveStudyActivity(user);
+        if (activeStudyActivity.isEmpty()) {
+            return ResponseEntity.ok(null);
+        }
+
+        StudyActivity studyActivity = activeStudyActivity.get(0);
+        Date date = studyActivity.getDate();
+
+        OngoingResponse response = new OngoingResponse(
+                studyActivity.getId(),
+                studyActivity.getTitle(),
+                studyActivity.getSubjectID(),
+                studyActivity.getSubjectName(),
+                date.toString());
+
+        return ResponseEntity.ok(response);
     }
 
 
