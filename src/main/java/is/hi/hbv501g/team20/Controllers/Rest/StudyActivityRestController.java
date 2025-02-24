@@ -10,6 +10,7 @@ import is.hi.hbv501g.team20.Services.StudyActivityService;
 import is.hi.hbv501g.team20.Services.UserAuthService;
 import is.hi.hbv501g.team20.Services.UserService;
 import is.hi.hbv501g.team20.dto.CreateStudyActivityRequest;
+import is.hi.hbv501g.team20.dto.OngoingResponse;
 import is.hi.hbv501g.team20.dto.StudyActivityDTO;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +20,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 
@@ -46,7 +51,7 @@ public class StudyActivityRestController {
     }
 
     @PostMapping("/rest/api/studyactivity-create")
-    public ResponseEntity<String> createStudyActivityPost(@RequestBody CreateStudyActivityRequest request) {
+    public ResponseEntity<OngoingResponse> createStudyActivityPost(@RequestBody CreateStudyActivityRequest request) {
         User user = userAuthService.getAuthenticatedUser();
 
         if (user == null) {
@@ -65,7 +70,9 @@ public class StudyActivityRestController {
         studyActivity.setBuilding(request.getBuilding());
 
         studyActivity.setPrivacy(user);
-        studyActivity.setDate(new Date());
+
+        Date date = new Date();
+        studyActivity.setDate(date);
         studyActivity.setStart(LocalTime.now());
         studyActivity.setIsActive(0);
         studyActivity.setDuration(studyActivity.getStart(), null);
@@ -86,7 +93,20 @@ public class StudyActivityRestController {
         studyActivity.setLocation(location);
         studyActivityService.save(studyActivity);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body("Study activity created.");
+        // Combine the date and start time into a single LocalDateTime.
+        LocalDate localDate = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        LocalDateTime dateTime = LocalDateTime.of(localDate, studyActivity.getStart());
+        String formattedStart = dateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"));
+
+        // Create the response DTO with proper data.
+        OngoingResponse response = new OngoingResponse(
+                studyActivity.getId(),
+                studyActivity.getTitle(),
+                studyActivity.getSubjectID(),
+                studyActivity.getSubjectName(),
+                formattedStart
+        );
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @GetMapping("/rest/studyactivity-active/{id}")
@@ -301,4 +321,6 @@ if (!studyActivity.getUser().getId().equals(user.getId())) {
         }
         return ResponseEntity.notFound().build();
     }
+
+
 }
