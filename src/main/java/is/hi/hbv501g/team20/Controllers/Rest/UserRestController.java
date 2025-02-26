@@ -64,7 +64,7 @@ public class UserRestController {
             if (ongoingId == null){
                 ongoingId = 0L;
             }
-            LoginResponse response = new LoginResponse(token, userId, ongoingId);
+            LoginResponse response = new LoginResponse(token, userId, ongoingId, user.getIsActive());
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
