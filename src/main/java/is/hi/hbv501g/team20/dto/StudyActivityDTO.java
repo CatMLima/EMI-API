@@ -44,7 +44,10 @@ public class StudyActivityDTO {
         this.hasCoffeed = hasCoffeed;
     }
 
-    public Long getId() { return id; }
+    public StudyActivityDTO(long id, Long id1, byte[] activityPicture, Building building, Location location, Date date, String formattedDuration, String title, String description, String name, String subjectName, String subjectID) {
+    }
+
+    public long getId() { return id; }
     public void setId(Long id) { this.id = id; }
     public Long getUserID() { return userID; }
     public void setUserID(Long userID) { this.userID = userID; }
