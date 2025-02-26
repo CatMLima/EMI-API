@@ -150,7 +150,7 @@ public class StudyActivityRestController {
         else return ResponseEntity.notFound().build();
     }
 
-    @GetMapping("/rest/get/OG/{id}")
+    @GetMapping("/rest/get/ongoingActivity/{id}")
     public ResponseEntity<OngoingResponse> getOGbyID(@PathVariable Long id) {
         StudyActivity studyActivity = studyActivityService.findById(id);
         OngoingResponse response = new OngoingResponse(
@@ -170,13 +170,16 @@ public class StudyActivityRestController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         List<StudyActivity> activeStudyActivity = studyActivityService.findActiveStudyActivity(user);
-        if(activeStudyActivity == null || activeStudyActivity.get(0) == null)
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        StudyActivity studyActivity = activeStudyActivity.get(0);
+        Long currId = 0L;
+
+        for (StudyActivity studyActivity : activeStudyActivity) {currId = studyActivity.getId();}
+        if (currId == 0L) return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        StudyActivity studyActivity = studyActivityService.findById(currId);
 
         LocalDate localDate = studyActivity.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
         LocalDateTime dateTime = LocalDateTime.of(localDate, studyActivity.getStart());
         String formattedStart = dateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"));
+
         if (studyActivity.getStart() == null) {
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         }
