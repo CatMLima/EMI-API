@@ -253,10 +253,15 @@ if (!studyActivity.getUser().getId().equals(user.getId())) {
         List<StudyActivity> allStudyActivities = studyActivityService.findAllPublicAndUserActivities(user);
         List<StudyActivityDTO> dtoList = new ArrayList<>();
         for (StudyActivity sa : allStudyActivities) {
+            Coffee coffeeCheck = coffeeService.findCoffeeByUserAndActivity(user,sa);
+            boolean hasCoffee = false;
+            if (coffeeCheck != null) {
+                hasCoffee = true;
+            }
             StudyActivityDTO dto = new StudyActivityDTO(sa.getId(), sa.getUser().getId(),
                     sa.getActivityPicture(), sa.getBuilding(), sa.getLocation(), sa.getDate(),
                     sa.getFormattedDuration(), sa.getTitle(), sa.getDescription(), sa.getUser().getName(),
-                    sa.getSubjectName(), sa.getSubjectID());
+                    sa.getSubjectName(), sa.getSubjectID(), sa.getCoffees().size(),hasCoffee);
             dtoList.add(dto);
         }
         return ResponseEntity.ok(dtoList);
