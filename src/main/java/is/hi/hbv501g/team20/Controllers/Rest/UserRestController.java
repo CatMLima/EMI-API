@@ -61,6 +61,9 @@ public class UserRestController {
 
             Long userId = userService.findByEmail(user.getEmail()).getId();
             Long ongoingId = userService.getOngoingId(user);
+            if (ongoingId == null){
+                ongoingId = 0L;
+            }
             LoginResponse response = new LoginResponse(token, userId, ongoingId);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
