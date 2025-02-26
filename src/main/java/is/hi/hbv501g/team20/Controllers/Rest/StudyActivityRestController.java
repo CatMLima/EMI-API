@@ -327,8 +327,7 @@ if (!studyActivity.getUser().getId().equals(user.getId())) {
         }
     }
 
-
-    @GetMapping("/rest/studyactivity/{id}/toggle-coffee")
+    @PutMapping("/rest/studyactivity/{id}/toggle-coffee")
     public ResponseEntity<String> toggleCoffee(@PathVariable Long id) {
         User user = userAuthService.getAuthenticatedUser();
         if (user == null) {
@@ -336,17 +335,18 @@ if (!studyActivity.getUser().getId().equals(user.getId())) {
         }
 
         StudyActivity studyActivity = studyActivityService.findById(id);
-        if (studyActivity != null) {
-            Coffee existingCoffee = coffeeService.findCoffeeByUserAndActivity(user,studyActivity);
-            if (existingCoffee != null){
-                coffeeService.removeCoffee(user, studyActivity);
-            } else{
-                coffeeService.giveCoffee(user, studyActivity);
-            }
-            return ResponseEntity.ok("Coffee toggled successfully.");
+        if (studyActivity == null) {
+            return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.notFound().build();
-    }
 
+        Coffee coffee = coffeeService.findCoffeeByUserAndActivity(user,studyActivity);
+        if (coffee != null) {
+            coffeeService.removeCoffee(user,studyActivity);
+            return ResponseEntity.ok("Coffee removed.");
+        }else{
+            coffeeService.giveCoffee(user,studyActivity);
+            return ResponseEntity.ok("Coffee added.");
+        }
+    }
 
 }
