@@ -126,8 +126,8 @@ public class StudyActivityRestController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 
         StudyActivity studyActivity = activeStudyActivity.get(0);
-        //Date startdate = studyActivity.getDate();
-        // Combine the date and start time into a single LocalDateTime.
+//        Date startdate = studyActivity.getDate();
+//         Combine the date and start time into a single LocalDateTime.
 //        LocalDate localDate = startdate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 //        LocalDateTime dateTime = LocalDateTime.of(localDate, studyActivity.getStart());
 //        String formattedStart = dateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"));

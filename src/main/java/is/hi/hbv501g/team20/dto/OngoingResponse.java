@@ -1,8 +1,6 @@
 package is.hi.hbv501g.team20.dto;
 
-import java.io.Serializable;
-
-public class OngoingResponse implements Serializable {
+public class OngoingResponse {
 
     private Long id;
 
