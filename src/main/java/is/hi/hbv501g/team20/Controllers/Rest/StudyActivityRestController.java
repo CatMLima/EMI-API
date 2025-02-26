@@ -115,6 +115,39 @@ public class StudyActivityRestController {
         return studyActivity != null ? ResponseEntity.ok(studyActivity) : ResponseEntity.notFound().build();
     }
 
+    @GetMapping("rest/get/OG")
+    public ResponseEntity<StudyActivityDTO> getOG() {
+        User user = userAuthService.getAuthenticatedUser();
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+        List<StudyActivity> activeStudyActivity = studyActivityService.findActiveStudyActivity(user);
+        StudyActivity sa = activeStudyActivity.getFirst();
+        Coffee coffeeCheck = coffeeService.findCoffeeByUserAndActivity(user,sa);
+        boolean hasCoffee = false;
+        if (coffeeCheck != null) {
+            hasCoffee = true;
+        }
+        StudyActivityDTO dto = new StudyActivityDTO(sa.getId(), sa.getUser().getId(),
+                sa.getActivityPicture(), sa.getBuilding(), sa.getLocation(), sa.getDate(),
+                sa.getFormattedDuration(), sa.getTitle(), sa.getDescription(), sa.getUser().getName(),
+                sa.getSubjectName(), sa.getSubjectID(), sa.getCoffees().size(), hasCoffee);
+        return ResponseEntity.ok(dto);
+    }
+
+    @GetMapping("rest/get/OG/{id]")
+    public ResponseEntity<OngoingResponse> testOR(@PathVariable Long id) {
+        StudyActivity studyActivity = studyActivityService.findById(id);
+        OngoingResponse response = new OngoingResponse(
+                studyActivity.getId(),
+                studyActivity.getTitle(),
+                studyActivity.getSubjectID(),
+                studyActivity.getSubjectName(),
+                studyActivity.getStart().toString()
+        );
+        return response != null ? ResponseEntity.ok(response) : ResponseEntity.notFound().build();
+    }
+
     @GetMapping("/rest/get/ongoingActivity")
     public ResponseEntity<OngoingResponse> getOngoingActivity() {
         User user = userAuthService.getAuthenticatedUser();
@@ -122,23 +155,25 @@ public class StudyActivityRestController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         List<StudyActivity> activeStudyActivity = studyActivityService.findActiveStudyActivity(user);
-        if(activeStudyActivity == null || activeStudyActivity.isEmpty())
+        if(activeStudyActivity == null || activeStudyActivity.getFirst() == null)
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-
-        StudyActivity studyActivity = activeStudyActivity.get(0);
+        StudyActivity studyActivity = activeStudyActivity.getFirst();
 //        Date startdate = studyActivity.getDate();
 //         Combine the date and start time into a single LocalDateTime.
 //        LocalDate localDate = startdate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 //        LocalDateTime dateTime = LocalDateTime.of(localDate, studyActivity.getStart());
 //        String formattedStart = dateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"));
-        if(activeStudyActivity.get(0) == null) return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        if (studyActivity.getStart() == null) {
+            // Return a meaningful error or handle gracefully
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        }
         // Create the response DTO with proper data.
         OngoingResponse response = new OngoingResponse(
                 studyActivity.getId(),
                 studyActivity.getTitle(),
                 studyActivity.getSubjectID(),
                 studyActivity.getSubjectName(),
-                studyActivity.getStart().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"))
+                studyActivity.getStart().toString()
         );
         return ResponseEntity.ok(response);
     }
