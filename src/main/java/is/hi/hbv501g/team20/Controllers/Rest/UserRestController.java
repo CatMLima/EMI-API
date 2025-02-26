@@ -60,11 +60,12 @@ public class UserRestController {
             }
 
             Long userId = userService.findByEmail(user.getEmail()).getId();
-            Long ongoingId = userService.getOngoingId(user);
-            if (ongoingId == null){
-                ongoingId = 0L;
-            }
-            LoginResponse response = new LoginResponse(token, userId, ongoingId, user.getIsActive());
+//            Long ongoingId = userService.getOngoingId(user);
+//            if (ongoingId == null){
+//                ongoingId = 0L;
+//            }
+            Integer isActive = userService.findByEmail(user.getEmail()).getIsActive();
+            LoginResponse response = new LoginResponse(token, userId, isActive);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
