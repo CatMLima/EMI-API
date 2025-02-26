@@ -110,9 +110,21 @@ public class StudyActivityRestController {
     }
 
     @GetMapping("/rest/studyactivity-active/{id}")
-    public ResponseEntity<StudyActivity> activeStudyActivityGet(@PathVariable Long id) {
-        StudyActivity studyActivity = studyActivityService.findById(id);
-        return studyActivity != null ? ResponseEntity.ok(studyActivity) : ResponseEntity.notFound().build();
+    public ResponseEntity<StudyActivityDTO> activeStudyActivityGet(@PathVariable Long id) {
+        StudyActivity sa = studyActivityService.findById(id);
+        User user = userAuthService.getAuthenticatedUser();
+
+        if (user == null || sa == null) return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        Coffee coffeeCheck = coffeeService.findCoffeeByUserAndActivity(user,sa);
+        boolean hasCoffee = false;
+        if (coffeeCheck != null) hasCoffee = true;
+
+        StudyActivityDTO dto = new StudyActivityDTO(sa.getId(), sa.getUser().getId(),
+                sa.getActivityPicture(), sa.getBuilding(), sa.getLocation(), sa.getDate(),
+                sa.getFormattedDuration(), sa.getTitle(), sa.getDescription(), sa.getUser().getName(),
+                sa.getSubjectName(), sa.getSubjectID(), sa.getCoffees().size(), hasCoffee);
+
+        return dto != null ? ResponseEntity.ok(dto) : ResponseEntity.notFound().build();
     }
 
     @GetMapping("/rest/get/OG")
@@ -122,21 +134,24 @@ public class StudyActivityRestController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         List<StudyActivity> activeStudyActivity = studyActivityService.findActiveStudyActivity(user);
-        StudyActivity sa = activeStudyActivity.getFirst();
-        Coffee coffeeCheck = coffeeService.findCoffeeByUserAndActivity(user,sa);
-        boolean hasCoffee = false;
-        if (coffeeCheck != null) {
-            hasCoffee = true;
+        if(activeStudyActivity.size() > 0) {
+            StudyActivity sa = activeStudyActivity.get(0);
+            Coffee coffeeCheck = coffeeService.findCoffeeByUserAndActivity(user,sa);
+            boolean hasCoffee = false;
+            if (coffeeCheck != null) {
+                hasCoffee = true;
+            }
+            StudyActivityDTO dto = new StudyActivityDTO(sa.getId(), sa.getUser().getId(),
+                    sa.getActivityPicture(), sa.getBuilding(), sa.getLocation(), sa.getDate(),
+                    sa.getFormattedDuration(), sa.getTitle(), sa.getDescription(), sa.getUser().getName(),
+                    sa.getSubjectName(), sa.getSubjectID(), sa.getCoffees().size(), hasCoffee);
+            return ResponseEntity.ok(dto);
         }
-        StudyActivityDTO dto = new StudyActivityDTO(sa.getId(), sa.getUser().getId(),
-                sa.getActivityPicture(), sa.getBuilding(), sa.getLocation(), sa.getDate(),
-                sa.getFormattedDuration(), sa.getTitle(), sa.getDescription(), sa.getUser().getName(),
-                sa.getSubjectName(), sa.getSubjectID(), sa.getCoffees().size(), hasCoffee);
-        return ResponseEntity.ok(dto);
+        else return ResponseEntity.notFound().build();
     }
 
-    @GetMapping("/rest/get/OG/{id]")
-    public ResponseEntity<OngoingResponse> testOR(@PathVariable Long id) {
+    @GetMapping("/rest/get/OG/{id}")
+    public ResponseEntity<OngoingResponse> getOGbyID(@PathVariable Long id) {
         StudyActivity studyActivity = studyActivityService.findById(id);
         OngoingResponse response = new OngoingResponse(
                 studyActivity.getId(),
@@ -155,9 +170,9 @@ public class StudyActivityRestController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         List<StudyActivity> activeStudyActivity = studyActivityService.findActiveStudyActivity(user);
-        if(activeStudyActivity == null || activeStudyActivity.getFirst() == null)
+        if(activeStudyActivity == null || activeStudyActivity.get(0) == null)
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        StudyActivity studyActivity = activeStudyActivity.getFirst();
+        StudyActivity studyActivity = activeStudyActivity.get(0);
 
         LocalDate localDate = studyActivity.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
         LocalDateTime dateTime = LocalDateTime.of(localDate, studyActivity.getStart());
