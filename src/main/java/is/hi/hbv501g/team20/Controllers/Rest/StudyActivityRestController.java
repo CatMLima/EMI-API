@@ -126,19 +126,19 @@ public class StudyActivityRestController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 
         StudyActivity studyActivity = activeStudyActivity.get(0);
-        Date startdate = studyActivity.getDate();
+        //Date startdate = studyActivity.getDate();
         // Combine the date and start time into a single LocalDateTime.
-        LocalDate localDate = startdate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-        LocalDateTime dateTime = LocalDateTime.of(localDate, studyActivity.getStart());
-        String formattedStart = dateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"));
-
+//        LocalDate localDate = startdate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+//        LocalDateTime dateTime = LocalDateTime.of(localDate, studyActivity.getStart());
+//        String formattedStart = dateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"));
+        if(activeStudyActivity.get(0) == null) return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         // Create the response DTO with proper data.
         OngoingResponse response = new OngoingResponse(
                 studyActivity.getId(),
                 studyActivity.getTitle(),
                 studyActivity.getSubjectID(),
                 studyActivity.getSubjectName(),
-                formattedStart
+                studyActivity.getStart().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"))
         );
         return ResponseEntity.ok(response);
     }
