@@ -115,6 +115,34 @@ public class StudyActivityRestController {
         return studyActivity != null ? ResponseEntity.ok(studyActivity) : ResponseEntity.notFound().build();
     }
 
+    @GetMapping("/rest/get/ongoingActivity")
+    public ResponseEntity<OngoingResponse> getOngoingActivity() {
+        User user = userAuthService.getAuthenticatedUser();
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+        List<StudyActivity> activeStudyActivity = studyActivityService.findActiveStudyActivity(user);
+        if(activeStudyActivity == null || activeStudyActivity.isEmpty())
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+
+        StudyActivity studyActivity = activeStudyActivity.get(0);
+        Date startdate = studyActivity.getDate();
+        // Combine the date and start time into a single LocalDateTime.
+        LocalDate localDate = startdate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        LocalDateTime dateTime = LocalDateTime.of(localDate, studyActivity.getStart());
+        String formattedStart = dateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"));
+
+        // Create the response DTO with proper data.
+        OngoingResponse response = new OngoingResponse(
+                studyActivity.getId(),
+                studyActivity.getTitle(),
+                studyActivity.getSubjectID(),
+                studyActivity.getSubjectName(),
+                formattedStart
+        );
+        return ResponseEntity.ok(response);
+    }
+
     @GetMapping("/rest/get-ongoing/{ongoingId}")
     public ResponseEntity<OngoingResponse> getOngoing(@PathVariable Long ongoingId) {
         StudyActivity studyActivity = studyActivityService.findById(ongoingId);
