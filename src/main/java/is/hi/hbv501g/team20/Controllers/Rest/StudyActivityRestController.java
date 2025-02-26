@@ -45,6 +45,11 @@ public class StudyActivityRestController {
         this.coffeeService = coffeeService;
     }
 
+    @GetMapping("/rest/studyactivity-create")
+    public ResponseEntity<StudyActivity> createStudyActivityGet() {
+        return ResponseEntity.ok(new StudyActivity());
+    }
+
     @PostMapping("/rest/api/studyactivity-create")
     public ResponseEntity<OngoingResponse> createStudyActivityPost(@RequestBody CreateStudyActivityRequest request) {
         User user = userAuthService.getAuthenticatedUser();
@@ -96,6 +101,33 @@ public class StudyActivityRestController {
         // Create the response DTO with proper data.
         OngoingResponse response = new OngoingResponse(
                 studyActivity.getId(),
+                studyActivity.getTitle(),
+                studyActivity.getSubjectID(),
+                studyActivity.getSubjectName(),
+                formattedStart
+        );
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @GetMapping("/rest/studyactivity-active/{id}")
+    public ResponseEntity<StudyActivity> activeStudyActivityGet(@PathVariable Long id) {
+        StudyActivity studyActivity = studyActivityService.findById(id);
+        return studyActivity != null ? ResponseEntity.ok(studyActivity) : ResponseEntity.notFound().build();
+    }
+
+    @GetMapping("/rest/get-ongoing/{ongoingId}")
+    public ResponseEntity<OngoingResponse> getOngoing(@PathVariable Long ongoingId) {
+        StudyActivity studyActivity = studyActivityService.findById(ongoingId);
+
+        Date start = studyActivity.getDate();
+        // Combine the date and start time into a single LocalDateTime.
+        LocalDate localDate = start.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        LocalDateTime dateTime = LocalDateTime.of(localDate, studyActivity.getStart());
+        String formattedStart = dateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"));
+
+        // Create the response DTO with proper data.
+        OngoingResponse response = new OngoingResponse(
+                ongoingId,
                 studyActivity.getTitle(),
                 studyActivity.getSubjectID(),
                 studyActivity.getSubjectName(),
@@ -221,16 +253,10 @@ if (!studyActivity.getUser().getId().equals(user.getId())) {
         List<StudyActivity> allStudyActivities = studyActivityService.findAllPublicAndUserActivities(user);
         List<StudyActivityDTO> dtoList = new ArrayList<>();
         for (StudyActivity sa : allStudyActivities) {
-            Coffee coffeeCheck = coffeeService.findCoffeeByUserAndActivity(user,sa);
-            boolean hasCoffee = false;
-
-            if (coffeeCheck != null) {
-                hasCoffee = true;
-            }
             StudyActivityDTO dto = new StudyActivityDTO(sa.getId(), sa.getUser().getId(),
                     sa.getActivityPicture(), sa.getBuilding(), sa.getLocation(), sa.getDate(),
                     sa.getFormattedDuration(), sa.getTitle(), sa.getDescription(), sa.getUser().getName(),
-                    sa.getSubjectName(), sa.getSubjectID(), sa.getCoffees().size(),hasCoffee);
+                    sa.getSubjectName(), sa.getSubjectID());
             dtoList.add(dto);
         }
         return ResponseEntity.ok(dtoList);
@@ -255,60 +281,6 @@ if (!studyActivity.getUser().getId().equals(user.getId())) {
         StudyActivity studyActivityCreated = studyActivityService.save(studyActivity);
         return ResponseEntity.status(HttpStatus.CREATED).body(studyActivityCreated);
     }
-
-    @PutMapping("/rest/studyactivity/{id}/toggle-coffee")
-    public ResponseEntity<String> toggleCoffee(@PathVariable Long id) {
-        User user = userAuthService.getAuthenticatedUser();
-        if (user == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not logged in.");
-        }
-
-        StudyActivity studyActivity = studyActivityService.findById(id);
-        if (studyActivity == null) {
-            return ResponseEntity.notFound().build();
-        }
-
-        Coffee coffee = coffeeService.findCoffeeByUserAndActivity(user,studyActivity);
-        if (coffee != null) {
-            coffeeService.removeCoffee(user,studyActivity);
-            return ResponseEntity.ok("Coffee removed.");
-        }else{
-            coffeeService.giveCoffee(user,studyActivity);
-            return ResponseEntity.ok("Coffee added.");
-        }
-    }
-
-    @GetMapping("/rest/get_active_study_activity")
-    public ResponseEntity<OngoingResponse> getActiveStudyActivity() {
-        User user = userAuthService.getAuthenticatedUser();
-        if (user == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-
-        List<StudyActivity> activeStudyActivity = studyActivityService.findActiveStudyActivity(user);
-        if (activeStudyActivity.isEmpty()) {
-            return ResponseEntity.ok(null);
-        }
-
-        StudyActivity studyActivity = activeStudyActivity.get(0);
-        Date date = studyActivity.getDate();
-
-        OngoingResponse response = new OngoingResponse(
-                studyActivity.getId(),
-                studyActivity.getTitle(),
-                studyActivity.getSubjectID(),
-                studyActivity.getSubjectName(),
-                date.toString());
-
-        return ResponseEntity.ok(response);
-    }
-
-
-
-
-    /*
-    Methods that have yet to be adapted to correct rest format
-     */
 
     @PostMapping("/rest/uploadActivityPicture")
     public ResponseEntity<String> uploadActivityPicture(@RequestParam("activityPicture") MultipartFile activityPicture,
@@ -351,7 +323,25 @@ if (!studyActivity.getUser().getId().equals(user.getId())) {
     }
 
 
+    @GetMapping("/rest/studyactivity/{id}/toggle-coffee")
+    public ResponseEntity<String> toggleCoffee(@PathVariable Long id) {
+        User user = userAuthService.getAuthenticatedUser();
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not logged in.");
+        }
 
+        StudyActivity studyActivity = studyActivityService.findById(id);
+        if (studyActivity != null) {
+            Coffee existingCoffee = coffeeService.findCoffeeByUserAndActivity(user,studyActivity);
+            if (existingCoffee != null){
+                coffeeService.removeCoffee(user, studyActivity);
+            } else{
+                coffeeService.giveCoffee(user, studyActivity);
+            }
+            return ResponseEntity.ok("Coffee toggled successfully.");
+        }
+        return ResponseEntity.notFound().build();
+    }
 
 
 }
