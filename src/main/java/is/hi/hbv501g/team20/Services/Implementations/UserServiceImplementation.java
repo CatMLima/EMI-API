@@ -243,4 +243,16 @@ public class UserServiceImplementation implements UserService {
         user.setStreak(0);
         return userRepo.save(user);
     }
+
+    @Override
+    public
+    Long getOngoingId(User user){
+        List<StudyActivity> activities = studyActivityRepository.findByUser(user);
+        for (StudyActivity activity : activities) {
+            if (activity.getIsActive() != null && activity.getIsActive() == 0) {
+                return activity.getId();
+            }
+        }
+        return null;
+    }
 }
