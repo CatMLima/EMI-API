@@ -115,8 +115,8 @@ public class StudyActivityRestController {
         return studyActivity != null ? ResponseEntity.ok(studyActivity) : ResponseEntity.notFound().build();
     }
 
-    @GetMapping("/rest/studyactivity-get-ongoing/{id}")
-    public ResponseEntity<OngoingResponse> ongoingGet(@PathVariable Long id) {
+    @GetMapping("/rest/studyactivity-ongoing/{id}")
+    public ResponseEntity<OngoingResponse> ongoingStudyActivityGet(@PathVariable Long id) {
         StudyActivity studyActivity = studyActivityService.findById(id);
         if (studyActivity != null) {
 
