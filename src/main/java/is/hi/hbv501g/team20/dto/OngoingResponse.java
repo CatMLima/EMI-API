@@ -22,7 +22,6 @@ public class OngoingResponse implements Serializable {
         this.start = start;
     }
 
-
     public Long getId() {
         return id;
     }
@@ -39,6 +38,8 @@ public class OngoingResponse implements Serializable {
         return subject_name;
     }
 
+    public String getStart() {return start;}
+
     public void setId(Long id) {
         this.id = id;
     }
@@ -54,4 +55,6 @@ public class OngoingResponse implements Serializable {
     public void setSubject_name(String subject_name) {
         this.subject_name = subject_name;
     }
+
+    public void setStart(String start) {this.start = start;}
 }
