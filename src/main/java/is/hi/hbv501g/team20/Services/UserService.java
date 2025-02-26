@@ -35,4 +35,6 @@ public interface UserService {
     User updateUser(User user);
 
     boolean checkPassword(User user, String password);
+
+    Long getOngoingId(User user);
 }
