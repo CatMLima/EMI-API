@@ -115,28 +115,6 @@ public class StudyActivityRestController {
         return studyActivity != null ? ResponseEntity.ok(studyActivity) : ResponseEntity.notFound().build();
     }
 
-    @GetMapping("/rest/get-ongoing/{id}")
-    public ResponseEntity<OngoingResponse> getOngoing(@PathVariable Long id) {
-        StudyActivity studyActivity = studyActivityService.findById(id);
-        if (studyActivity != null) {
-
-            // Combine the date and start time into a single LocalDateTime.
-            Date start = studyActivity.getDate();
-            LocalDate localDate = start.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-            LocalDateTime dateTime = LocalDateTime.of(localDate, studyActivity.getStart());
-            String formattedStart = dateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"));
-
-            return ResponseEntity.ok(new OngoingResponse(
-                    studyActivity.getId(),
-                    studyActivity.getTitle(),
-                    studyActivity.getSubjectID(),
-                    studyActivity.getSubjectName(),
-                    formattedStart
-            ));
-        }
-        return null;
-    }
-
     @PostMapping("/rest/studyactivity-finish/{id}")
     public ResponseEntity<String> finishStudyActivity(@PathVariable Long id) {
         User user = userAuthService.getAuthenticatedUser();
