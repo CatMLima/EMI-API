@@ -115,7 +115,7 @@ public class StudyActivityRestController {
         return studyActivity != null ? ResponseEntity.ok(studyActivity) : ResponseEntity.notFound().build();
     }
 
-    @GetMapping("rest/get/OG")
+    @GetMapping("/rest/get/OG")
     public ResponseEntity<StudyActivityDTO> getOG() {
         User user = userAuthService.getAuthenticatedUser();
         if (user == null) {
@@ -135,7 +135,7 @@ public class StudyActivityRestController {
         return ResponseEntity.ok(dto);
     }
 
-    @GetMapping("rest/get/OG/{id]")
+    @GetMapping("/rest/get/OG/{id]")
     public ResponseEntity<OngoingResponse> testOR(@PathVariable Long id) {
         StudyActivity studyActivity = studyActivityService.findById(id);
         OngoingResponse response = new OngoingResponse(
@@ -158,22 +158,20 @@ public class StudyActivityRestController {
         if(activeStudyActivity == null || activeStudyActivity.getFirst() == null)
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         StudyActivity studyActivity = activeStudyActivity.getFirst();
-//        Date startdate = studyActivity.getDate();
-//         Combine the date and start time into a single LocalDateTime.
-//        LocalDate localDate = startdate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-//        LocalDateTime dateTime = LocalDateTime.of(localDate, studyActivity.getStart());
-//        String formattedStart = dateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"));
+
+        LocalDate localDate = studyActivity.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        LocalDateTime dateTime = LocalDateTime.of(localDate, studyActivity.getStart());
+        String formattedStart = dateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"));
         if (studyActivity.getStart() == null) {
-            // Return a meaningful error or handle gracefully
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         }
-        // Create the response DTO with proper data.
+
         OngoingResponse response = new OngoingResponse(
                 studyActivity.getId(),
                 studyActivity.getTitle(),
                 studyActivity.getSubjectID(),
                 studyActivity.getSubjectName(),
-                studyActivity.getStart().toString()
+                formattedStart
         );
         return ResponseEntity.ok(response);
     }
