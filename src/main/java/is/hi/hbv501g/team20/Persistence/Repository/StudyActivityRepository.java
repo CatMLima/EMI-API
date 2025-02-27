@@ -29,7 +29,7 @@ public interface StudyActivityRepository extends JpaRepository<StudyActivity, Lo
         List<StudyActivity> searchStudyActivityPublicUser(@Param("query") String query, @Param("user") User user);
 
         // Query to get study activities for the feed (all public ones, and the users)
-        @Query("SELECT DISTINCT sa FROM StudyActivity sa WHERE sa.privacy = 0 OR sa.user = :user ORDER BY sa.date DESC")
+        @Query("SELECT DISTINCT sa FROM StudyActivity sa WHERE sa.privacy = 0 OR sa.user = :user ORDER BY sa.date DESC, sa.start DESC")
         List<StudyActivity> findActivitiesFeed(@Param("user") User user);
 
 
