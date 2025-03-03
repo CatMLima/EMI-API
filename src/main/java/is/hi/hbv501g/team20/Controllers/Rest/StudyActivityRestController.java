@@ -346,6 +346,30 @@ if (!studyActivity.getUser().getId().equals(user.getId())) {
         return ResponseEntity.ok(dtoList);
     }
 
+    @GetMapping("/rest/getActivityByID/{id}")
+    public ResponseEntity<StudyActivityDTO> getActivityByID(@PathVariable long id) {
+        User user = userAuthService.getAuthenticatedUser();
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+        StudyActivity sa = studyActivityService.findById(id);
+        if (sa!= null) {
+            Coffee coffeeCheck = coffeeService.findCoffeeByUserAndActivity(user,sa);
+            boolean hasCoffee = false;
+            if (coffeeCheck != null) {
+                hasCoffee = true;
+            }
+
+            StudyActivityDTO dto = new StudyActivityDTO(sa.getId(), sa.getUser().getId(),
+                    sa.getActivityPicture(), sa.getBuilding(), sa.getLocation(), sa.getDate(),
+                    sa.getFormattedDuration(), sa.getTitle(), sa.getDescription(), sa.getUser().getName(),
+                    sa.getSubjectName(), sa.getSubjectID(), sa.getCoffees().size(),hasCoffee);
+
+            return ResponseEntity.ok(dto);
+        }
+        return ResponseEntity.notFound().build();
+    }
+
     @GetMapping("/rest/profile")
     public ResponseEntity<User> getUserProfile() {
         User user = userAuthService.getAuthenticatedUser();
