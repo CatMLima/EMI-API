@@ -163,9 +163,9 @@ public class StudyActivityRestController {
         return response != null ? ResponseEntity.ok(response) : ResponseEntity.notFound().build();
     }
 
-    @GetMapping("/rest/get/ongoingActivity")
-    public ResponseEntity<OngoingResponse> getOngoingActivity() {
-        User user = userAuthService.getAuthenticatedUser();
+    @GetMapping("/rest/get/ongoingActivity/{user_id}")
+    public ResponseEntity<OngoingResponse> getOngoingActivity(@PathVariable Long user_id) {
+        User user = userService.findById(user_id);
         if (user == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
