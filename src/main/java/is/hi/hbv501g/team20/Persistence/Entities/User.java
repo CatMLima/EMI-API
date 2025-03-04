@@ -56,6 +56,7 @@ public class User {
         this.name = name;
         this.email = email;
         this.password = password;
+        this.isActive = 1;
         this.privacy = 0;
         this.lastActivityDate = null;
         this.streak = 0;
