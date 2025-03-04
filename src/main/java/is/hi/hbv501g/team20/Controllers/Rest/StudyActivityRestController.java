@@ -68,6 +68,7 @@ public class StudyActivityRestController {
         studyActivity.setDescription(request.getDescription());
         studyActivity.setSubjectID(request.getSubjectid());
         studyActivity.setBuilding(request.getBuilding());
+        studyActivity.setIsActive(0);
 
         studyActivity.setPrivacy(user);
 
@@ -169,11 +170,11 @@ public class StudyActivityRestController {
         if (user == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
-        List<StudyActivity> activeStudyActivity = studyActivityService.findActiveStudyActivity(user);
-        Long currId = 0L;
+        //List<StudyActivity> activeStudyActivity = studyActivityService.findActiveStudyActivity(user);
+        Long currId = userService.getOngoingId(user);
 
-        for (StudyActivity studyActivity : activeStudyActivity) {currId = studyActivity.getId();}
-        if (currId == 0L) return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        //for (StudyActivity studyActivity : activeStudyActivity) {currId = studyActivity.getId();}
+        if (currId == null) return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         StudyActivity studyActivity = studyActivityService.findById(currId);
 
         LocalDate localDate = studyActivity.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
