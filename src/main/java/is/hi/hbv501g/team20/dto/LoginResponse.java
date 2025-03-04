@@ -10,7 +10,7 @@ public class LoginResponse {
     public LoginResponse(String token, Long userId, Integer isActive) {
         this.token = token;
         this.userId = userId;
-        //this.ongoingId = ongoingId;
+        if (isActive == null) isActive = 1;
         this.isActive = isActive;
     }
 
@@ -21,10 +21,6 @@ public class LoginResponse {
     public Long getUserId() {
         return userId;
     }
-
-    //public Long getOngoingId() {
-//        return ongoingId;
-//    }
 
     public Integer getIsActive() {return isActive;}
 }
