@@ -105,7 +105,7 @@ public class StudyActivityRestController {
                 studyActivity.getTitle(),
                 studyActivity.getSubjectID(),
                 studyActivity.getSubjectName(),
-                formattedStart
+                studyActivity.getDuration().toString()
         );
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
@@ -159,27 +159,27 @@ public class StudyActivityRestController {
                 studyActivity.getTitle(),
                 studyActivity.getSubjectID(),
                 studyActivity.getSubjectName(),
-                studyActivity.getStart().toString()
+                studyActivity.getDuration().toString()
         );
         return response != null ? ResponseEntity.ok(response) : ResponseEntity.notFound().build();
     }
 
-    @GetMapping("/rest/get/ongoingActivity/{user_id}")
-    public ResponseEntity<OngoingResponse> getOngoingActivity(@PathVariable Long user_id) {
-        User user = userService.findById(user_id);
+    @GetMapping("/rest/get/ongoingActivity")
+    public ResponseEntity<OngoingResponse> getOngoingActivity() {
+        User user = userAuthService.getAuthenticatedUser();
         if (user == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         //List<StudyActivity> activeStudyActivity = studyActivityService.findActiveStudyActivity(user);
-        Long currId = userService.getOngoingId(user);
+        Long ongoingId = userService.getOngoingId(user);
 
         //for (StudyActivity studyActivity : activeStudyActivity) {currId = studyActivity.getId();}
-        if (currId == null) return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        StudyActivity studyActivity = studyActivityService.findById(currId);
+        if (ongoingId == null) return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        StudyActivity studyActivity = studyActivityService.findById(ongoingId);
 
-        LocalDate localDate = studyActivity.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-        LocalDateTime dateTime = LocalDateTime.of(localDate, studyActivity.getStart());
-        String formattedStart = dateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"));
+        //LocalDate localDate = studyActivity.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        //LocalDateTime dateTime = LocalDateTime.of(localDate, studyActivity.getStart());
+        //String formattedStart = dateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"));
 
         if (studyActivity.getStart() == null) {
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
@@ -190,7 +190,7 @@ public class StudyActivityRestController {
                 studyActivity.getTitle(),
                 studyActivity.getSubjectID(),
                 studyActivity.getSubjectName(),
-                formattedStart
+                studyActivity.getDuration().toString()
         );
         return ResponseEntity.ok(response);
     }
