@@ -105,7 +105,7 @@ public class StudyActivityRestController {
                 studyActivity.getTitle(),
                 studyActivity.getSubjectID(),
                 studyActivity.getSubjectName(),
-                studyActivity.getDuration().toString()
+                studyActivity.getDuration()
         );
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
@@ -159,7 +159,7 @@ public class StudyActivityRestController {
                 studyActivity.getTitle(),
                 studyActivity.getSubjectID(),
                 studyActivity.getSubjectName(),
-                studyActivity.getDuration().toString()
+                studyActivity.getDuration()
         );
         return response != null ? ResponseEntity.ok(response) : ResponseEntity.notFound().build();
     }
@@ -181,16 +181,16 @@ public class StudyActivityRestController {
         //LocalDateTime dateTime = LocalDateTime.of(localDate, studyActivity.getStart());
         //String formattedStart = dateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"));
 
-        if (studyActivity.getStart() == null) {
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-        }
+        //if (studyActivity.getStart() == null) {
+        //    return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        //}
 
         OngoingResponse response = new OngoingResponse(
                 studyActivity.getId(),
                 studyActivity.getTitle(),
                 studyActivity.getSubjectID(),
                 studyActivity.getSubjectName(),
-                studyActivity.getDuration().toString()
+                studyActivity.getDuration()
         );
         return ResponseEntity.ok(response);
     }
