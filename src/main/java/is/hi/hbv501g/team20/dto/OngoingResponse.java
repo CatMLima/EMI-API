@@ -10,14 +10,14 @@ public class OngoingResponse {
 
     private String subject_name;
 
-    private String duration;
+    private String start;
 
-    public OngoingResponse(Long id, String title, String subjectId, String subject_name, String duration){
+    public OngoingResponse(Long id, String title, String subjectId, String subject_name, String start){
         this.id = id;
         this.title = title;
         this.subjectId = subjectId;
         this.subject_name = subject_name;
-        this.duration = duration;
+        this.start = start;
     }
 
     public Long getId() {
@@ -36,7 +36,7 @@ public class OngoingResponse {
         return subject_name;
     }
 
-    public String getDuration() {return duration;}
+    public String getStart() {return start;}
 
     public void setId(Long id) {
         this.id = id;
@@ -54,5 +54,5 @@ public class OngoingResponse {
         this.subject_name = subject_name;
     }
 
-    public void setDuration(String duration) {this.duration = duration;}
+    public void setStart(String start) {this.start = start;}
 }
