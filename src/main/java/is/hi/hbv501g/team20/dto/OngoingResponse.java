@@ -1,5 +1,7 @@
 package is.hi.hbv501g.team20.dto;
 
+import java.time.Duration;
+
 public class OngoingResponse {
 
     private Long id;
@@ -10,14 +12,14 @@ public class OngoingResponse {
 
     private String subject_name;
 
-    private String start;
+    private Duration duration;
 
-    public OngoingResponse(Long id, String title, String subjectId, String subject_name, String start){
+    public OngoingResponse(Long id, String title, String subjectId, String subject_name, Duration duration){
         this.id = id;
         this.title = title;
         this.subjectId = subjectId;
         this.subject_name = subject_name;
-        this.start = start;
+        this.duration = duration;
     }
 
     public Long getId() {
@@ -36,7 +38,7 @@ public class OngoingResponse {
         return subject_name;
     }
 
-    public String getStart() {return start;}
+    public Duration getDuration() {return duration;}
 
     public void setId(Long id) {
         this.id = id;
@@ -54,5 +56,5 @@ public class OngoingResponse {
         this.subject_name = subject_name;
     }
 
-    public void setStart(String start) {this.start = start;}
+    public void setDuration(Duration duration) {this.duration = duration;}
 }

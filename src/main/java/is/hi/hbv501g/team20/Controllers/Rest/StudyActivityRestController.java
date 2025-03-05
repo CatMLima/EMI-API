@@ -68,6 +68,7 @@ public class StudyActivityRestController {
         studyActivity.setDescription(request.getDescription());
         studyActivity.setSubjectID(request.getSubjectid());
         studyActivity.setBuilding(request.getBuilding());
+        studyActivity.setIsActive(0);
 
         studyActivity.setPrivacy(user);
 
@@ -104,7 +105,7 @@ public class StudyActivityRestController {
                 studyActivity.getTitle(),
                 studyActivity.getSubjectID(),
                 studyActivity.getSubjectName(),
-                formattedStart
+                studyActivity.getDuration()
         );
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
@@ -158,7 +159,7 @@ public class StudyActivityRestController {
                 studyActivity.getTitle(),
                 studyActivity.getSubjectID(),
                 studyActivity.getSubjectName(),
-                studyActivity.getStart().toString()
+                studyActivity.getDuration()
         );
         return response != null ? ResponseEntity.ok(response) : ResponseEntity.notFound().build();
     }
@@ -169,50 +170,29 @@ public class StudyActivityRestController {
         if (user == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
-        List<StudyActivity> activeStudyActivity = studyActivityService.findActiveStudyActivity(user);
-        Long currId = 0L;
+        //List<StudyActivity> activeStudyActivity = studyActivityService.findActiveStudyActivity(user);
+        Long ongoingId = userService.getOngoingId(user);
 
-        for (StudyActivity studyActivity : activeStudyActivity) {currId = studyActivity.getId();}
-        if (currId == 0L) return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        StudyActivity studyActivity = studyActivityService.findById(currId);
+        //for (StudyActivity studyActivity : activeStudyActivity) {currId = studyActivity.getId();}
+        if (ongoingId == null) return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        StudyActivity studyActivity = studyActivityService.findById(ongoingId);
 
-        LocalDate localDate = studyActivity.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-        LocalDateTime dateTime = LocalDateTime.of(localDate, studyActivity.getStart());
-        String formattedStart = dateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"));
+        //LocalDate localDate = studyActivity.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        //LocalDateTime dateTime = LocalDateTime.of(localDate, studyActivity.getStart());
+        //String formattedStart = dateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"));
 
-        if (studyActivity.getStart() == null) {
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-        }
+        //if (studyActivity.getStart() == null) {
+        //    return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        //}
 
         OngoingResponse response = new OngoingResponse(
                 studyActivity.getId(),
                 studyActivity.getTitle(),
                 studyActivity.getSubjectID(),
                 studyActivity.getSubjectName(),
-                formattedStart
+                studyActivity.getDuration()
         );
         return ResponseEntity.ok(response);
-    }
-
-    @GetMapping("/rest/get-ongoing/{ongoingId}")
-    public ResponseEntity<OngoingResponse> getOngoing(@PathVariable Long ongoingId) {
-        StudyActivity studyActivity = studyActivityService.findById(ongoingId);
-
-        Date start = studyActivity.getDate();
-        // Combine the date and start time into a single LocalDateTime.
-        LocalDate localDate = start.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-        LocalDateTime dateTime = LocalDateTime.of(localDate, studyActivity.getStart());
-        String formattedStart = dateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"));
-
-        // Create the response DTO with proper data.
-        OngoingResponse response = new OngoingResponse(
-                ongoingId,
-                studyActivity.getTitle(),
-                studyActivity.getSubjectID(),
-                studyActivity.getSubjectName(),
-                formattedStart
-        );
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @PostMapping("/rest/studyactivity-finish/{id}")
