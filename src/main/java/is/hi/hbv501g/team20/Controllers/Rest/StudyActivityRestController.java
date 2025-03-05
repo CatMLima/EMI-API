@@ -264,13 +264,23 @@ if (!studyActivity.getUser().getId().equals(user.getId())) {
     }
 
     @PostMapping("/rest/studyactivity-edit")
-    public ResponseEntity<String> editStudyActivity(@RequestBody StudyActivityDTO studyActivityDTO) {
-        StudyActivity studyActivity = studyActivityService.findById(studyActivityDTO.getId());
+    public ResponseEntity<String> editStudyActivity(@RequestBody List<String> changes) {
+        String idAsString = changes.get(0);
 
-        studyActivity.setTitle(studyActivityDTO.getTitle());
-        studyActivity.setDescription(studyActivityDTO.getDescription());
-        studyActivity.setSubjectID(studyActivityDTO.getSubjectID());
-        studyActivity.setSubjectName(studyActivityDTO.getSubjectName());
+        Long sId;
+        try {
+            sId = Long.parseLong(idAsString);
+        } catch (NumberFormatException e) {
+            return ResponseEntity.badRequest().body("Invalid long in the first element: " + idAsString);
+        }
+        StudyActivity studyActivity = studyActivityService.findById(sId);
+
+        if (studyActivity == null) {return ResponseEntity.notFound().build();}
+
+        studyActivity.setTitle(changes.get(1));
+        studyActivity.setDescription(changes.get(2));
+        studyActivity.setSubjectID(changes.get(3));
+        studyActivity.setSubjectName(changes.get(4));
         studyActivityService.save(studyActivity);
 
         return ResponseEntity.ok("study activity edited successfully");
