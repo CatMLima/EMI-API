@@ -263,6 +263,22 @@ if (!studyActivity.getUser().getId().equals(user.getId())) {
         }
     }
 
+    @PostMapping("/rest/studyactivity-edit")
+    public ResponseEntity<String> editStudyActivity(@RequestBody StudyActivityDTO studyActivityDTO) {
+        StudyActivity studyActivity = studyActivityService.findById(studyActivityDTO.getId());
+
+        if (studyActivity != null) {
+            studyActivity.setTitle(studyActivityDTO.getTitle());
+            studyActivity.setDescription(studyActivityDTO.getDescription());
+            studyActivity.setSubjectID(studyActivityDTO.getSubjectID());
+            studyActivity.setSubjectName(studyActivityDTO.getSubjectName());
+            studyActivityService.save(studyActivity);
+            return ResponseEntity.ok("study activity edited successfully");
+        }
+
+        return ResponseEntity.badRequest().body("Error processing editStudyActivity request");
+    }
+
     @GetMapping("/rest/studyactivity-list")
     public ResponseEntity<List<StudyActivity>> getStudyActivityDetails(HttpSession session) {
         User user = userAuthService.getAuthenticatedUser();
