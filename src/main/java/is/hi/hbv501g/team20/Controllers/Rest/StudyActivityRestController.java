@@ -267,16 +267,13 @@ if (!studyActivity.getUser().getId().equals(user.getId())) {
     public ResponseEntity<String> editStudyActivity(@RequestBody StudyActivityDTO studyActivityDTO) {
         StudyActivity studyActivity = studyActivityService.findById(studyActivityDTO.getId());
 
-        if (studyActivity != null) {
-            studyActivity.setTitle(studyActivityDTO.getTitle());
-            studyActivity.setDescription(studyActivityDTO.getDescription());
-            studyActivity.setSubjectID(studyActivityDTO.getSubjectID());
-            studyActivity.setSubjectName(studyActivityDTO.getSubjectName());
-            studyActivityService.save(studyActivity);
-            return ResponseEntity.ok("study activity edited successfully");
-        }
+        studyActivity.setTitle(studyActivityDTO.getTitle());
+        studyActivity.setDescription(studyActivityDTO.getDescription());
+        studyActivity.setSubjectID(studyActivityDTO.getSubjectID());
+        studyActivity.setSubjectName(studyActivityDTO.getSubjectName());
+        studyActivityService.save(studyActivity);
 
-        return ResponseEntity.badRequest().body("Error processing editStudyActivity request");
+        return ResponseEntity.ok("study activity edited successfully");
     }
 
     @GetMapping("/rest/studyactivity-list")
