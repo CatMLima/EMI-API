@@ -1,12 +1,9 @@
 package is.hi.hbv501g.team20.dto;
 
-import is.hi.hbv501g.team20.Persistence.Entities.Coffee;
 import is.hi.hbv501g.team20.Persistence.Entities.Location;
 import is.hi.hbv501g.team20.Persistence.Enums.Building;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 public class StudyActivityDTO {
     private Long id;
@@ -24,13 +21,12 @@ public class StudyActivityDTO {
     private int coffeesCount;
     private boolean hasCoffeed;
 
-    public StudyActivityDTO(Long id, Long userID, byte[] activityPicture, Building building,
+    public StudyActivityDTO(Long id, Long userID, Building building,
                             Location location, Date date, String duration, String title,
                             String description, String userName, String subjectID,
                             String subjectName, int coffeesCount, boolean hasCoffeed) {
         this.id = id;
         this.userID = userID;
-        this.activityPicture = activityPicture;
         this.building = building;
         this.location = location;
         this.date = date;
