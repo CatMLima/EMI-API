@@ -10,15 +10,15 @@ public class OngoingResponse {
 
     private String subjectId;
 
-    private String subject_name;
+    private String subjectName;
 
-    private Duration duration;
+    private String duration;
 
-    public OngoingResponse(Long id, String title, String subjectId, String subject_name, Duration duration){
+    public OngoingResponse(Long id, String title, String subjectId, String subjectName, String duration){
         this.id = id;
         this.title = title;
         this.subjectId = subjectId;
-        this.subject_name = subject_name;
+        this.subjectName = subjectName;
         this.duration = duration;
     }
 
@@ -34,11 +34,11 @@ public class OngoingResponse {
         return subjectId;
     }
 
-    public String getSubject_name() {
-        return subject_name;
+    public String getSubjectName() {
+        return subjectName;
     }
 
-    public Duration getDuration() {return duration;}
+    public String getDuration() {return duration;}
 
     public void setId(Long id) {
         this.id = id;
@@ -52,9 +52,9 @@ public class OngoingResponse {
         this.subjectId = subjectId;
     }
 
-    public void setSubject_name(String subject_name) {
-        this.subject_name = subject_name;
+    public void setSubjectName(String subject_name) {
+        this.subjectName = subjectName;
     }
 
-    public void setDuration(Duration duration) {this.duration = duration;}
+    public void setDuration(String duration) {this.duration = duration;}
 }
