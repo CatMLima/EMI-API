@@ -392,7 +392,7 @@ if (!studyActivity.getUser().getId().equals(user.getId())) {
         StudyActivity studyActivityCreated = studyActivityService.save(studyActivity);
         return ResponseEntity.status(HttpStatus.CREATED).body(studyActivityCreated);
     }
-
+//pls
     @PostMapping("/rest/uploadActivityPicture/{activityId}")
     public ResponseEntity<String> uploadActivityPicture(@RequestParam("activityPicture") MultipartFile activityPicture,
                                                         @PathVariable("activityId") Long activityId) {
