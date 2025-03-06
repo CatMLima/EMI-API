@@ -195,6 +195,17 @@ public class UserRestController {
         return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(user.getProfilePicture());
     }
 
+    @GetMapping("/get/profile_by_id/{id}")
+    public ResponseEntity<byte[]> getProfilePicById(@PathVariable Long id){
+        User user = userAuthService.getAuthenticatedUser();
+
+        if (user == null || user.getProfilePicture() == null){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+        User searchedUser = userService.findById(id);
+        return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(searchedUser.getProfilePicture());
+    }
+
     @PostMapping("/set/profilePicture")
     public ResponseEntity<String> uploadPicture(@RequestParam("file") MultipartFile profilePicture){
         User user = userAuthService.getAuthenticatedUser();
