@@ -120,8 +120,7 @@ public class StudyActivityRestController {
         boolean hasCoffee = false;
         if (coffeeCheck != null) hasCoffee = true;
 
-        StudyActivityDTO dto = new StudyActivityDTO(sa.getId(), sa.getUser().getId(),
-                sa.getActivityPicture(), sa.getBuilding(), sa.getLocation(), sa.getDate(),
+        StudyActivityDTO dto = new StudyActivityDTO(sa.getId(), sa.getUser().getId(), sa.getBuilding(), sa.getLocation(), sa.getDate(),
                 sa.getFormattedDuration(), sa.getTitle(), sa.getDescription(), sa.getUser().getName(),
                 sa.getSubjectName(), sa.getSubjectID(), sa.getCoffees().size(), hasCoffee);
 
@@ -142,8 +141,7 @@ public class StudyActivityRestController {
             if (coffeeCheck != null) {
                 hasCoffee = true;
             }
-            StudyActivityDTO dto = new StudyActivityDTO(sa.getId(), sa.getUser().getId(),
-                    sa.getActivityPicture(), sa.getBuilding(), sa.getLocation(), sa.getDate(),
+            StudyActivityDTO dto = new StudyActivityDTO(sa.getId(), sa.getUser().getId(), sa.getBuilding(), sa.getLocation(), sa.getDate(),
                     sa.getFormattedDuration(), sa.getTitle(), sa.getDescription(), sa.getUser().getName(),
                     sa.getSubjectName(), sa.getSubjectID(), sa.getCoffees().size(), hasCoffee);
             return ResponseEntity.ok(dto);
@@ -340,8 +338,7 @@ if (!studyActivity.getUser().getId().equals(user.getId())) {
             if (coffeeCheck != null) {
                 hasCoffee = true;
             }
-            StudyActivityDTO dto = new StudyActivityDTO(sa.getId(), sa.getUser().getId(),
-                    sa.getActivityPicture(), sa.getBuilding(), sa.getLocation(), sa.getDate(),
+            StudyActivityDTO dto = new StudyActivityDTO(sa.getId(), sa.getUser().getId(), sa.getBuilding(), sa.getLocation(), sa.getDate(),
                     sa.getFormattedDuration(), sa.getTitle(), sa.getDescription(), sa.getUser().getName(),
                     sa.getSubjectName(), sa.getSubjectID(), sa.getCoffees().size(),hasCoffee);
             dtoList.add(dto);
@@ -363,8 +360,7 @@ if (!studyActivity.getUser().getId().equals(user.getId())) {
                 hasCoffee = true;
             }
 
-            StudyActivityDTO dto = new StudyActivityDTO(sa.getId(), sa.getUser().getId(),
-                    sa.getActivityPicture(), sa.getBuilding(), sa.getLocation(), sa.getDate(),
+            StudyActivityDTO dto = new StudyActivityDTO(sa.getId(), sa.getUser().getId(), sa.getBuilding(), sa.getLocation(), sa.getDate(),
                     sa.getFormattedDuration(), sa.getTitle(), sa.getDescription(), sa.getUser().getName(),
                     sa.getSubjectName(), sa.getSubjectID(), sa.getCoffees().size(),hasCoffee);
 

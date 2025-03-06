@@ -40,7 +40,7 @@ public class StudyActivityDTO {
         this.hasCoffeed = hasCoffeed;
     }
 
-    public StudyActivityDTO(long id, Long id1, byte[] activityPicture, Building building, Location location, Date date, String formattedDuration, String title, String description, String name, String subjectName, String subjectID) {
+    public StudyActivityDTO(long id, Long id1, Building building, Location location, Date date, String formattedDuration, String title, String description, String name, String subjectName, String subjectID) {
     }
 
     public long getId() { return id; }

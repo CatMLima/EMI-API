@@ -195,7 +195,7 @@ public class UserRestController {
         return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(user.getProfilePicture());
     }
 
-    @GetMapping("/get/profile_by_id/{id}")
+    @GetMapping("/get/profile_pic_by_id/{id}")
     public ResponseEntity<byte[]> getProfilePicById(@PathVariable Long id){
         User user = userAuthService.getAuthenticatedUser();
 
