@@ -105,7 +105,7 @@ public class StudyActivityRestController {
                 studyActivity.getTitle(),
                 studyActivity.getSubjectID(),
                 studyActivity.getSubjectName(),
-                studyActivity.getDuration()
+                studyActivity.getDuration().toString()
         );
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
@@ -159,7 +159,7 @@ public class StudyActivityRestController {
                 studyActivity.getTitle(),
                 studyActivity.getSubjectID(),
                 studyActivity.getSubjectName(),
-                studyActivity.getDuration()
+                studyActivity.getDuration().toString()
         );
         return response != null ? ResponseEntity.ok(response) : ResponseEntity.notFound().build();
     }
@@ -190,7 +190,7 @@ public class StudyActivityRestController {
                 studyActivity.getTitle(),
                 studyActivity.getSubjectID(),
                 studyActivity.getSubjectName(),
-                studyActivity.getDuration()
+                studyActivity.getDuration().toString()
         );
         return ResponseEntity.ok(response);
     }
