@@ -230,11 +230,12 @@ public class UserRestController {
     @GetMapping("/get/profile_pic_by_id/{id}")
     public ResponseEntity<byte[]> getProfilePicById(@PathVariable Long id){
         User user = userAuthService.getAuthenticatedUser();
+        User searchedUser = userService.findById(id);
 
-        if (user == null || user.getProfilePicture() == null){
+        if (user == null || searchedUser == null || searchedUser.getProfilePicture() == null){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
-        User searchedUser = userService.findById(id);
+
         return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(searchedUser.getProfilePicture());
     }
 
