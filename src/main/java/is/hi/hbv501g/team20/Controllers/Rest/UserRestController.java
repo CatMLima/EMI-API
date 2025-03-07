@@ -91,7 +91,7 @@ public class UserRestController {
         return ResponseEntity.ok(smallerUser);
     }
 
-    @GetMapping("/get/user/id")
+    @GetMapping("/get/user/{id}")
     public ResponseEntity<UserDTO> getUserById(@PathVariable Long id){
 
         User user = userService.findById(id);
