@@ -105,6 +105,22 @@ public class UserRestController {
         return ResponseEntity.ok(userDTO);
     }
 
+    @PostMapping("/set/user")
+    public ResponseEntity<String> syncUser(@RequestBody UserDTO userDTO){
+        if (userDTO != null) {
+            User user = userService.findById(userDTO.getId());
+            if (user == null) {return ResponseEntity.status(HttpStatus.NOT_FOUND).build();}
+
+            user.setIsActive(userDTO.getIsActive());
+            user.setPrivacy(userDTO.getPrivacy());
+            user.setStreak(userDTO.getStreak());
+            userService.save(user);
+
+            return ResponseEntity.ok("Sync User successful.");
+        }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+    }
+
 
     /*
     A bunch of GET MAPPINGS to get the information about the User.
