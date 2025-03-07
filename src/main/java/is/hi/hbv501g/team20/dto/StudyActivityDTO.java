@@ -18,13 +18,14 @@ public class StudyActivityDTO {
     private String userName;
     private String subjectID;
     private String subjectName;
+    private Integer privacy;
     private int coffeesCount;
     private boolean hasCoffeed;
 
     public StudyActivityDTO(Long id, Long userID, Building building,
                             Location location, Date date, String duration, String title,
                             String description, String userName, String subjectID,
-                            String subjectName, int coffeesCount, boolean hasCoffeed) {
+                            String subjectName, Integer privacy, int coffeesCount, boolean hasCoffeed) {
         this.id = id;
         this.userID = userID;
         this.building = building;
@@ -36,6 +37,7 @@ public class StudyActivityDTO {
         this.userName = userName;
         this.subjectID = subjectID;
         this.subjectName = subjectName;
+        this.privacy = privacy;
         this.coffeesCount = coffeesCount;
         this.hasCoffeed = hasCoffeed;
     }
@@ -67,6 +69,8 @@ public class StudyActivityDTO {
     public void setSubjectID(String subjectID) { this.subjectID = subjectID; }
     public String getSubjectName() { return subjectName; }
     public void setSubjectName(String subjectName) { this.subjectName = subjectName; }
+    public Integer getPrivacy() { return privacy; }
+    public void setPrivacy(Integer privacy) { this.privacy = privacy; }
     public int getCoffeesCount() { return coffeesCount; }
     public void setCoffeesCount(int coffeesCount) { this.coffeesCount = coffeesCount; }
     public boolean getHasCoffeed(){ return hasCoffeed; }

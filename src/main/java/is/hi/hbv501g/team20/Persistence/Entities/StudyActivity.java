@@ -66,6 +66,7 @@ public class StudyActivity {
                          String subjectName) {
         this.date = date;
         this.start = start;
+        this.end_time = end;
         this.title = title;
         this.description = description;
         this.subjectID = subjectID;
@@ -209,9 +210,7 @@ public class StudyActivity {
         return activityPicture;
     }
 
-    private Integer getPrivacy() {
-        return privacy;
-    }
+    public Integer getPrivacy() { return user.getPrivacy(); }
 
     public void setPrivacy(User user) {
         this.privacy = userPrivacy();

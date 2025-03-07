@@ -4,6 +4,7 @@ import is.hi.hbv501g.team20.Persistence.Entities.User;
 import is.hi.hbv501g.team20.Services.*;
 import is.hi.hbv501g.team20.dto.ChangePasswordRequest;
 import is.hi.hbv501g.team20.dto.LoginResponse;
+import is.hi.hbv501g.team20.dto.UserDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -89,6 +90,21 @@ public class UserRestController {
 
         return ResponseEntity.ok(smallerUser);
     }
+
+    @GetMapping("/get/user/id")
+    public ResponseEntity<UserDTO> getUserById(@PathVariable Long id){
+
+        User user = userService.findById(id);
+        if (user == null){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+
+        UserDTO userDTO = new UserDTO(user.getId(), user.getIsActive(), user.getPrivacy(), user.getStreak(),
+                user.getName(), user.getEmail());
+
+        return ResponseEntity.ok(userDTO);
+    }
+
 
     /*
     A bunch of GET MAPPINGS to get the information about the User.
