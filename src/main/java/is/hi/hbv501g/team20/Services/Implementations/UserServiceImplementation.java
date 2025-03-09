@@ -135,7 +135,7 @@ public class UserServiceImplementation implements UserService {
     @Override
     public User registerNewUser(User user) {
         user.setPassword(encoder.encode(user.getPassword()));
-        user.setIsActive(0);
+        user.setIsActive(1);
         user.setStreak(0);
         user.setPrivacy(0);
         return userRepo.save(user);
