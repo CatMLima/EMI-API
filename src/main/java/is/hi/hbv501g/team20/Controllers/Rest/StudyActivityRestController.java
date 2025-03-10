@@ -124,7 +124,7 @@ public class StudyActivityRestController {
 
         StudyActivityDTO dto = new StudyActivityDTO(sa.getId(), sa.getUser().getId(), sa.getBuilding(), sa.getLocation(), sa.getDate(),
                 sa.getFormattedDuration(), sa.getTitle(), sa.getDescription(), sa.getUser().getName(),
-                sa.getSubjectName(), sa.getSubjectID(), sa.getCoffees().size(), hasCoffee);
+                sa.getSubjectName(), sa.getSubjectID(), user.getPrivacy(), sa.getCoffees().size(), hasCoffee);
 
         return dto != null ? ResponseEntity.ok(dto) : ResponseEntity.notFound().build();
     }
@@ -145,7 +145,7 @@ public class StudyActivityRestController {
             }
             StudyActivityDTO dto = new StudyActivityDTO(sa.getId(), sa.getUser().getId(), sa.getBuilding(), sa.getLocation(), sa.getDate(),
                     sa.getFormattedDuration(), sa.getTitle(), sa.getDescription(), sa.getUser().getName(),
-                    sa.getSubjectName(), sa.getSubjectID(), sa.getCoffees().size(), hasCoffee);
+                    sa.getSubjectName(), sa.getSubjectID(), user.getPrivacy(), sa.getCoffees().size(), hasCoffee);
             return ResponseEntity.ok(dto);
         }
         else return ResponseEntity.notFound().build();
@@ -349,7 +349,7 @@ if (!studyActivity.getUser().getId().equals(user.getId())) {
             }
             StudyActivityDTO dto = new StudyActivityDTO(sa.getId(), sa.getUser().getId(), sa.getBuilding(), sa.getLocation(), sa.getDate(),
                     sa.getFormattedDuration(), sa.getTitle(), sa.getDescription(), sa.getUser().getName(),
-                    sa.getSubjectName(), sa.getSubjectID(), sa.getCoffees().size(),hasCoffee);
+                    sa.getSubjectName(), sa.getSubjectID(), user.getPrivacy(), sa.getCoffees().size(),hasCoffee);
             dtoList.add(dto);
         }
         return ResponseEntity.ok(dtoList);
@@ -371,7 +371,7 @@ if (!studyActivity.getUser().getId().equals(user.getId())) {
 
             StudyActivityDTO dto = new StudyActivityDTO(sa.getId(), sa.getUser().getId(), sa.getBuilding(), sa.getLocation(), sa.getDate(),
                     sa.getFormattedDuration(), sa.getTitle(), sa.getDescription(), sa.getUser().getName(),
-                    sa.getSubjectName(), sa.getSubjectID(), sa.getCoffees().size(),hasCoffee);
+                    sa.getSubjectName(), sa.getSubjectID(), user.getPrivacy(), sa.getCoffees().size(),hasCoffee);
 
             return ResponseEntity.ok(dto);
         }
