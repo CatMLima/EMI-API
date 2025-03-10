@@ -1,15 +1,17 @@
 package is.hi.hbv501g.team20.dto;
 
+import is.hi.hbv501g.team20.Persistence.Enums.Building;
+
 public class LocationDTO {
 
-    private String building;
+    private Building building;
     private int userCount;
 
-    public LocationDTO(String building, int userCount) {
+    public LocationDTO(Building building, int userCount) {
         this.building = building;
         this.userCount = userCount;
     }
 
-    public String getBuilding() {return building;}
+    public Building getBuilding() {return building;}
     public int getUserCount() {return userCount;}
 }

@@ -305,7 +305,7 @@ if (!studyActivity.getUser().getId().equals(user.getId())) {
         }
         List<Location> locations = (userCount != null) ? studyActivityService.findByUserCountLessThanEqual(userCount) : studyActivityService.findBuildingAlphabetically();
 
-        List<LocationDTO> locationsDTO = locations.stream().map(location -> new LocationDTO(location.getBuilding().name(),location.getUserCount())).collect(Collectors.toList());
+        List<LocationDTO> locationsDTO = locations.stream().map(location -> new LocationDTO(location.getBuilding(),location.getUserCount())).collect(Collectors.toList());
 
         return ResponseEntity.ok(locationsDTO);
     }
