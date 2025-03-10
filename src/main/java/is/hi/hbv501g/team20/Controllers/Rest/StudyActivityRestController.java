@@ -10,6 +10,7 @@ import is.hi.hbv501g.team20.Services.StudyActivityService;
 import is.hi.hbv501g.team20.Services.UserAuthService;
 import is.hi.hbv501g.team20.Services.UserService;
 import is.hi.hbv501g.team20.dto.CreateStudyActivityRequest;
+import is.hi.hbv501g.team20.dto.LocationDTO;
 import is.hi.hbv501g.team20.dto.OngoingResponse;
 import is.hi.hbv501g.team20.dto.StudyActivityDTO;
 import jakarta.servlet.http.HttpSession;
@@ -26,6 +27,7 @@ import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 @RestController
@@ -296,9 +298,16 @@ if (!studyActivity.getUser().getId().equals(user.getId())) {
     }
 
     @GetMapping("/rest/locations-list")
-    public ResponseEntity<List<Location>> getLocationsList(@RequestParam(required = false) Integer userCount) {
+    public ResponseEntity<?> getLocationsList(@RequestParam(required = false) Integer userCount) {
+        User user = userAuthService.getAuthenticatedUser(); // Pass token if required by your service
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not logged in.");
+        }
         List<Location> locations = (userCount != null) ? studyActivityService.findByUserCountLessThanEqual(userCount) : studyActivityService.findBuildingAlphabetically();
-        return ResponseEntity.ok(locations);
+
+        List<LocationDTO> locationsDTO = locations.stream().map(location -> new LocationDTO(location.getBuilding().name(),location.getUserCount())).collect(Collectors.toList());
+
+        return ResponseEntity.ok(locationsDTO);
     }
 
     @GetMapping("/rest/feed")
