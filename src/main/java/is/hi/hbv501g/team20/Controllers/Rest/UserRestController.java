@@ -99,8 +99,13 @@ public class UserRestController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
 
+        String totalTime = userService.totalTime(user);
+        Integer totalSessions = userService.totalSessions(user);
+        String averageTime = userService.average(user);
+        String favouriteLocation = userService.favouriteLocation(user);
+
         UserDTO userDTO = new UserDTO(user.getId(), user.getIsActive(), user.getPrivacy(), user.getStreak(),
-                user.getName(), user.getEmail());
+                user.getName(), user.getEmail(), totalTime, totalSessions, averageTime, favouriteLocation);
 
         return ResponseEntity.ok(userDTO);
     }
