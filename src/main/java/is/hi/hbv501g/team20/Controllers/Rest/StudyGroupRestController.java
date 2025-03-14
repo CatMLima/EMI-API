@@ -9,6 +9,7 @@ import is.hi.hbv501g.team20.dto.PostDTO;
 import is.hi.hbv501g.team20.dto.StudyActivityDTO;
 import is.hi.hbv501g.team20.dto.StudyGroupDTO;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,9 +17,9 @@ import org.springframework.web.bind.annotation.*;
 import java.util.*;
 
 @RestController
-@RequestMapping("/rest")
 public class StudyGroupRestController {
 
+    @Autowired
     private UserAuthService userAuthService;
 
     private final StudyGroupService studyGroupService;
@@ -29,7 +30,7 @@ public class StudyGroupRestController {
         this.postService = postService;
     }
 
-    @GetMapping("/studygroups-feed")
+    @GetMapping("/rest/studygroups-feed")
     public ResponseEntity<List<StudyGroupDTO>> getStudyGroupFeed() {
         User user = userAuthService.getAuthenticatedUser();
 
@@ -38,6 +39,9 @@ public class StudyGroupRestController {
         }
 
         List<StudyGroup> notMemberStudyGroups = studyGroupService.findAllExceptUser(user.getId());
+        if (notMemberStudyGroups == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
         List<StudyGroupDTO> dtoList = new ArrayList<>();
         for (StudyGroup sg : notMemberStudyGroups) {
             StudyGroupDTO dto = new StudyGroupDTO(sg.getId(), sg.getName(), sg.getDescription(),
@@ -48,15 +52,17 @@ public class StudyGroupRestController {
         return ResponseEntity.ok(dtoList);
     }
 
-    @GetMapping("/get/user/studygroups")
+    @GetMapping("/rest/get/user/studygroups")
     public ResponseEntity<List<StudyGroupDTO>> getUserStudyGroup() {
         User user = userAuthService.getAuthenticatedUser();
-
         if (user == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
         List<StudyGroup> isMemberStudyGroups = studyGroupService.findByUserId(user.getId());
+        if (isMemberStudyGroups == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
 
         List<StudyGroupDTO> dtoList = new ArrayList<>();
         for (StudyGroup sg : isMemberStudyGroups) {
@@ -68,13 +74,13 @@ public class StudyGroupRestController {
         return ResponseEntity.ok(dtoList);
     }
 
-    @GetMapping("/studygroup-create")
+    @GetMapping("/rest/studygroup-create")
     public ResponseEntity<StudyGroup> getStudyGroupTemplate(){
         StudyGroup studyGroup = new StudyGroup();
         return ResponseEntity.ok(studyGroup);
     }
 
-    @PostMapping("/studygroup-create")
+    @PostMapping("/rest/studygroup-create")
     public ResponseEntity<String> createStudyGroup(@RequestBody StudyGroupDTO studyGroupDTO) {
         User admin = userAuthService.getAuthenticatedUser();
         if (admin == null) {
@@ -91,7 +97,7 @@ public class StudyGroupRestController {
         return ResponseEntity.status(HttpStatus.CREATED).body("StudyGroup created!");
     }
 
-    @PostMapping("/studygroup-join/{id}")
+    @PostMapping("/rest/studygroup-join/{id}")
     public ResponseEntity<String> joinStudyGroup(@PathVariable Long id){
         User user = userAuthService.getAuthenticatedUser();
         if (user == null) {
@@ -108,7 +114,7 @@ public class StudyGroupRestController {
         return ResponseEntity.ok().body("Joined study group successfully!");
     }
 
-    @GetMapping("/studygroup-view/{id}")
+    @GetMapping("/rest/studygroup-view/{id}")
     public ResponseEntity<List<PostDTO>> viewStudyGroup(@PathVariable("id") Long id) {
         StudyGroup studyGroup = studyGroupService.findById(id);
         if (studyGroup == null) {
@@ -129,7 +135,7 @@ public class StudyGroupRestController {
         return ResponseEntity.ok(dtoList);
     }
 
-    @PostMapping("/admin-join")
+    @PostMapping("/rest/admin-join")
     public ResponseEntity<String> changeLookingForMembers(@RequestParam("studyGroupId") long studyGroupId,
                                                      @RequestParam("lookingForMembers") int lookingForMembers) {
         StudyGroup studyGroup = studyGroupService.findById(studyGroupId);
@@ -142,7 +148,7 @@ public class StudyGroupRestController {
         return ResponseEntity.ok().body("Updated looking for members status.");
     }
 
-    @PostMapping("/post-create")
+    @PostMapping("/rest/post-create")
     public ResponseEntity<String> createPost(@RequestParam("studyGroupId") long studyGroupId,
                                         @RequestBody PostDTO postDTO){
         User user = userAuthService.getAuthenticatedUser();
