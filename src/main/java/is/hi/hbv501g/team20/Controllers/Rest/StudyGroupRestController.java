@@ -1,23 +1,25 @@
 package is.hi.hbv501g.team20.Controllers.Rest;
 
-import is.hi.hbv501g.team20.Persistence.Entities.Post;
-import is.hi.hbv501g.team20.Persistence.Entities.StudyGroup;
-import is.hi.hbv501g.team20.Persistence.Entities.User;
+import is.hi.hbv501g.team20.Persistence.Entities.*;
 import is.hi.hbv501g.team20.Services.PostService;
 import is.hi.hbv501g.team20.Services.StudyGroupService;
+import is.hi.hbv501g.team20.Services.UserAuthService;
+import is.hi.hbv501g.team20.Services.UserService;
+import is.hi.hbv501g.team20.dto.PostDTO;
+import is.hi.hbv501g.team20.dto.StudyActivityDTO;
+import is.hi.hbv501g.team20.dto.StudyGroupDTO;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @RequestMapping("/rest")
 public class StudyGroupRestController {
+
+    private UserAuthService userAuthService;
 
     private final StudyGroupService studyGroupService;
     private final PostService postService;
@@ -28,21 +30,42 @@ public class StudyGroupRestController {
     }
 
     @GetMapping("/studygroups-feed")
-    public ResponseEntity<?> getStudyGroupFeed(HttpSession session) {
-        User user = (User) session.getAttribute("user");
+    public ResponseEntity<List<StudyGroupDTO>> getStudyGroupFeed() {
+        User user = userAuthService.getAuthenticatedUser();
 
         if (user == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not logged in.");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        List<StudyGroup> notMemberStudyGroups = studyGroupService.findAllExceptUser(user.getId());
+        List<StudyGroupDTO> dtoList = new ArrayList<>();
+        for (StudyGroup sg : notMemberStudyGroups) {
+            StudyGroupDTO dto = new StudyGroupDTO(sg.getId(), sg.getName(), sg.getDescription(),
+                    sg.getSubjectId(), sg.getMemberCount());
+            dtoList.add(dto);
+        }
+
+        return ResponseEntity.ok(dtoList);
+    }
+
+    @GetMapping("/get/user/studygroups")
+    public ResponseEntity<List<StudyGroupDTO>> getUserStudyGroup() {
+        User user = userAuthService.getAuthenticatedUser();
+
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
         List<StudyGroup> isMemberStudyGroups = studyGroupService.findByUserId(user.getId());
-        List<StudyGroup> notMemberStudyGroups = studyGroupService.findAllExceptUser(user.getId());
 
-        Map<String, List<StudyGroup>> response = new HashMap<>();
-        response.put("isMemberStudyGroups", isMemberStudyGroups);
-        response.put("notMemberStudyGroups", notMemberStudyGroups);
+        List<StudyGroupDTO> dtoList = new ArrayList<>();
+        for (StudyGroup sg : isMemberStudyGroups) {
+            StudyGroupDTO dto = new StudyGroupDTO(sg.getId(), sg.getName(), sg.getDescription(),
+                    sg.getSubjectId(), sg.getMemberCount());
+            dtoList.add(dto);
+        }
 
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(dtoList);
     }
 
     @GetMapping("/studygroup-create")
@@ -52,24 +75,25 @@ public class StudyGroupRestController {
     }
 
     @PostMapping("/studygroup-create")
-    public ResponseEntity<?> createStudyGroup(HttpSession session, @RequestBody StudyGroup studyGroup) {
-        User admin = (User) session.getAttribute("user");
+    public ResponseEntity<String> createStudyGroup(@RequestBody StudyGroupDTO studyGroupDTO) {
+        User admin = userAuthService.getAuthenticatedUser();
         if (admin == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not logged in.");
         }
-
+        StudyGroup studyGroup = new StudyGroup(studyGroupDTO.getName(), studyGroupDTO.getDescription(),
+                studyGroupDTO.getSubjectId(), studyGroupDTO.getLookingForMembers());
         studyGroup.setAdmin(admin);
         studyGroup.addMember(admin);
         studyGroup.addMemberCount();
 
         studyGroupService.save(studyGroup);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(studyGroup);
+        return ResponseEntity.status(HttpStatus.CREATED).body("StudyGroup created!");
     }
 
     @PostMapping("/studygroup-join/{id}")
-    public ResponseEntity<?> joinStudyGroup(@PathVariable Long id, HttpSession session){
-        User user = (User) session.getAttribute("user");
+    public ResponseEntity<String> joinStudyGroup(@PathVariable Long id){
+        User user = userAuthService.getAuthenticatedUser();
         if (user == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not logged in.");
         }
@@ -85,24 +109,28 @@ public class StudyGroupRestController {
     }
 
     @GetMapping("/studygroup-view/{id}")
-    public ResponseEntity<?> viewStudyGroup(@PathVariable("id") Long id, HttpSession session) {
+    public ResponseEntity<List<PostDTO>> viewStudyGroup(@PathVariable("id") Long id) {
         StudyGroup studyGroup = studyGroupService.findById(id);
         if (studyGroup == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Study group does not exist.");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
 
-        User user = (User) session.getAttribute("user");
+        User user = userAuthService.getAuthenticatedUser();
         List<Post> posts = postService.findByStudyGroup(studyGroup);
         Collections.reverse(posts);
 
-        Map<String, List<Post>> response = new HashMap<>();
-        response.put("posts", posts);
+        List<PostDTO> dtoList = new ArrayList<>();
+        for (Post post : posts) {
+            PostDTO dto = new PostDTO(post.getId(), studyGroup.getId(), user.getName(),
+                    post.getTitle(), post.getContent());
+            dtoList.add(dto);
+        }
 
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(dtoList);
     }
 
     @PostMapping("/admin-join")
-    public ResponseEntity<?> changeLookingForMembers(@RequestParam("studyGroupId") long studyGroupId,
+    public ResponseEntity<String> changeLookingForMembers(@RequestParam("studyGroupId") long studyGroupId,
                                                      @RequestParam("lookingForMembers") int lookingForMembers) {
         StudyGroup studyGroup = studyGroupService.findById(studyGroupId);
         if (studyGroup == null) {
@@ -115,24 +143,26 @@ public class StudyGroupRestController {
     }
 
     @PostMapping("/post-create")
-    public ResponseEntity<?> createPost(@RequestParam("studyGroupId") long studyGroupId, HttpSession session,
-                                        @RequestBody Post post){
-        User user = (User) session.getAttribute("user");
+    public ResponseEntity<String> createPost(@RequestParam("studyGroupId") long studyGroupId,
+                                        @RequestBody PostDTO postDTO){
+        User user = userAuthService.getAuthenticatedUser();
         if (user == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not logged in.");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
         StudyGroup studyGroup = studyGroupService.findById(studyGroupId);
         if (studyGroup == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Study group does not exist.");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
 
+        Post post = new Post();
+        post.setTitle(postDTO.getTitle());
+        post.setContent(postDTO.getContent());
         post.setUser(user);
         post.setStudygroup(studyGroup);
         postService.save(post);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(post);
+        return ResponseEntity.status(HttpStatus.CREATED).body("post created!");
     }
-
 
 }
