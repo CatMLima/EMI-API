@@ -45,7 +45,7 @@ public class StudyGroupRestController {
         List<StudyGroupDTO> dtoList = new ArrayList<>();
         for (StudyGroup sg : notMemberStudyGroups) {
             StudyGroupDTO dto = new StudyGroupDTO(sg.getId(), sg.getName(), sg.getDescription(),
-                    sg.getSubjectId(), sg.getMemberCount());
+                    sg.getSubjectId(), sg.getLookingForMembers(), sg.getMemberCount(), 0);
             dtoList.add(dto);
         }
 
@@ -67,7 +67,7 @@ public class StudyGroupRestController {
         List<StudyGroupDTO> dtoList = new ArrayList<>();
         for (StudyGroup sg : isMemberStudyGroups) {
             StudyGroupDTO dto = new StudyGroupDTO(sg.getId(), sg.getName(), sg.getDescription(),
-                    sg.getSubjectId(), sg.getMemberCount());
+                    sg.getSubjectId(), sg.getLookingForMembers(), sg.getMemberCount(), 1);
             dtoList.add(dto);
         }
 
