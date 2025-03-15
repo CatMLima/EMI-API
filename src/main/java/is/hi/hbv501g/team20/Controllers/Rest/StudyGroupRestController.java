@@ -149,14 +149,13 @@ public class StudyGroupRestController {
     }
 
     @PostMapping("/rest/post-create")
-    public ResponseEntity<String> createPost(@RequestParam("studyGroupId") long studyGroupId,
-                                        @RequestBody PostDTO postDTO){
+    public ResponseEntity<String> createPost(@RequestBody PostDTO postDTO){
         User user = userAuthService.getAuthenticatedUser();
         if (user == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        StudyGroup studyGroup = studyGroupService.findById(studyGroupId);
+        StudyGroup studyGroup = studyGroupService.findById(postDTO.getStudyGroupId());
         if (studyGroup == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
