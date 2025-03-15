@@ -127,8 +127,8 @@ public class StudyGroupRestController {
 
         List<PostDTO> dtoList = new ArrayList<>();
         for (Post post : posts) {
-            PostDTO dto = new PostDTO(post.getId(), studyGroup.getId(), user.getId(),
-                    user.getName(), post.getTitle(), post.getContent());
+            PostDTO dto = new PostDTO(post.getId(), studyGroup.getId(), post.getUser().getId(),
+                    post.getUser().getName(), post.getTitle(), post.getContent());
             dtoList.add(dto);
         }
 
