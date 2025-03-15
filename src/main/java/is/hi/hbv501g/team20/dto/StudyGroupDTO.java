@@ -11,6 +11,8 @@ public class StudyGroupDTO {
     private int memberCount;
     private int hasUserJoined;
 
+    public StudyGroupDTO() {}
+
     public StudyGroupDTO(Long id, String name, String description, String subjectId,
                          int lookingForMembers, int memberCount, int hasUserJoined) {
         this.id = id;
