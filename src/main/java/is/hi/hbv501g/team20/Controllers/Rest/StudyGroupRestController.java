@@ -23,10 +23,12 @@ public class StudyGroupRestController {
     private UserAuthService userAuthService;
 
     private final StudyGroupService studyGroupService;
+    private final UserService userService;
     private final PostService postService;
 
-    public StudyGroupRestController(StudyGroupService studyGroupService, PostService postService) {
+    public StudyGroupRestController(StudyGroupService studyGroupService, UserService userService, PostService postService) {
         this.studyGroupService = studyGroupService;
+        this.userService = userService;
         this.postService = postService;
     }
 
@@ -74,20 +76,20 @@ public class StudyGroupRestController {
         return ResponseEntity.ok(dtoList);
     }
 
-    @GetMapping("/rest/studygroup-create")
-    public ResponseEntity<StudyGroup> getStudyGroupTemplate(){
-        StudyGroup studyGroup = new StudyGroup();
-        return ResponseEntity.ok(studyGroup);
-    }
-
     @PostMapping("/rest/studygroup-create")
     public ResponseEntity<String> createStudyGroup(@RequestBody StudyGroupDTO studyGroupDTO) {
-        User admin = userAuthService.getAuthenticatedUser();
-        if (admin == null) {
+        User user = userAuthService.getAuthenticatedUser();
+        if (user == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not logged in.");
+        } else if (studyGroupDTO.getName() == null || studyGroupDTO.getDescription() == null
+                || studyGroupDTO.getSubjectId() == null || studyGroupDTO.getSubjectId() == null) {
+            ResponseEntity.status(HttpStatus.NOT_FOUND).body("Missing parameters.");
         }
+
         StudyGroup studyGroup = new StudyGroup(studyGroupDTO.getName(), studyGroupDTO.getDescription(),
                 studyGroupDTO.getSubjectId(), studyGroupDTO.getLookingForMembers());
+
+        User admin = userService.findById(user.getId());
         studyGroup.setAdmin(admin);
         studyGroup.addMember(admin);
 
