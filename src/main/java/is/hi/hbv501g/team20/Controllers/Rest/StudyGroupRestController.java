@@ -90,7 +90,6 @@ public class StudyGroupRestController {
                 studyGroupDTO.getSubjectId(), studyGroupDTO.getLookingForMembers());
         studyGroup.setAdmin(admin);
         studyGroup.addMember(admin);
-        studyGroup.addMemberCount();
 
         studyGroupService.save(studyGroup);
 
