@@ -103,6 +103,7 @@ public class UserRestController {
         Integer totalSessions = userService.totalSessions(user);
         String averageTime = userService.average(user);
         String favouriteLocation = userService.favouriteLocation(user);
+        user = userService.updateUser(user);
 
         UserDTO userDTO = new UserDTO(user.getId(), user.getIsActive(), user.getPrivacy(), user.getStreak(),
                 user.getName(), user.getEmail(), totalTime, totalSessions, averageTime, favouriteLocation);
