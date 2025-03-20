@@ -143,9 +143,9 @@ public class StudyGroupRestController {
         return ResponseEntity.ok(dtoList);
     }
 
-    @PostMapping("/rest/admin-join")
-    public ResponseEntity<String> changeLookingForMembers(@RequestBody long studyGroupId) {
-        StudyGroup studyGroup = studyGroupService.findById(studyGroupId);
+    @PostMapping("/rest/update/admin/{id}")
+    public ResponseEntity<String> changeLookingForMembers(@PathVariable("id") Long id) {
+        StudyGroup studyGroup = studyGroupService.findById(id);
         if (studyGroup == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Study group does not exist.");
         }
