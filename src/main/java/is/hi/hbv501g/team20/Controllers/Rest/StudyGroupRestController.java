@@ -44,10 +44,13 @@ public class StudyGroupRestController {
         if (notMemberStudyGroups == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
+
+        Collections.reverse(notMemberStudyGroups);
+
         List<StudyGroupDTO> dtoList = new ArrayList<>();
         for (StudyGroup sg : notMemberStudyGroups) {
             StudyGroupDTO dto = new StudyGroupDTO(sg.getId(), sg.getName(), sg.getDescription(),
-                    sg.getSubjectId(), sg.getLookingForMembers(), sg.getMemberCount(), 0);
+                    sg.getSubjectId(), sg.getLookingForMembers(), sg.getMemberCount(), 0, 0);
             dtoList.add(dto);
         }
 
@@ -56,20 +59,24 @@ public class StudyGroupRestController {
 
     @GetMapping("/rest/get/user/studygroups")
     public ResponseEntity<List<StudyGroupDTO>> getUserStudyGroup() {
-        User user = userAuthService.getAuthenticatedUser();
-        if (user == null) {
+        User tempUser = userAuthService.getAuthenticatedUser();
+        if (tempUser == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
+        User user = userService.findById(tempUser.getId());
         List<StudyGroup> isMemberStudyGroups = studyGroupService.findByUserId(user.getId());
         if (isMemberStudyGroups == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
 
+        Collections.reverse(isMemberStudyGroups);
+
         List<StudyGroupDTO> dtoList = new ArrayList<>();
         for (StudyGroup sg : isMemberStudyGroups) {
             StudyGroupDTO dto = new StudyGroupDTO(sg.getId(), sg.getName(), sg.getDescription(),
-                    sg.getSubjectId(), sg.getLookingForMembers(), sg.getMemberCount(), 1);
+                    sg.getSubjectId(), sg.getLookingForMembers(), sg.getMemberCount(), 1,
+                    Objects.equals(sg.getAdmin().getId(), user.getId()) ?1:0);
             dtoList.add(dto);
         }
 
@@ -137,14 +144,13 @@ public class StudyGroupRestController {
     }
 
     @PostMapping("/rest/admin-join")
-    public ResponseEntity<String> changeLookingForMembers(@RequestParam("studyGroupId") long studyGroupId,
-                                                     @RequestParam("lookingForMembers") int lookingForMembers) {
+    public ResponseEntity<String> changeLookingForMembers(@RequestBody long studyGroupId) {
         StudyGroup studyGroup = studyGroupService.findById(studyGroupId);
         if (studyGroup == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Study group does not exist.");
         }
 
-        studyGroup.setLookingForMembers(lookingForMembers);
+        studyGroup.setLookingForMembers(studyGroup.getLookingForMembers()==0?1:0);
         studyGroupService.save(studyGroup);
         return ResponseEntity.ok().body("Updated looking for members status.");
     }
@@ -169,6 +175,54 @@ public class StudyGroupRestController {
         postService.save(post);
 
         return ResponseEntity.status(HttpStatus.CREATED).body("post created!");
+    }
+
+    @DeleteMapping("/rest/studygroup-delete/{id}")
+    public ResponseEntity<String> deleteStudyGroup(@PathVariable Long id) {
+
+        User tempUser = userAuthService.getAuthenticatedUser();
+        if (tempUser == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not logged in.");
+        }
+        User user = userService.findById(id);
+        StudyGroup studyGroup = studyGroupService.findById(id);
+        if (studyGroup == null) {
+            return ResponseEntity.notFound().build();
+        }
+        List<Post> posts = studyGroup.getPosts();
+        for (Post post : posts) {postService.delete(post);}
+
+        studyGroupService.delete(studyGroup);
+
+        return ResponseEntity.ok("Study Group deleted.");
+    }
+
+    @GetMapping("/rest/get/post/{id}")
+    public ResponseEntity<PostDTO> getPost(@PathVariable("id") Long id) {
+        Post post = postService.findById(id);
+        if (post == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+
+        return ResponseEntity.ok(new PostDTO(post.getId(), post.getStudygroup().getId(), post.getUser().getId(),
+                post.getUser().getName(), post.getTitle(), post.getContent()));
+    }
+
+    @DeleteMapping("/rest/post-delete/{id}")
+    public ResponseEntity<String> deletePost(@PathVariable Long id) {
+        User user = userAuthService.getAuthenticatedUser();
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not logged in.");
+        }
+
+        Post post = postService.findById(id);
+        if (post == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        postService.delete(post);
+
+        return ResponseEntity.ok("post deleted.");
     }
 
 }

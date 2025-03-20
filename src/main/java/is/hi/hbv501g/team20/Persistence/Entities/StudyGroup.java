@@ -97,6 +97,8 @@ public class StudyGroup {
 
     public List<User> getMembers() {return members;}
 
+    public List<Post> getPosts() {return posts;}
+
     @Override
     public String toString() {
         return "StudyGroup{" +
