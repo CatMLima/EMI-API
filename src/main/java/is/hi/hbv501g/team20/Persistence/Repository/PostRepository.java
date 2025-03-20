@@ -14,6 +14,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     void delete(Post post);
     Post save(Post post);
     List<Post> findAll();
+    Post findById(long id);
 
     @Query("SELECT p FROM Post p WHERE p.studygroup = :studygroup")
     List<Post> findByStudyGroup(@Param("studygroup") StudyGroup studyGroup);

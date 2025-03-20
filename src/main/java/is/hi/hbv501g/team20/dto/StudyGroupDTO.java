@@ -10,11 +10,12 @@ public class StudyGroupDTO {
     private int lookingForMembers;
     private int memberCount;
     private int hasUserJoined;
+    private int isAdmin;
 
     public StudyGroupDTO() {}
 
     public StudyGroupDTO(Long id, String name, String description, String subjectId,
-                         int lookingForMembers, int memberCount, int hasUserJoined) {
+                         int lookingForMembers, int memberCount, int hasUserJoined, int isAdmin) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -22,6 +23,7 @@ public class StudyGroupDTO {
         this.lookingForMembers = lookingForMembers;
         this.memberCount = memberCount;
         this.hasUserJoined = hasUserJoined;
+        this.isAdmin = isAdmin;
     }
 
     public StudyGroupDTO(Long id, String name, String description, String subjectId, int lookingForMembers) {
@@ -30,6 +32,7 @@ public class StudyGroupDTO {
         this.description = description;
         this.subjectId = subjectId;
         this.lookingForMembers = lookingForMembers;
+        this.isAdmin = 1;
         this.memberCount = 1;
         this.hasUserJoined = 1;
     }
@@ -61,4 +64,8 @@ public class StudyGroupDTO {
     public int getHasUserJoined() { return hasUserJoined; }
 
     public void setHasUserJoined(int hasUserJoined) {this.hasUserJoined = hasUserJoined;}
+
+    public int getIsAdmin() { return isAdmin; }
+
+    public void setIsAdmin(int isAdmin) {this.isAdmin = isAdmin;}
 }

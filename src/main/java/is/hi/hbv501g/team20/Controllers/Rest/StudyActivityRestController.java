@@ -231,9 +231,9 @@ public class StudyActivityRestController {
             return ResponseEntity.notFound().build();
         }
 
-if (!studyActivity.getUser().getId().equals(user.getId())) {
-    return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You can only delete your own study activities.");
-}
+        if (!studyActivity.getUser().getId().equals(user.getId())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You can only delete your own study activities.");
+        }
         studyActivityService.delete(studyActivity);
         return ResponseEntity.ok("Study activity deleted.");
     }

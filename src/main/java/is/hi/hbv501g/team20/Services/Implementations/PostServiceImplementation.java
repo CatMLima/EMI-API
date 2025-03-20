@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class PostServiceImplementation implements PostService {
@@ -22,6 +23,12 @@ public class PostServiceImplementation implements PostService {
     @Override
     public void delete(Post post) {
         postRepo.delete(post);
+    }
+
+    @Override
+    public Post findById(Long id) {
+        Optional<Post> byId = postRepo.findById(id);
+        return byId.orElse(null);
     }
 
     @Override
