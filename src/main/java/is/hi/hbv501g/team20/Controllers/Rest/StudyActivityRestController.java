@@ -21,6 +21,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -33,8 +35,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@Tag(name = "Study Activities", description = "APIs for managing study activities.")
 @RestController
-@RequestMapping("/rest")
+@RequestMapping("/study")
 public class StudyActivityRestController {
 
     @Autowired
@@ -55,8 +58,8 @@ public class StudyActivityRestController {
     // User-centric activity endpoints
     // -------------------------------------------------------------------------
 
-    // POST /rest/activities — start a new study session
-    @PostMapping("/activities")
+    // POST /study/activities/new — start a new study session
+    @PostMapping("/activities/new")
     public ResponseEntity<OngoingResponse> createActivity(@RequestBody CreateStudyActivityRequest request) {
         User user = userAuthService.getAuthenticatedUser();
         if (user == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
@@ -102,7 +105,7 @@ public class StudyActivityRestController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    // GET /rest/activities — list all of the authenticated user's sessions
+    // GET /study/activities — list all of the authenticated user's sessions
     @GetMapping("/activities")
     public ResponseEntity<List<StudyActivityDTO>> getMyActivities() {
         User user = userAuthService.getAuthenticatedUser();
@@ -115,7 +118,7 @@ public class StudyActivityRestController {
         return ResponseEntity.ok(dtos);
     }
 
-    // GET /rest/activities/ongoing — get the current active session
+    // GET /study/activities/ongoing — get the current active session
     @GetMapping("/activities/ongoing")
     public ResponseEntity<OngoingResponse> getOngoing() {
         User user = userAuthService.getAuthenticatedUser();
@@ -137,7 +140,7 @@ public class StudyActivityRestController {
         return ResponseEntity.ok(response);
     }
 
-    // GET /rest/activities/{id} — get a single session's details
+    // GET /study/activities/{id} — get a single session's details
     @GetMapping("/activities/{id}")
     public ResponseEntity<StudyActivityDTO> getActivity(@PathVariable Long id) {
         User user = userAuthService.getAuthenticatedUser();
@@ -149,7 +152,7 @@ public class StudyActivityRestController {
         return ResponseEntity.ok(toDTO(sa, user));
     }
 
-    // PUT /rest/activities/{id} — edit a session
+    // PUT /study/activities/{id} — edit a session
     @PutMapping("/activities/{id}")
     public ResponseEntity<String> editActivity(@PathVariable Long id, @RequestBody EditActivityRequest request) {
         User user = userAuthService.getAuthenticatedUser();
@@ -169,7 +172,7 @@ public class StudyActivityRestController {
         return ResponseEntity.ok("Study session updated.");
     }
 
-    // PATCH /rest/activities/{id}/finish — finish an active session
+    // PATCH /study/activities/{id}/finish — finish an active session
     @PatchMapping("/activities/{id}/finish")
     public ResponseEntity<String> finishActivity(@PathVariable Long id) {
         User user = userAuthService.getAuthenticatedUser();
@@ -199,7 +202,7 @@ public class StudyActivityRestController {
         return ResponseEntity.ok("Study session finished.");
     }
 
-    // DELETE /rest/activities/{id} — delete a session
+    // DELETE /study/activities/{id} — delete a session
     @DeleteMapping("/activities/{id}")
     public ResponseEntity<String> deleteActivity(@PathVariable Long id) {
         User user = userAuthService.getAuthenticatedUser();
@@ -215,7 +218,7 @@ public class StudyActivityRestController {
         return ResponseEntity.ok("Study session deleted.");
     }
 
-    // POST /rest/activities/{id}/picture — upload a picture for a session
+    // POST /study/activities/{id}/picture — upload a picture for a session
     @PostMapping("/activities/{id}/picture")
     public ResponseEntity<String> uploadActivityPicture(@PathVariable Long id,
                                                         @RequestParam("picture") MultipartFile picture) {
@@ -237,7 +240,7 @@ public class StudyActivityRestController {
         }
     }
 
-    // GET /rest/activities/{id}/picture — get a session's picture
+    // GET /study/activities/{id}/picture — get a session's picture
     @GetMapping("/activities/{id}/picture")
     public ResponseEntity<byte[]> getActivityPicture(@PathVariable Long id) {
         StudyActivity sa = studyActivityService.findById(id);
@@ -249,6 +252,7 @@ public class StudyActivityRestController {
     // Social / feed endpoints — kept as-is, will be redesigned in a later phase
     // -------------------------------------------------------------------------
 
+    // GET /study/feed - get's the feed of all public study activities
     @GetMapping("/feed")
     public ResponseEntity<Map<String, Object>> showFeed() {
         User user = userAuthService.getAuthenticatedUser();

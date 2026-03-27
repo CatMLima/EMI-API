@@ -11,10 +11,13 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 import java.util.Map;
 
+@Tag(name = "Users", description = "APIs for managing users.")
 @RestController
-@RequestMapping("/rest")
+@RequestMapping("/users")
 public class UserRestController {
 
     @Autowired
@@ -32,7 +35,7 @@ public class UserRestController {
     @Autowired
     private UserAuthService userAuthService;
 
-    // POST /rest/register — create a new account
+    // POST /register — create a new account
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
         try {
@@ -47,7 +50,7 @@ public class UserRestController {
         }
     }
 
-    // POST /rest/login — authenticate and receive JWT
+    // POST /login — authenticate and receive JWT
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
         try {
@@ -64,8 +67,8 @@ public class UserRestController {
         }
     }
 
-    // GET /rest/users/me — get the authenticated user's profile
-    @GetMapping("/users/me")
+    // GET /me — get the authenticated user's profile
+    @GetMapping("/me")
     public ResponseEntity<UserDTO> getMe() {
         User user = userAuthService.getAuthenticatedUser();
         if (user == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
@@ -81,8 +84,8 @@ public class UserRestController {
         return ResponseEntity.ok(dto);
     }
 
-    // GET /rest/users/{id} — get a user's public profile by ID
-    @GetMapping("/users/{id}")
+    // GET /{id} — get a user's public profile by ID
+    @GetMapping("/{id}")
     public ResponseEntity<UserDTO> getUserById(@PathVariable Long id) {
         User user = userService.findById(id);
         if (user == null) return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
@@ -98,8 +101,8 @@ public class UserRestController {
         return ResponseEntity.ok(dto);
     }
 
-    // PUT /rest/users/me/privacy — update privacy setting
-    @PutMapping("/users/me/privacy")
+    // PUT /me/privacy — update privacy setting
+    @PutMapping("/me/privacy")
     public ResponseEntity<?> changePrivacy(@RequestBody Map<String, Integer> body) {
         User user = userAuthService.getAuthenticatedUser();
         if (user == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
@@ -111,8 +114,8 @@ public class UserRestController {
         return ResponseEntity.ok("Privacy updated.");
     }
 
-    // PUT /rest/users/me/password — change password
-    @PutMapping("/users/me/password")
+    // PUT /me/password — change password
+    @PutMapping("/me/password")
     public ResponseEntity<?> changePassword(@RequestBody ChangePasswordRequest request) {
         User user = userAuthService.getAuthenticatedUser();
         if (user == null) return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found.");
@@ -129,8 +132,8 @@ public class UserRestController {
         return ResponseEntity.ok("Password changed successfully. Please log in again.");
     }
 
-    // POST /rest/users/me/picture — upload profile picture
-    @PostMapping("/users/me/picture")
+    // POST /me/picture — upload profile picture
+    @PostMapping("/me/picture")
     public ResponseEntity<String> uploadProfilePicture(@RequestParam("file") MultipartFile file) {
         User user = userAuthService.getAuthenticatedUser();
         if (user == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
@@ -144,8 +147,8 @@ public class UserRestController {
         }
     }
 
-    // GET /rest/users/me/picture — get own profile picture
-    @GetMapping("/users/me/picture")
+    // GET /me/picture — get own profile picture
+    @GetMapping("/me/picture")
     public ResponseEntity<byte[]> getMyProfilePicture() {
         User user = userAuthService.getAuthenticatedUser();
         if (user == null || user.getProfilePicture() == null) {
@@ -154,8 +157,8 @@ public class UserRestController {
         return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(user.getProfilePicture());
     }
 
-    // GET /rest/users/{id}/picture — get a user's profile picture by ID
-    @GetMapping("/users/{id}/picture")
+    // GET /{id}/picture — get a user's profile picture by ID
+    @GetMapping("/{id}/picture")
     public ResponseEntity<byte[]> getProfilePictureById(@PathVariable Long id) {
         User user = userService.findById(id);
         if (user == null || user.getProfilePicture() == null) {
@@ -164,8 +167,8 @@ public class UserRestController {
         return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(user.getProfilePicture());
     }
 
-    // DELETE /rest/users/me — delete own account
-    @DeleteMapping("/users/me")
+    // DELETE /me — delete own account
+    @DeleteMapping("/me")
     public ResponseEntity<String> deleteAccount() {
         User user = userAuthService.getAuthenticatedUser();
         if (user == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();

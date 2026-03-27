@@ -106,7 +106,7 @@ class StudyActivityRestControllerTest {
             return sa;
         });
 
-        mockMvc.perform(post("/rest/activities")
+        mockMvc.perform(post("/study/activities/new")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
@@ -121,7 +121,7 @@ class StudyActivityRestControllerTest {
 
         when(userAuthService.getAuthenticatedUser()).thenReturn(null);
 
-        mockMvc.perform(post("/rest/activities")
+        mockMvc.perform(post("/study/activities/new")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isUnauthorized());
@@ -137,7 +137,7 @@ class StudyActivityRestControllerTest {
         when(studyActivityService.findByUser(testUser)).thenReturn(List.of(testActivity));
         when(coffeeService.findCoffeeByUserAndActivity(eq(testUser), any())).thenReturn(null);
 
-        mockMvc.perform(get("/rest/activities"))
+        mockMvc.perform(get("/study/activities"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].title").value("Study Session"))
                 .andExpect(jsonPath("$[0].id").value(10));
@@ -147,7 +147,7 @@ class StudyActivityRestControllerTest {
     void getMyActivities_unauthenticated_returns401() throws Exception {
         when(userAuthService.getAuthenticatedUser()).thenReturn(null);
 
-        mockMvc.perform(get("/rest/activities"))
+        mockMvc.perform(get("/study/activities"))
                 .andExpect(status().isUnauthorized());
     }
 
@@ -156,7 +156,7 @@ class StudyActivityRestControllerTest {
         when(userAuthService.getAuthenticatedUser()).thenReturn(testUser);
         when(studyActivityService.findByUser(testUser)).thenReturn(new ArrayList<>());
 
-        mockMvc.perform(get("/rest/activities"))
+        mockMvc.perform(get("/study/activities"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())
                 .andExpect(jsonPath("$").isEmpty());
@@ -172,7 +172,7 @@ class StudyActivityRestControllerTest {
         when(userService.getOngoingId(testUser)).thenReturn(10L);
         when(studyActivityService.findById(10L)).thenReturn(testActivity);
 
-        mockMvc.perform(get("/rest/activities/ongoing"))
+        mockMvc.perform(get("/study/activities/ongoing"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(10))
                 .andExpect(jsonPath("$.title").value("Study Session"));
@@ -183,7 +183,7 @@ class StudyActivityRestControllerTest {
         when(userAuthService.getAuthenticatedUser()).thenReturn(testUser);
         when(userService.getOngoingId(testUser)).thenReturn(null);
 
-        mockMvc.perform(get("/rest/activities/ongoing"))
+        mockMvc.perform(get("/study/activities/ongoing"))
                 .andExpect(status().isNotFound());
     }
 
@@ -191,7 +191,7 @@ class StudyActivityRestControllerTest {
     void getOngoing_unauthenticated_returns401() throws Exception {
         when(userAuthService.getAuthenticatedUser()).thenReturn(null);
 
-        mockMvc.perform(get("/rest/activities/ongoing"))
+        mockMvc.perform(get("/study/activities/ongoing"))
                 .andExpect(status().isUnauthorized());
     }
 
@@ -205,7 +205,7 @@ class StudyActivityRestControllerTest {
         when(studyActivityService.findById(10L)).thenReturn(testActivity);
         when(coffeeService.findCoffeeByUserAndActivity(testUser, testActivity)).thenReturn(null);
 
-        mockMvc.perform(get("/rest/activities/10"))
+        mockMvc.perform(get("/study/activities/10"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.title").value("Study Session"))
                 .andExpect(jsonPath("$.subjectID").value("CS101"));
@@ -216,7 +216,7 @@ class StudyActivityRestControllerTest {
         when(userAuthService.getAuthenticatedUser()).thenReturn(testUser);
         when(studyActivityService.findById(99L)).thenReturn(null);
 
-        mockMvc.perform(get("/rest/activities/99"))
+        mockMvc.perform(get("/study/activities/99"))
                 .andExpect(status().isNotFound());
     }
 
@@ -232,7 +232,7 @@ class StudyActivityRestControllerTest {
         when(userAuthService.getAuthenticatedUser()).thenReturn(testUser);
         when(studyActivityService.findById(10L)).thenReturn(testActivity);
 
-        mockMvc.perform(put("/rest/activities/10")
+        mockMvc.perform(put("/study/activities/10")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
@@ -252,7 +252,7 @@ class StudyActivityRestControllerTest {
         when(userAuthService.getAuthenticatedUser()).thenReturn(testUser);
         when(studyActivityService.findById(10L)).thenReturn(testActivity);
 
-        mockMvc.perform(put("/rest/activities/10")
+        mockMvc.perform(put("/study/activities/10")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isForbidden());
@@ -265,7 +265,7 @@ class StudyActivityRestControllerTest {
         when(userAuthService.getAuthenticatedUser()).thenReturn(testUser);
         when(studyActivityService.findById(99L)).thenReturn(null);
 
-        mockMvc.perform(put("/rest/activities/99")
+        mockMvc.perform(put("/study/activities/99")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isNotFound());
@@ -282,7 +282,7 @@ class StudyActivityRestControllerTest {
         when(userService.updateStreak(testUser)).thenReturn(testUser);
         when(userService.save(testUser)).thenReturn(testUser);
 
-        mockMvc.perform(patch("/rest/activities/10/finish"))
+        mockMvc.perform(patch("/study/activities/10/finish"))
                 .andExpect(status().isOk())
                 .andExpect(content().string("Study session finished."));
 
@@ -296,7 +296,7 @@ class StudyActivityRestControllerTest {
         when(userAuthService.getAuthenticatedUser()).thenReturn(testUser);
         when(studyActivityService.findById(10L)).thenReturn(testActivity);
 
-        mockMvc.perform(patch("/rest/activities/10/finish"))
+        mockMvc.perform(patch("/study/activities/10/finish"))
                 .andExpect(status().isForbidden());
     }
 
@@ -305,7 +305,7 @@ class StudyActivityRestControllerTest {
         when(userAuthService.getAuthenticatedUser()).thenReturn(testUser);
         when(studyActivityService.findById(99L)).thenReturn(null);
 
-        mockMvc.perform(patch("/rest/activities/99/finish"))
+        mockMvc.perform(patch("/study/activities/99/finish"))
                 .andExpect(status().isNotFound());
     }
 
@@ -319,7 +319,7 @@ class StudyActivityRestControllerTest {
         when(studyActivityService.findById(10L)).thenReturn(testActivity);
         doNothing().when(studyActivityService).delete(testActivity);
 
-        mockMvc.perform(delete("/rest/activities/10"))
+        mockMvc.perform(delete("/study/activities/10"))
                 .andExpect(status().isOk())
                 .andExpect(content().string("Study session deleted."));
 
@@ -333,7 +333,7 @@ class StudyActivityRestControllerTest {
         when(userAuthService.getAuthenticatedUser()).thenReturn(testUser);
         when(studyActivityService.findById(10L)).thenReturn(testActivity);
 
-        mockMvc.perform(delete("/rest/activities/10"))
+        mockMvc.perform(delete("/study/activities/10"))
                 .andExpect(status().isForbidden());
 
         verify(studyActivityService, never()).delete(any());
@@ -344,7 +344,7 @@ class StudyActivityRestControllerTest {
         when(userAuthService.getAuthenticatedUser()).thenReturn(testUser);
         when(studyActivityService.findById(99L)).thenReturn(null);
 
-        mockMvc.perform(delete("/rest/activities/99"))
+        mockMvc.perform(delete("/study/activities/99"))
                 .andExpect(status().isNotFound());
     }
 
@@ -357,7 +357,7 @@ class StudyActivityRestControllerTest {
         testActivity.setActivityPicture(new byte[]{1, 2, 3});
         when(studyActivityService.findById(10L)).thenReturn(testActivity);
 
-        mockMvc.perform(get("/rest/activities/10/picture"))
+        mockMvc.perform(get("/study/activities/10/picture"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.IMAGE_JPEG));
     }
@@ -367,7 +367,7 @@ class StudyActivityRestControllerTest {
         testActivity.setActivityPicture(null);
         when(studyActivityService.findById(10L)).thenReturn(testActivity);
 
-        mockMvc.perform(get("/rest/activities/10/picture"))
+        mockMvc.perform(get("/study/activities/10/picture"))
                 .andExpect(status().isNotFound());
     }
 
@@ -375,7 +375,7 @@ class StudyActivityRestControllerTest {
     void getActivityPicture_activityNotFound_returns404() throws Exception {
         when(studyActivityService.findById(99L)).thenReturn(null);
 
-        mockMvc.perform(get("/rest/activities/99/picture"))
+        mockMvc.perform(get("/study/activities/99/picture"))
                 .andExpect(status().isNotFound());
     }
 }

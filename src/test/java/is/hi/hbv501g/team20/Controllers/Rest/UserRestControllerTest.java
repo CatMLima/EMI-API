@@ -73,7 +73,7 @@ class UserRestControllerTest {
 
         when(userService.registerNewUser(any(User.class))).thenReturn(registered);
 
-        mockMvc.perform(post("/rest/register")
+        mockMvc.perform(post("/users/register")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
@@ -88,7 +88,7 @@ class UserRestControllerTest {
 
         when(userService.registerNewUser(any(User.class))).thenThrow(new RuntimeException("Duplicate email"));
 
-        mockMvc.perform(post("/rest/register")
+        mockMvc.perform(post("/users/register")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest());
@@ -105,7 +105,7 @@ class UserRestControllerTest {
         when(userService.verify(any(User.class))).thenReturn("jwt.token.here");
         when(userService.findByEmail("test@test.com")).thenReturn(testUser);
 
-        mockMvc.perform(post("/rest/login")
+        mockMvc.perform(post("/users/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
@@ -119,7 +119,7 @@ class UserRestControllerTest {
 
         when(userService.verify(any(User.class))).thenReturn("Failed");
 
-        mockMvc.perform(post("/rest/login")
+        mockMvc.perform(post("/users/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isUnauthorized());
@@ -138,7 +138,7 @@ class UserRestControllerTest {
         when(userService.average(testUser)).thenReturn("0h 18m");
         when(userService.favouriteLocation(testUser)).thenReturn("Adal");
 
-        mockMvc.perform(get("/rest/users/me"))
+        mockMvc.perform(get("/users/me"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.email").value("test@test.com"))
                 .andExpect(jsonPath("$.name").value("Test User"))
@@ -150,7 +150,7 @@ class UserRestControllerTest {
     void getMe_unauthenticated_returns401() throws Exception {
         when(userAuthService.getAuthenticatedUser()).thenReturn(null);
 
-        mockMvc.perform(get("/rest/users/me"))
+        mockMvc.perform(get("/users/me"))
                 .andExpect(status().isUnauthorized());
     }
 
@@ -167,7 +167,7 @@ class UserRestControllerTest {
         when(userService.favouriteLocation(testUser)).thenReturn("Gimli");
         when(userService.updateUser(testUser)).thenReturn(testUser);
 
-        mockMvc.perform(get("/rest/users/1"))
+        mockMvc.perform(get("/users/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.name").value("Test User"));
@@ -177,7 +177,7 @@ class UserRestControllerTest {
     void getUserById_notFound_returns404() throws Exception {
         when(userService.findById(99L)).thenReturn(null);
 
-        mockMvc.perform(get("/rest/users/99"))
+        mockMvc.perform(get("/users/99"))
                 .andExpect(status().isNotFound());
     }
 
@@ -190,7 +190,7 @@ class UserRestControllerTest {
         when(userAuthService.getAuthenticatedUser()).thenReturn(testUser);
         when(userService.updatePrivacy(1L, 1)).thenReturn(testUser);
 
-        mockMvc.perform(put("/rest/users/me/privacy")
+        mockMvc.perform(put("/users/me/privacy")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"privacy\": 1}"))
                 .andExpect(status().isOk())
@@ -201,7 +201,7 @@ class UserRestControllerTest {
     void changePrivacy_unauthenticated_returns401() throws Exception {
         when(userAuthService.getAuthenticatedUser()).thenReturn(null);
 
-        mockMvc.perform(put("/rest/users/me/privacy")
+        mockMvc.perform(put("/users/me/privacy")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"privacy\": 1}"))
                 .andExpect(status().isUnauthorized());
@@ -211,7 +211,7 @@ class UserRestControllerTest {
     void changePrivacy_missingField_returns400() throws Exception {
         when(userAuthService.getAuthenticatedUser()).thenReturn(testUser);
 
-        mockMvc.perform(put("/rest/users/me/privacy")
+        mockMvc.perform(put("/users/me/privacy")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{}"))
                 .andExpect(status().isBadRequest());
@@ -233,7 +233,7 @@ class UserRestControllerTest {
         when(userService.checkNewPassword("newpass123", "newpass123")).thenReturn(true);
         when(userService.changePassword(eq(testUser), eq("newpass123"))).thenReturn(testUser);
 
-        mockMvc.perform(put("/rest/users/me/password")
+        mockMvc.perform(put("/users/me/password")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
@@ -250,7 +250,7 @@ class UserRestControllerTest {
         when(userAuthService.getAuthenticatedUser()).thenReturn(testUser);
         when(userService.checkOldPassword(testUser, "wrongpass")).thenReturn(false);
 
-        mockMvc.perform(put("/rest/users/me/password")
+        mockMvc.perform(put("/users/me/password")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest())
@@ -268,7 +268,7 @@ class UserRestControllerTest {
         when(userService.checkOldPassword(testUser, "oldpass")).thenReturn(true);
         when(userService.checkNewPassword("newpass123", "different")).thenReturn(false);
 
-        mockMvc.perform(put("/rest/users/me/password")
+        mockMvc.perform(put("/users/me/password")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest())
@@ -287,7 +287,7 @@ class UserRestControllerTest {
         doNothing().when(studyGroupService).removeUserFromStudyGroups(testUser);
         doNothing().when(userService).deleteUser(testUser);
 
-        mockMvc.perform(delete("/rest/users/me"))
+        mockMvc.perform(delete("/users/me"))
                 .andExpect(status().isOk())
                 .andExpect(content().string("Account deleted."));
 
@@ -298,7 +298,7 @@ class UserRestControllerTest {
     void deleteAccount_unauthenticated_returns401() throws Exception {
         when(userAuthService.getAuthenticatedUser()).thenReturn(null);
 
-        mockMvc.perform(delete("/rest/users/me"))
+        mockMvc.perform(delete("/users/me"))
                 .andExpect(status().isUnauthorized());
     }
 
@@ -311,7 +311,7 @@ class UserRestControllerTest {
         testUser.setProfilePicture(null);
         when(userAuthService.getAuthenticatedUser()).thenReturn(testUser);
 
-        mockMvc.perform(get("/rest/users/me/picture"))
+        mockMvc.perform(get("/users/me/picture"))
                 .andExpect(status().isNotFound());
     }
 
@@ -320,7 +320,7 @@ class UserRestControllerTest {
         testUser.setProfilePicture(new byte[]{1, 2, 3});
         when(userAuthService.getAuthenticatedUser()).thenReturn(testUser);
 
-        mockMvc.perform(get("/rest/users/me/picture"))
+        mockMvc.perform(get("/users/me/picture"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.IMAGE_JPEG));
     }
@@ -329,7 +329,7 @@ class UserRestControllerTest {
     void getPictureById_userNotFound_returns404() throws Exception {
         when(userService.findById(99L)).thenReturn(null);
 
-        mockMvc.perform(get("/rest/users/99/picture"))
+        mockMvc.perform(get("/users/99/picture"))
                 .andExpect(status().isNotFound());
     }
 }
