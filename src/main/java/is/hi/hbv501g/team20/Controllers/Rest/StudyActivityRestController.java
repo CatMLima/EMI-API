@@ -10,10 +10,10 @@ import is.hi.hbv501g.team20.Services.StudyActivityService;
 import is.hi.hbv501g.team20.Services.UserAuthService;
 import is.hi.hbv501g.team20.Services.UserService;
 import is.hi.hbv501g.team20.dto.CreateStudyActivityRequest;
+import is.hi.hbv501g.team20.dto.EditActivityRequest;
 import is.hi.hbv501g.team20.dto.LocationDTO;
 import is.hi.hbv501g.team20.dto.OngoingResponse;
 import is.hi.hbv501g.team20.dto.StudyActivityDTO;
-import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -21,16 +21,23 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
-
+@Tag(name = "Study Activities", description = "APIs for managing study activities.")
 @RestController
+@RequestMapping("/study")
 public class StudyActivityRestController {
 
     @Autowired
@@ -47,61 +54,47 @@ public class StudyActivityRestController {
         this.coffeeService = coffeeService;
     }
 
-    @GetMapping("/rest/studyactivity-create")
-    public ResponseEntity<StudyActivity> createStudyActivityGet() {
-        return ResponseEntity.ok(new StudyActivity());
-    }
+    // -------------------------------------------------------------------------
+    // User-centric activity endpoints
+    // -------------------------------------------------------------------------
 
-    @PostMapping("/rest/api/studyactivity-create")
-    public ResponseEntity<OngoingResponse> createStudyActivityPost(@RequestBody CreateStudyActivityRequest request) {
+    // POST /study/activities/new — start a new study session
+    @PostMapping("/activities/new")
+    public ResponseEntity<OngoingResponse> createActivity(@RequestBody CreateStudyActivityRequest request) {
         User user = userAuthService.getAuthenticatedUser();
+        if (user == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 
-        if (user == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }
         user.setIsActive(0);
         userService.save(user);
 
-        //Convert DTO into StudyActivity entity
         StudyActivity studyActivity = new StudyActivity();
         studyActivity.setUser(user);
-        studyActivity.setSubjectName(request.getSubject_name());
         studyActivity.setTitle(request.getTitle());
         studyActivity.setDescription(request.getDescription());
         studyActivity.setSubjectID(request.getSubjectid());
+        studyActivity.setSubjectName(request.getSubject_name());
         studyActivity.setBuilding(request.getBuilding());
         studyActivity.setIsActive(0);
-
         studyActivity.setPrivacy(user);
 
         Date date = new Date();
         studyActivity.setDate(date);
         studyActivity.setStart(LocalTime.now());
-        studyActivity.setIsActive(0);
         studyActivity.setDuration(studyActivity.getStart(), null);
 
         Building building = studyActivity.getBuilding();
         Location location = studyActivityService.findByBuilding(building);
-
         if (location == null) {
             location = new Location();
             location.setBuilding(building);
             location.setUserCount(1);
-            studyActivityService.save(location);
         } else {
             location.setUserCount(location.getUserCount() + 1);
-            studyActivityService.save(location);
         }
-
+        studyActivityService.save(location);
         studyActivity.setLocation(location);
         studyActivityService.save(studyActivity);
 
-        // Combine the date and start time into a single LocalDateTime.
-        LocalDate localDate = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-        LocalDateTime dateTime = LocalDateTime.of(localDate, studyActivity.getStart());
-        String formattedStart = dateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"));
-
-        // Create the response DTO with proper data.
         OngoingResponse response = new OngoingResponse(
                 studyActivity.getId(),
                 studyActivity.getTitle(),
@@ -112,210 +105,158 @@ public class StudyActivityRestController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    @GetMapping("/rest/studyactivity-active/{id}")
-    public ResponseEntity<StudyActivityDTO> activeStudyActivityGet(@PathVariable Long id) {
-        StudyActivity sa = studyActivityService.findById(id);
+    // GET /study/activities — list all of the authenticated user's sessions
+    @GetMapping("/activities")
+    public ResponseEntity<List<StudyActivityDTO>> getMyActivities() {
         User user = userAuthService.getAuthenticatedUser();
+        if (user == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 
-        if (user == null || sa == null) return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        Coffee coffeeCheck = coffeeService.findCoffeeByUserAndActivity(user,sa);
-        boolean hasCoffee = false;
-        if (coffeeCheck != null) hasCoffee = true;
-
-        StudyActivityDTO dto = new StudyActivityDTO(sa.getId(), sa.getUser().getId(), sa.getBuilding(), sa.getLocation(), sa.getDate(),
-                sa.getFormattedDuration(), sa.getTitle(), sa.getDescription(), sa.getUser().getName(),
-                sa.getSubjectName(), sa.getSubjectID(), user.getPrivacy(), sa.getCoffees().size(), hasCoffee);
-
-        return dto != null ? ResponseEntity.ok(dto) : ResponseEntity.notFound().build();
+        List<StudyActivity> activities = studyActivityService.findByUser(user);
+        List<StudyActivityDTO> dtos = activities.stream()
+                .map(sa -> toDTO(sa, user))
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(dtos);
     }
 
-    @GetMapping("/rest/get/OG")
-    public ResponseEntity<StudyActivityDTO> getOG() {
+    // GET /study/activities/ongoing — get the current active session
+    @GetMapping("/activities/ongoing")
+    public ResponseEntity<OngoingResponse> getOngoing() {
         User user = userAuthService.getAuthenticatedUser();
-        if (user == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }
-        List<StudyActivity> activeStudyActivity = studyActivityService.findActiveStudyActivity(user);
-        if(activeStudyActivity.size() > 0) {
-            StudyActivity sa = activeStudyActivity.get(0);
-            Coffee coffeeCheck = coffeeService.findCoffeeByUserAndActivity(user,sa);
-            boolean hasCoffee = false;
-            if (coffeeCheck != null) {
-                hasCoffee = true;
-            }
-            StudyActivityDTO dto = new StudyActivityDTO(sa.getId(), sa.getUser().getId(), sa.getBuilding(), sa.getLocation(), sa.getDate(),
-                    sa.getFormattedDuration(), sa.getTitle(), sa.getDescription(), sa.getUser().getName(),
-                    sa.getSubjectName(), sa.getSubjectID(), user.getPrivacy(), sa.getCoffees().size(), hasCoffee);
-            return ResponseEntity.ok(dto);
-        }
-        else return ResponseEntity.notFound().build();
-    }
+        if (user == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 
-    @GetMapping("/rest/get/ongoingActivity/{id}")
-    public ResponseEntity<OngoingResponse> getOGbyID(@PathVariable Long id) {
-        StudyActivity studyActivity = studyActivityService.findById(id);
-        OngoingResponse response = new OngoingResponse(
-                studyActivity.getId(),
-                studyActivity.getTitle(),
-                studyActivity.getSubjectID(),
-                studyActivity.getSubjectName(),
-                studyActivity.getDuration().toString()
-        );
-        return response != null ? ResponseEntity.ok(response) : ResponseEntity.notFound().build();
-    }
-
-    @GetMapping("/rest/get/ongoingActivity")
-    public ResponseEntity<OngoingResponse> getOngoingActivity() {
-        User user = userAuthService.getAuthenticatedUser();
-        if (user == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }
-        //List<StudyActivity> activeStudyActivity = studyActivityService.findActiveStudyActivity(user);
         Long ongoingId = userService.getOngoingId(user);
-
-        //for (StudyActivity studyActivity : activeStudyActivity) {currId = studyActivity.getId();}
         if (ongoingId == null) return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        StudyActivity studyActivity = studyActivityService.findById(ongoingId);
 
-        //LocalDate localDate = studyActivity.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-        //LocalDateTime dateTime = LocalDateTime.of(localDate, studyActivity.getStart());
-        //String formattedStart = dateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"));
-
-        //if (studyActivity.getStart() == null) {
-        //    return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-        //}
+        StudyActivity sa = studyActivityService.findById(ongoingId);
+        if (sa == null) return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 
         OngoingResponse response = new OngoingResponse(
-                studyActivity.getId(),
-                studyActivity.getTitle(),
-                studyActivity.getSubjectID(),
-                studyActivity.getSubjectName(),
-                studyActivity.getDuration().toString()
+                sa.getId(),
+                sa.getTitle(),
+                sa.getSubjectID(),
+                sa.getSubjectName(),
+                sa.getDuration().toString()
         );
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/rest/studyactivity-finish/{id}")
-    public ResponseEntity<String> finishStudyActivity(@PathVariable Long id) {
+    // GET /study/activities/{id} — get a single session's details
+    @GetMapping("/activities/{id}")
+    public ResponseEntity<StudyActivityDTO> getActivity(@PathVariable Long id) {
         User user = userAuthService.getAuthenticatedUser();
-        if (user == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User not logged in.");
+        if (user == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+
+        StudyActivity sa = studyActivityService.findById(id);
+        if (sa == null) return ResponseEntity.notFound().build();
+
+        return ResponseEntity.ok(toDTO(sa, user));
+    }
+
+    // PUT /study/activities/{id} — edit a session
+    @PutMapping("/activities/{id}")
+    public ResponseEntity<String> editActivity(@PathVariable Long id, @RequestBody EditActivityRequest request) {
+        User user = userAuthService.getAuthenticatedUser();
+        if (user == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+
+        StudyActivity sa = studyActivityService.findById(id);
+        if (sa == null) return ResponseEntity.notFound().build();
+        if (!sa.getUser().getId().equals(user.getId())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You can only edit your own study sessions.");
         }
 
-        StudyActivity studyActivity = studyActivityService.findById(id);
+        sa.setTitle(request.getTitle());
+        sa.setDescription(request.getDescription());
+        sa.setSubjectID(request.getSubjectId());
+        sa.setSubjectName(request.getSubjectName());
+        studyActivityService.save(sa);
+        return ResponseEntity.ok("Study session updated.");
+    }
+
+    // PATCH /study/activities/{id}/finish — finish an active session
+    @PatchMapping("/activities/{id}/finish")
+    public ResponseEntity<String> finishActivity(@PathVariable Long id) {
+        User user = userAuthService.getAuthenticatedUser();
+        if (user == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+
+        StudyActivity sa = studyActivityService.findById(id);
+        if (sa == null) return ResponseEntity.notFound().build();
+        if (!sa.getUser().getId().equals(user.getId())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You can only finish your own study sessions.");
+        }
+
         user.setIsActive(1);
         user = userService.updateStreak(user);
         userService.save(user);
 
-        studyActivity.setEnd_time(LocalTime.now());
-        studyActivity.setIsActive(1);
-        studyActivity.setDuration(studyActivity.getStart(), studyActivity.getEnd_time());
-        studyActivityService.save(studyActivity);
+        sa.setEnd_time(LocalTime.now());
+        sa.setIsActive(1);
+        sa.setDuration(sa.getStart(), sa.getEnd_time());
+        studyActivityService.save(sa);
 
-        Location location = studyActivity.getLocation();
-        location.setUserCount(location.getUserCount() - 1);
-        studyActivityService.save(location);
+        Location location = sa.getLocation();
+        if (location != null) {
+            location.setUserCount(Math.max(0, location.getUserCount() - 1));
+            studyActivityService.save(location);
+        }
 
-        return ResponseEntity.ok("Study activity finished.");
+        return ResponseEntity.ok("Study session finished.");
     }
 
-    @DeleteMapping("/rest/studyactivity-delete/{id}")
-    public ResponseEntity<String> deleteStudyActivity(@PathVariable Long id) {
-
-        User user = userAuthService.getAuthenticatedUser(); // Pass token if required by your service
-        if (user == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not logged in.");
-        }
-        StudyActivity studyActivity = studyActivityService.findById(id);
-        if (studyActivity == null) {
-            return ResponseEntity.notFound().build();
-        }
-
-        if (!studyActivity.getUser().getId().equals(user.getId())) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You can only delete your own study activities.");
-        }
-        studyActivityService.delete(studyActivity);
-        return ResponseEntity.ok("Study activity deleted.");
-    }
-
-    @GetMapping("/rest/studyactivity-details/{id}")
-    public ResponseEntity<StudyActivity> getStudyActivityDetails(@PathVariable Long id) {
-        StudyActivity studyActivity = studyActivityService.findById(id);
-        if (studyActivity != null && studyActivity.getDuration() == null) {
-            studyActivity.setDuration(studyActivity.getStart(), studyActivity.getEnd_time());
-            studyActivityService.save(studyActivity);
-        }
-        return studyActivity != null ? ResponseEntity.ok(studyActivity) : ResponseEntity.notFound().build();
-    }
-
-    @GetMapping("/rest/studyactivity-edit/{id}")
-    public ResponseEntity<StudyActivity> getStudyActivityEdit(@PathVariable("id") long id) {
-        StudyActivity studyActivity = studyActivityService.findById(id);
-        if (studyActivity != null) {
-            // Ensure that the old study activity has an updated duration if it's null
-            if (studyActivity.getDuration() == null) {
-                studyActivity.setDuration(studyActivity.getStart(), studyActivity.getEnd_time());
-                studyActivityService.save(studyActivity);
-            }
-            return ResponseEntity.ok(studyActivity);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
-    }
-
-    @PostMapping("/rest/studyactivity-edit")
-    public ResponseEntity<String> editStudyActivity(@RequestBody List<String> changes) {
-        String idAsString = changes.get(0);
-
-        Long sId;
-        try {
-            sId = Long.parseLong(idAsString);
-        } catch (NumberFormatException e) {
-            return ResponseEntity.badRequest().body("Invalid long in the first element: " + idAsString);
-        }
-        StudyActivity studyActivity = studyActivityService.findById(sId);
-
-        if (studyActivity == null) {return ResponseEntity.notFound().build();}
-
-        studyActivity.setTitle(changes.get(1));
-        studyActivity.setDescription(changes.get(2));
-        studyActivity.setSubjectID(changes.get(3));
-        studyActivity.setSubjectName(changes.get(4));
-        studyActivityService.save(studyActivity);
-
-        return ResponseEntity.ok("study activity edited successfully");
-    }
-
-    @GetMapping("/rest/studyactivity-list")
-    public ResponseEntity<List<StudyActivity>> getStudyActivityDetails(HttpSession session) {
+    // DELETE /study/activities/{id} — delete a session
+    @DeleteMapping("/activities/{id}")
+    public ResponseEntity<String> deleteActivity(@PathVariable Long id) {
         User user = userAuthService.getAuthenticatedUser();
-        if (user != null) {
-            List<StudyActivity> studyActivities = studyActivityService.findByUser(user);
-            return ResponseEntity.ok(studyActivities);
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        if (user == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+
+        StudyActivity sa = studyActivityService.findById(id);
+        if (sa == null) return ResponseEntity.notFound().build();
+        if (!sa.getUser().getId().equals(user.getId())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You can only delete your own study sessions.");
+        }
+
+        studyActivityService.delete(sa);
+        return ResponseEntity.ok("Study session deleted.");
+    }
+
+    // POST /study/activities/{id}/picture — upload a picture for a session
+    @PostMapping("/activities/{id}/picture")
+    public ResponseEntity<String> uploadActivityPicture(@PathVariable Long id,
+                                                        @RequestParam("picture") MultipartFile picture) {
+        User user = userAuthService.getAuthenticatedUser();
+        if (user == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+
+        StudyActivity sa = studyActivityService.findById(id);
+        if (sa == null) return ResponseEntity.notFound().build();
+        if (!sa.getUser().getId().equals(user.getId())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You can only upload pictures to your own sessions.");
+        }
+
+        try {
+            sa.setActivityPicture(picture.getBytes());
+            studyActivityService.save(sa);
+            return ResponseEntity.ok("Picture uploaded.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error uploading picture.");
         }
     }
 
-    @GetMapping("/rest/locations-list")
-    public ResponseEntity<?> getLocationsList(@RequestParam(required = false) Integer userCount) {
-        User user = userAuthService.getAuthenticatedUser(); // Pass token if required by your service
-        if (user == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not logged in.");
-        }
-        List<Location> locations = (userCount != null) ? studyActivityService.findByUserCountLessThanEqual(userCount) : studyActivityService.findBuildingAlphabetically();
-
-        List<LocationDTO> locationsDTO = locations.stream().map(location -> new LocationDTO(location.getBuilding(),location.getUserCount())).collect(Collectors.toList());
-
-        return ResponseEntity.ok(locationsDTO);
+    // GET /study/activities/{id}/picture — get a session's picture
+    @GetMapping("/activities/{id}/picture")
+    public ResponseEntity<byte[]> getActivityPicture(@PathVariable Long id) {
+        StudyActivity sa = studyActivityService.findById(id);
+        if (sa == null || sa.getActivityPicture() == null) return ResponseEntity.notFound().build();
+        return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(sa.getActivityPicture());
     }
 
-    @GetMapping("/rest/feed")
+    // -------------------------------------------------------------------------
+    // Social / feed endpoints — kept as-is, will be redesigned in a later phase
+    // -------------------------------------------------------------------------
+
+    // GET /study/feed - get's the feed of all public study activities
+    @GetMapping("/feed")
     public ResponseEntity<Map<String, Object>> showFeed() {
         User user = userAuthService.getAuthenticatedUser();
-        if (user == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }
+        if (user == null) return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
 
         List<StudyActivity> allStudyActivities = studyActivityService.findAllPublicAndUserActivities(user);
         List<StudyActivity> activeStudyActivity = studyActivityService.findActiveStudyActivity(user);
@@ -333,131 +274,84 @@ public class StudyActivityRestController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/rest/getFeedActivities")
+    @GetMapping("/getFeedActivities")
     public ResponseEntity<List<StudyActivityDTO>> getFeedActivities() {
         User user = userAuthService.getAuthenticatedUser();
-        if (user == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }
+        if (user == null) return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+
         List<StudyActivity> allStudyActivities = studyActivityService.findAllPublicAndUserActivities(user);
-        List<StudyActivityDTO> dtoList = new ArrayList<>();
-        for (StudyActivity sa : allStudyActivities) {
-            Coffee coffeeCheck = coffeeService.findCoffeeByUserAndActivity(user,sa);
-            boolean hasCoffee = false;
-            if (coffeeCheck != null) {
-                hasCoffee = true;
-            }
-            StudyActivityDTO dto = new StudyActivityDTO(sa.getId(), sa.getUser().getId(), sa.getBuilding(), sa.getLocation(), sa.getDate(),
-                    sa.getFormattedDuration(), sa.getTitle(), sa.getDescription(), sa.getUser().getName(),
-                    sa.getSubjectName(), sa.getSubjectID(), user.getPrivacy(), sa.getCoffees().size(),hasCoffee);
-            dtoList.add(dto);
-        }
+        List<StudyActivityDTO> dtoList = allStudyActivities.stream()
+                .map(sa -> toDTO(sa, user))
+                .collect(Collectors.toList());
         return ResponseEntity.ok(dtoList);
     }
 
-    @GetMapping("/rest/getActivityByID/{id}")
-    public ResponseEntity<StudyActivityDTO> getActivityByID(@PathVariable long id) {
+    @GetMapping("/locations-list")
+    public ResponseEntity<?> getLocationsList(@RequestParam(required = false) Integer userCount) {
         User user = userAuthService.getAuthenticatedUser();
-        if (user == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }
-        StudyActivity sa = studyActivityService.findById(id);
-        if (sa!= null) {
-            Coffee coffeeCheck = coffeeService.findCoffeeByUserAndActivity(user,sa);
-            boolean hasCoffee = false;
-            if (coffeeCheck != null) {
-                hasCoffee = true;
-            }
+        if (user == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not logged in.");
 
-            StudyActivityDTO dto = new StudyActivityDTO(sa.getId(), sa.getUser().getId(), sa.getBuilding(), sa.getLocation(), sa.getDate(),
-                    sa.getFormattedDuration(), sa.getTitle(), sa.getDescription(), sa.getUser().getName(),
-                    sa.getSubjectName(), sa.getSubjectID(), user.getPrivacy(), sa.getCoffees().size(),hasCoffee);
+        List<Location> locations = (userCount != null)
+                ? studyActivityService.findByUserCountLessThanEqual(userCount)
+                : studyActivityService.findBuildingAlphabetically();
 
-            return ResponseEntity.ok(dto);
-        }
-        return ResponseEntity.notFound().build();
+        List<LocationDTO> locationsDTO = locations.stream()
+                .map(l -> new LocationDTO(l.getBuilding(), l.getUserCount()))
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(locationsDTO);
     }
 
-    @GetMapping("/rest/profile")
-    public ResponseEntity<User> getUserProfile() {
+    @GetMapping("/feed-search")
+    public ResponseEntity<List<StudyActivityDTO>> searchStudyActivities(@RequestParam("query") String query) {
         User user = userAuthService.getAuthenticatedUser();
-        if (user != null) {
-            return ResponseEntity.ok(user);
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
+        if (user == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+
+        List<StudyActivity> results = studyActivityService.searchByTitleOrDescription(query, user);
+        List<StudyActivityDTO> dtos = results.stream()
+                .map(sa -> toDTO(sa, user))
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(dtos);
     }
 
-    @PostMapping(value = "/rest/studyactivity-create", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<StudyActivity> createStudyActivity(@RequestBody StudyActivity studyActivity) {
-        User user = userAuthService.getAuthenticatedUser();
-        if (user == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }
-        StudyActivity studyActivityCreated = studyActivityService.save(studyActivity);
-        return ResponseEntity.status(HttpStatus.CREATED).body(studyActivityCreated);
-    }
-//pls
-    @PostMapping("/rest/uploadActivityPicture/{activityId}")
-    public ResponseEntity<String> uploadActivityPicture(@RequestParam("activityPicture") MultipartFile activityPicture,
-                                                        @PathVariable("activityId") Long activityId) {
-        StudyActivity studyActivity = studyActivityService.findById(activityId);
-
-        if (studyActivity != null && !activityPicture.isEmpty()) {
-            try {
-                byte[] bytes = activityPicture.getBytes();
-                studyActivity.setActivityPicture(bytes);
-                studyActivityService.save(studyActivity);
-                return ResponseEntity.ok("Picture uploaded successfully");
-            } catch (Exception e) {
-                e.printStackTrace();
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error uploading activity picture");
-            }
-        }
-        return ResponseEntity.badRequest().body("No picture uploaded or invalid study activity");
-    }
-
-    @GetMapping("/rest/activity/{id}/activityPicture")
-    public ResponseEntity<byte[]> getActivityPicture(@PathVariable Long id) {
-        StudyActivity activity = studyActivityService.findById(id);
-        if (activity != null && activity.getActivityPicture() != null) {
-            return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(activity.getActivityPicture());
-        } else {
-            return ResponseEntity.notFound().build();
-        }
-    }
-
-    @GetMapping("/rest/feed-search")
-    public ResponseEntity<List<StudyActivity>> searchStudyActivities(@RequestParam("query") String query) {
-        User user = userAuthService.getAuthenticatedUser();
-        if (user != null) {
-            List<StudyActivity> searchResults = studyActivityService.searchByTitleOrDescription(query, user);
-            return ResponseEntity.ok(searchResults);
-        } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }
-    }
-
-    @PutMapping("/rest/studyactivity/{id}/toggle-coffee")
+    @PutMapping("/studyactivity/{id}/toggle-coffee")
     public ResponseEntity<String> toggleCoffee(@PathVariable Long id) {
         User user = userAuthService.getAuthenticatedUser();
-        if (user == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not logged in.");
-        }
+        if (user == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not logged in.");
 
-        StudyActivity studyActivity = studyActivityService.findById(id);
-        if (studyActivity == null) {
-            return ResponseEntity.notFound().build();
-        }
+        StudyActivity sa = studyActivityService.findById(id);
+        if (sa == null) return ResponseEntity.notFound().build();
 
-        Coffee coffee = coffeeService.findCoffeeByUserAndActivity(user,studyActivity);
+        Coffee coffee = coffeeService.findCoffeeByUserAndActivity(user, sa);
         if (coffee != null) {
-            coffeeService.removeCoffee(user,studyActivity);
+            coffeeService.removeCoffee(user, sa);
             return ResponseEntity.ok("Coffee removed.");
-        }else{
-            coffeeService.giveCoffee(user,studyActivity);
+        } else {
+            coffeeService.giveCoffee(user, sa);
             return ResponseEntity.ok("Coffee added.");
         }
     }
 
+    // -------------------------------------------------------------------------
+    // Helper
+    // -------------------------------------------------------------------------
+
+    private StudyActivityDTO toDTO(StudyActivity sa, User user) {
+        Coffee coffeeCheck = coffeeService.findCoffeeByUserAndActivity(user, sa);
+        return new StudyActivityDTO(
+                sa.getId(),
+                sa.getUser().getId(),
+                sa.getBuilding(),
+                sa.getLocation(),
+                sa.getDate(),
+                sa.getFormattedDuration(),
+                sa.getTitle(),
+                sa.getDescription(),
+                sa.getUser().getName(),
+                sa.getSubjectID(),
+                sa.getSubjectName(),
+                user.getPrivacy(),
+                sa.getCoffees().size(),
+                coffeeCheck != null
+        );
+    }
 }
